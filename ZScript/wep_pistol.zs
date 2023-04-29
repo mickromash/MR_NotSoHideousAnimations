@@ -620,7 +620,8 @@ class HDPistol:HDHandgun replaces Pistol{
 		PSR1 A 0 A_Jump(256,3);
 		PSR4 A 0 A_JumpIf(invoker.weaponstatus[PISS_CHAMBER]>0,2);
 		PSR3 A 0;
-		#### D 5 offset(0,15){A_JumpIf(!pressingreload(),"CheckEndEmpty");}
+		---- A 0 A_OverLay(102,"Dumb");
+		#### D 5 offset(0,15) A_JumpIf(!pressingreload(),"CheckEndEmpty");
 		Loop;
 	CheckEndEmpty:	
 		#### R 0 A_JumpIf(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR4R0"),4);
