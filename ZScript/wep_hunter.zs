@@ -483,12 +483,67 @@ class Hunter:HDShotgun{
 			if(!countinv("HDShellAmmo"))setweaponstate("nope");
 			else invoker.weaponstatus[0]|=HUNTF_FROMPOCKETS;
 		}goto startreload;
+	CheckTube:
+		SHTG A 1;
+		SHTG BC 4 A_MuzzleClimb(frandom(1.2,2.4),-frandom(1.2,2.4));
+		SHTG C 1 offset(0,34);
+		SHTG C 1 offset(0,36) A_StartSound("weapons/huntopen",8);
+		SHTG C 1 offset(0,38);
+		SHTG C 4 offset(0,36) A_MuzzleClimb(-frandom(1.2,2.4),frandom(1.2,2.4));
+		SHTG D 1 offset(0,34) A_MuzzleClimb(-frandom(1.2,2.4),frandom(1.2,2.4));
+	CheckLoop:	
+		---- A 0 {if(invoker.weaponstatus[HUNTS_TUBE]>0)A_OverLay(102,"Dumb");
+				if(invoker.weaponstatus[HUNTS_CHAMBER]>0)A_OverLay(103,"Dumb3");}
+		SHTG D 5 offset(0,34) A_JumpIf(!pressingreload(),"CheckEnd");
+		Loop;		
+	CheckEnd:
+		SHTG C 4 offset(0,34) A_StartSound("weapons/huntopen",8);
+		SHTG C 1 offset(0,36);
+		SHTG C 1 offset(0,34);
+		SHTG CBA 3;
+		SHTG A 0 A_JumpIf(invoker.weaponstatus[0]&HUNTF_HOLDING,"nope");
+		goto ready;
+	Dumb:
+		STUP A 0 A_OverLayOffset(102,29,20);
+		---- A 0 A_JumpIf(Invoker.WeaponStatus[HUNTS_TUBESIZE]==5,"Dumb2");
+		STUP A 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>1,1);
+		Stop;
+		STUP D 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>2,1);
+		Stop;
+		STUP F 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>3,1);
+		Stop;
+		STUP I 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>4,1);
+		Stop;
+		STUP K 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>5,1);
+		Stop;
+		STUP M 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>6,1);
+		Stop;
+		STUP O 5;
+		Stop;	
+	Dumb3:
+		STUP A 0 A_OverLayOffset(103,29,17);
+		STUP A 5 A_JumpIf(Invoker.WeaponStatus[HUNTS_CHAMBER]>1,1);
+		Stop;
+		STUP P 5;
+		Stop;
+	Dumb2:
+		STUP B 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>1,1);
+		Stop;
+		STUP E 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>2,1);
+		Stop;
+		STUP H 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>3,1);
+		Stop;
+		STUP L 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>4,1);
+		Stop;
+		STUP O 5;
+		Stop;	
 	reload:
 	reloadfromsidesaddles:
 		SHTG A 0{
+			If(pressingzoom())Setweaponstate("CheckTube");
 			int sss=invoker.weaponstatus[SHOTS_SIDESADDLE];
 			int ppp=countinv("HDShellAmmo");
-			if(ppp<1&&sss<1)setweaponstate("nope");
+			if(ppp<1&&sss<1&&!pressingzoom())setweaponstate("nope");
 				else if(sss<1)
 					invoker.weaponstatus[0]|=HUNTF_FROMPOCKETS;
 				else invoker.weaponstatus[0]&=~HUNTF_FROMPOCKETS;
