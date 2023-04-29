@@ -379,8 +379,8 @@ class Hunter:HDShotgun{
 		SHHA D 1 A_OverLayOffset(26, -2, -7);
 		SHHA D 1 {if((HDPlayerPawn(self).bloodpressure>30)||(Health<41))A_OverLayOffset(-26, -1, -6); Else A_OverLayOffset(26, -2, -8);}
 		SHHA D 1 A_OverLayOffset(26, -2, -9);
-		RVHA C 1 {if((HDPlayerPawn(self).bloodpressure>40)||(Health<41))A_OverLayOffset(-26, -32, 36); Else A_OverLayOffset(26, -32, 35);}
-		RVHA C 1 A_OverLayOffset(26, -28, 49);
+		RVHA C 1 A_OverLayOffset(26, -32, 45);
+		RVHA C 1 A_OverLayOffset(26, -28, 52);
 		Stop;	
 	rackreload:
 		SHTG F 1 offset(-1,35) A_WeaponBusy(true);
