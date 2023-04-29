@@ -92,6 +92,7 @@ class Hunter:HDShotgun{
 		..WEPHELP_FIRE.."  Shoot (choke: "..weaponstatus[HUNTS_CHOKE]..")\n"
 		..WEPHELP_ALTFIRE.."  Pump\n"
 		..WEPHELP_RELOAD.."  Reload (side saddles first)\n"
+		..WEPHELP_ZOOM.."+"..WEPHELP_RELOAD.."  Check Tube\n"
 		..WEPHELP_ALTRELOAD.."  Reload (pockets only)\n"
 		..(weaponstatus[0]&HUNTF_EXPORT?"":(WEPHELP_FIREMODE.."  Pump/Semi"..(weaponstatus[0]&HUNTF_CANFULLAUTO?"/Auto":"").."\n"))
 		..WEPHELP_FIREMODE.."+"..WEPHELP_RELOAD.."  Load side saddles\n"
