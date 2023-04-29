@@ -110,17 +110,42 @@ class SelfBandage:HDWoundFixer{
 			A_MuzzleClimb(frandom(-1.5,1.8),frandom(-2.4,2.4));
 			if(hdplayerpawn(self))hdplayerpawn(self).fatigue+=2;
 		}
-		TNT1 A random(1,3) A_Jump(32,2,4);
+		TNT1 A random(1,2) A_Jump(32,2,4);
 		TNT1 A 0 A_Jump(256,2);
-		TNT1 A random(1,3) A_PlaySkinSound(SKINSOUND_GRUNT,"*usefail");
+		TNT1 A random(1,2) A_PlaySkinSound(SKINSOUND_GRUNT,"*usefail");
 		TNT1 A 0 A_Jump(256,2);
-		TNT1 A random(1,3) A_PlaySkinSound(SKINSOUND_GRUNT,"*grunt");
-		TNT1 A 0 A_Jump(200,"try4");
-		TNT1 ABCDEFGHIIJJKKLLMM 1;
-		TNT1 A 0 A_StartSound("bandage/rip",CHAN_WEAPON,CHANF_OVERLAP,0.4);
-		TNT1 NO 2;
-		TNT1 A 0 A_Refire("ArmLeft");
-		goto ready;
+		TNT1 A random(1,2) A_PlaySkinSound(SKINSOUND_GRUNT,"*grunt");
+		TNT1 A 0 A_Jump(160,"try4");
+		RAGA E 0 A_Jump(60,4);
+		RAGB E 0 A_Jump(110,3);
+		RAGC E 0 A_Jump(140,2);
+		RAGD E 0;
+		#### V 1 Offset(0,50);
+		#### V 1 Offset(0,30);
+		#### V 1 Offset(0,10);
+		#### VW 3 Offset(0,0);
+		#### A 0 A_StartSound("bandage/rip",CHAN_WEAPON,CHANF_OVERLAP,0.4);
+		#### XYZ 2;
+		#### U 3;
+		#### A 0 A_OverLay(26,"Try41");
+		#### U 8;
+		#### A 0 A_OverLay(26,"None");
+		#### A 0 A_Refire("BandageArm");
+		goto BandageArm;
+	None:
+		TNT1 A 0;
+		Stop;
+	Try41:
+		TNT1 A 0 A_CheckFloor(2);
+		TNT1 A 0 A_Jump(240,2);
+		TNT1 A 0 A_ChangeVelocity(frandom(-0.3,0.3),frandom(-0.3,0.3),frandom(-1,2));
+		TNT1 A 0{
+			A_MuzzleClimb(frandom(-1.5,1.7),frandom(-2.4,2.4));
+			if(hdplayerpawn(self))hdplayerpawn(self).fatigue+=2;
+		}
+		//TNT1 A 0 A_Jump(240,2);
+		RAGA ABCD 2;
+		Stop;
 	Try4:
 		TNT1 A 0 A_CheckFloor(2);
 		TNT1 A 0 A_Jump(240,2);
@@ -135,6 +160,7 @@ class SelfBandage:HDWoundFixer{
 		RAGB E 0 A_Jump(110,3);
 		RAGC E 0 A_Jump(140,2);
 		RAGD E 0;
+	BandageArm:	
 		#### A 0 A_Jump(240,2);
 		#### A 0 A_PlaySkinSound(SKINSOUND_GRUNT,"*grunt");
 		//TNT1 A 0 A_Jump(140,2);
