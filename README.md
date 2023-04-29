@@ -55,3 +55,7 @@ April 28-29
 Added Self Bandage aniamtion
 Added Mag Check Feature For Pistol
 Fixed Some Bugs
+
+April 30
+
+Added Tube Check Feature For Shotgun
