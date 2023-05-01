@@ -679,10 +679,12 @@ class HDPistol:HDHandgun replaces Pistol{
 		#### A 0 A_StartSound("weapons/pismagclick",8,CHANF_OVERLAP);
 		#### BC 2 offset(0,15);
 		#### A 0 A_JumpIf(invoker.weaponstatus[PISS_MAG]<1,"magoutingempty");
-		#### HG 2 offset(0,15);
+		#### HG 1 offset(0,15);
+		#### F 2 offset(0,0);
 		goto magout;
 	magoutingempty:
-		#### DE 2 offset(0,15);
+		#### DE 1 offset(0,15);
+		#### F 2 offset(0,0);
 		goto magout;
 	pocketmag:
 		---- R 0;
@@ -692,7 +694,7 @@ class HDPistol:HDHandgun replaces Pistol{
 		PSR1 A 0 A_Jump(256,3);
 		PSR4 A 0 A_JumpIf(invoker.weaponstatus[PISS_CHAMBER]>0,2);
 		PSR3 A 0;
-		#### NLJ 1 offset(0,15) {A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));if((HDPlayerPawn(self).bloodpressure>19)||(Health<41))A_SetTics(2);}
+		#### NMLJJ 1 offset(0,15) {A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));if((HDPlayerPawn(self).bloodpressure>19)||(Health<41))A_SetTics(2);}
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<20)&&(Health>40),2);
 		#### J 2 offset(0,15) A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));
 		#### I 3{A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4)); A_StartSound("weapons/pismagclick",8,CHANF_OVERLAP);if((HDPlayerPawn(self).bloodpressure>25)||(Health<41))A_SetTics(4);}
