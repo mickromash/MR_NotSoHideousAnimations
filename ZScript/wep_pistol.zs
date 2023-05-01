@@ -247,10 +247,10 @@ class HDPistol:HDHandgun replaces Pistol{
 		RVHA C 1 A_OverLayOffset(26, -12, 48);
 		Stop;	
 	HandChamberRight:
-		RVHB C 1 A_OverLayOffset(26, -100, 40);
-		RVHB C 1 A_OverLayOffset(26, -90, 30);
-		RVHB C 1 A_OverLayOffset(26, -80, 20);
-		RVHB C 1 A_OverLayOffset(26, -70, 10);
+		RVHB C 1 A_OverLayOffset(26, -10, 20);
+		RVHB C 1 A_OverLayOffset(26, 0, 10);
+		RVHB C 1 A_OverLayOffset(26, 10, 0);
+		RVHB C 1 A_OverLayOffset(26, 20, -10);
 		RVHB E 1 A_OverLayOffset(26, -17, 0);
 		RVHB E 1 A_OverLayOffset(26, -17, 1);
 		RVHB E 1 A_OverLayOffset(26, -17, 2);
@@ -259,11 +259,11 @@ class HDPistol:HDHandgun replaces Pistol{
 		RVHB E 1 A_OverLayOffset(26, -17, 13);
 		RVHB E 1 A_OverLayOffset(26, -17, 12);
 		RVHB E 1 A_OverLayOffset(26, -17, 11);
-		RVHB C 1 A_OverLayOffset(26, -70, 10);
-		RVHB C 1 A_OverLayOffset(26, -75, 14);
-		RVHB C 1 A_OverLayOffset(26, -80, 20);
-		RVHB C 1 A_OverLayOffset(26, -85, 36);
-		RVHB C 1 A_OverLayOffset(26, -90, 48);
+		RVHB C 1 A_OverLayOffset(26, 20, -10);
+		RVHB C 1 A_OverLayOffset(26, 10, 4);
+		RVHB C 1 A_OverLayOffset(26, 0, 10);
+		RVHB C 1 A_OverLayOffset(26, -10, 26);
+		RVHB C 1 A_OverLayOffset(26, -20, 38);
 		Stop;		
 	chamber_manualUnload:
 		---- A 0 A_JumpIf(
