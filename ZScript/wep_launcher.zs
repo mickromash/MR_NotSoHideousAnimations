@@ -14,7 +14,7 @@ class HDRL:HDWeapon{
 		weapon.bobrangex 0.3;
 		weapon.bobrangey 0.9;
 		scale 0.6;
-		inventory.pickupmessage "You got the rocket launcher!";
+		inventory.pickupmessage "$PICKUP_RL";
 		obituary "$OB_ROCKET";
 		hdweapon.barrelsize 32,3.1,5;
 		hdweapon.refid HDLD_LAUNCHR;
@@ -33,11 +33,11 @@ class HDRL:HDWeapon{
 	}
 	override double gunmass(){
 		return (weaponstatus[0]&RLF_NOMAG)?
-			9+weaponstatus[RLS_CHAMBER]
-			:(10+weaponstatus[RLS_MAG]+weaponstatus[RLS_CHAMBER]);
+			7+weaponstatus[RLS_CHAMBER]
+			:(8+weaponstatus[RLS_MAG]+weaponstatus[RLS_CHAMBER]);
 	}
 	override double weaponbulk(){
-		double blx=(weaponstatus[0]&RLF_NOMAG)?120:(175+weaponstatus[RLS_MAG]*ENC_ROCKETLOADED);
+		double blx=(weaponstatus[0]&RLF_NOMAG)?100:(125+weaponstatus[RLS_MAG]*ENC_ROCKETLOADED);
 
 		int chmb=weaponstatus[RLS_CHAMBER];
 		if(chmb>1)blx+=ENC_HEATROCKETLOADED;
@@ -218,6 +218,7 @@ class HDRL:HDWeapon{
 		MISG # 0 A_CheckIdSprite("LAUGA0","MISGA0");
 		---- A 0;
 		goto deselect0small;
+		
 	Safety:
 		---- A 0 {
 		if(invoker.weaponstatus[RLF_SAFETY]==1)invoker.weaponstatus[RLF_SAFETY]=0;
@@ -260,7 +261,7 @@ class HDRL:HDWeapon{
 
 
 	fire:
-		#### A 1 A_JumpIf(invoker.weaponstatus[RLF_SAFETY]==1,"Nope");
+		#### A 1;
 		goto shoot;
 	althold:
 	hold:
@@ -278,56 +279,60 @@ class HDRL:HDWeapon{
 				return;
 			}
 
-			gyrogrenade rkt;
+			RocketGrenade rkt;
 			if(
 				invoker.weaponstatus[0]&RLF_GRENADEMODE
 				&&chm==1
 			){
 				//shoot a grenade
-				A_ZoomRecoil(0.995);
 				A_FireHDGL();
 				invoker.weaponstatus[RLS_SMOKE]+=5;
 				invoker.weaponstatus[RLS_CHAMBER]=0;
+				invoker.weaponstatus[RLS_RECOIL]=0;
+			}else{
+				A_FireHDGL(chm>1?2:1);
+				invoker.weaponstatus[RLS_SMOKE]+=5;
+				invoker.weaponstatus[RLS_CHAMBER]=0;
+
+				if(chm>1)invoker.weaponstatus[RLS_RECOIL]=2;
+				else invoker.weaponstatus[RLS_RECOIL]=1;
+			}
+		}
+		#### B 2{
+			switch(invoker.weaponstatus[RLS_RECOIL]){
+			case 2:
+				A_ZoomRecoil(0.99);
+				A_MuzzleClimb(
+					0,0,
+					-0.8,-1.6,
+					-0.2,-0.6,
+					-0.3,-0.9
+				);
+				break;
+			case 1:
+				A_ZoomRecoil(0.995);
+				A_MuzzleClimb(
+					0,0,
+					-0.4,-0.8,
+					-0.1,-0.3,
+					-0.2,-0.6
+				);
+				break;
+			case 0:
+			default:
+				A_ZoomRecoil(0.995);
 				A_MuzzleClimb(
 					0,0,
 					-0.4,-0.8,
 					-0.1,-0.3
 				);
-				if(invoker.weaponstatus[0]&RLF_NOMAG)setweaponstate("nope");
-				else setweaponstate("chamber");
-			}else{
-				//shoot a rocket
-				class<actor> rrr;
-				if(chm>1){
-					rrr="HDHEAT";
-					A_ChangeVelocity(cos(pitch),0,sin(pitch),CVF_RELATIVE);
-				}else rrr="GyroGrenade";
-				vector3 gpos=pos+gunpos((0,0,-getdefaultbytype(rrr).height*0.6));
-				rkt=gyrogrenade(spawn(rrr,gpos,ALLOW_REPLACE));
-				invoker.weaponstatus[RLS_SMOKE]+=50;
-				rkt.target=self;rkt.master=self;
-
-				let hdp=hdplayerpawn(self);
-				if(hdp){
-					rkt.angle=hdp.gunangle;
-					rkt.pitch=hdp.gunpitch;
-				}else{
-					rkt.angle=angle;
-					rkt.pitch=pitch;
-				}
-
-				rkt.primed=false;
-				rkt.isrocket=true;
-				if(
-					chm==1
-					&&invoker.airburst
-				)rkt.airburst=int(max(1000,abs(invoker.airburst))*HDCONST_ONEMETRE*0.01);
-				if(!(player.cmd.buttons&BT_ZOOM))invoker.airburst=0;
-				invoker.weaponstatus[RLS_CHAMBER]=0;
-				A_StartSound("weapons/rockignite",CHAN_WEAPON,CHANF_OVERLAP);
-				A_StartSound("weapons/rockboom",CHAN_WEAPON,CHANF_OVERLAP);
+				break;
 			}
 		}
+		---- A 0 A_JumpIf(!(invoker.weaponstatus[0]&RLF_NOMAG),"chamber");
+		goto nope;
+
+	hardlaunchrecoil:  //unused
 		#### A 2{
 			A_ZoomRecoil(0.7);
 			if(gunbraced()){
@@ -850,13 +855,14 @@ class HDRL:HDWeapon{
 enum rocketstatus{
 	RLF_GRENADEMODE=2,
 	RLF_NOMAG=4,
-	RLF_SAFETY=6,
+	RLF_SAFETY=7,
 	RLS_STATUS=0,
 	RLS_MAG=1,
 	RLS_CHAMBER=2,
 	RLS_AIRBURST=3,
 	RLS_SMOKE=4,
 	RLS_DOT=5,
+	RLS_RECOIL=6,
 };
 
 
