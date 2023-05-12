@@ -63,6 +63,7 @@ class SelfBandage:HDWoundFixer{
 	states{
 	select:
 		TNT1 A 0{
+			if(Random(0,2))invoker.weaponstatus[SFBS_WOUND]=1;
 			if(!DoHelpText()) return;
 			if(!!hdbleedingwound.findbiggest(self,0))A_WeaponMessage("\cu--- \ccBANDAGING \cu---\c-\n\n\nPress and hold Fire\n\nwhile standing still\n\nto try to not die.",210);
 			else A_WeaponMessage("\cu--- \ccBANDAGING \cu---\c-\n\n\nPress and hold Fire to bandage\n\nyourself when you are bleeding.\n\n\n\nPress and hold Altfire\n\nto bandage someone else.",210);
@@ -91,11 +92,74 @@ class SelfBandage:HDWoundFixer{
 		}
 	hold:
 	lower:
+		TNT1 A 0 A_JumpIf(invoker.weaponstatus[SFBS_WOUND]==1,"Search");
 		TNT1 A 0 A_JumpIf(pitch>45,"try");
 		TNT1 A 1 A_MuzzleClimb(0,6);
 		TNT1 A 0 A_JumpIf(IsMoving.Count(self)>=4,"abort");
 		TNT1 A 0 A_Refire("lower");
 		goto ready;
+	Search:
+		RAGF WV 3;
+		TNT1 A 0 A_Jump(75, "EjectBullet");
+		RAGF BC 4;
+		TNT1 A 0 A_Jump(75, "EjectBrass");
+		RAGF DXY 3;
+		---- A 0 A_Jump(256,"EjectBulletLeft");
+		Goto Trying;
+	EjectBrass:
+		RAGF EFGH 3;
+		#### A 0 A_PlaySkinSound(SKINSOUND_MEDS,"*usemeds");
+		RAGF HJIJH 2 A_MuzzleClimb(frandom(-1.5,1.8),frandom(-1.4,1.4));
+		#### A 0 A_PlaySkinSound(SKINSOUND_MEDS,"*usemeds");
+		RAGF IJIHJI 2 A_MuzzleClimb(frandom(-1.5,1.8),frandom(-1.4,1.4));
+		#### A 0 A_PlaySkinSound(SKINSOUND_MEDS,"*usemeds");
+		RAGF KLMMM 3;
+		RAGF NOP 2;
+		TNT1 A 0 {invoker.bandagewound(frandom(5,10),self);}
+		TNT1 A 0 A_StartSound("weapons/chunksplat",CHAN_BODY);
+		RAGF QRSTU 3;
+		---- A 0 {invoker.weaponstatus[SFBS_WOUND]=0;}
+		Goto Try;
+	EjectBulletLeft:
+		RRGE AB 2;
+		RRGE CDE 2;
+		RRGE FG 4;
+		---- A 0 A_StartSound("misc/smallslop",CHAN_VOICE);
+		RRGE GOGGP 1 A_MuzzleClimb(frandom(-4.4,4.4),frandom(-2.4,2.4));
+		---- A 0 A_StartSound("misc/smallslop",CHAN_VOICE);
+		RRGE PO 1 A_MuzzleClimb(frandom(-4.4,4.4),frandom(-2.4,2.4));
+		---- A 0 A_StartSound("misc/smallslop",CHAN_VOICE);
+		RRGE GG 1 A_MuzzleClimb(frandom(-4.4,4.4),frandom(-2.4,2.4));
+		---- A 0 A_StartSound("misc/smallslop",CHAN_VOICE);
+		RRGE GOOGPGGO 1 A_MuzzleClimb(frandom(-4.4,4.4),frandom(-2.4,2.4));
+		---- A 0 A_StartSound("weapons/rockopen",CHAN_VOICE);
+		RRGE H 5;
+		RRGE I 3;
+		---- A 0 A_StartSound("weapons/rocklaunch",Chan_BODY);
+		RRGE JK 3;
+		---- A 0 A_MuzzleClimb(frandom(-5.4,5.4),frandom(-2.4,2.4));
+		---- A 0{actor aaa=spawn(
+					"HDSpent9mm",
+					(pos.xy,pos.z+height-10)
+					+(cos(pitch)*cos(angle),cos(pitch)*sin(angle),sin(pitch))*7,
+					ALLOW_REPLACE);
+				invoker.weaponstatus[SFBS_WOUND]=0;}
+	BandageArm2Left:
+		TNT1 A 0 {invoker.bandagewound(frandom(5,10),self);}
+		RRGE L 4;
+		---- A 0 A_StartSound("weapons/pocket",CHAN_BODY,CHANF_OVERLAP);
+		RRGE LL 6 A_MuzzleClimb(frandom(-2.4,2.4),frandom(-2.4,2.4));
+		---- A 0 A_StartSound("weapons/pocket",CHAN_BODY,CHANF_OVERLAP);
+		RRGE LL 6 A_MuzzleClimb(frandom(-2.4,2.4),frandom(-2.4,2.4));
+		RRGE MN 3;
+		RRGE "[" 3;
+		#### A 0 A_StartSound("bandage/rustle",CHAN_BODY,CHANF_OVERLAP);
+		RRGE "]" 3;
+		RRGE QRSTUVWXYZZ 3;
+		RRGE Z 2 offset(10,38);
+		RRGF A 2;
+		---- A 0 offset(0,0);
+		goto Heal;
 	try:
 		TNT1 A random(15,25);
 		TNT1 A 0{
@@ -106,32 +170,56 @@ class SelfBandage:HDWoundFixer{
 		TNT1 A random(5,15) damagemobj(self,self,1,"bleedout");
 		TNT1 A 0 A_JumpIf(IsMoving.Count(self)>=4,"abort");
 	try2:
+		//TNT1 A 0 A_JumpIf(targetwound<7,"Try5");
+		---- A 0{let itg=invoker.target;
+			if(itg){
+				let tgw=invoker.targetwound;
+				if(tgw.bleeder!=itg)A_Jump(256,1);}}
+		Goto Try5;	
 		TNT1 A 0{
 			A_MuzzleClimb(frandom(-1.5,1.8),frandom(-2.4,2.4));
 			if(hdplayerpawn(self))hdplayerpawn(self).fatigue+=2;
 		}
-		TNT1 A random(1,2) A_Jump(32,2,4);
-		TNT1 A 0 A_Jump(256,2);
-		TNT1 A random(1,2) A_PlaySkinSound(SKINSOUND_GRUNT,"*usefail");
-		TNT1 A 0 A_Jump(256,2);
-		TNT1 A random(1,2) A_PlaySkinSound(SKINSOUND_GRUNT,"*grunt");
-		TNT1 A 0 A_Jump(160,"try4");
-		RAGA E 0 A_Jump(60,4);
-		RAGB E 0 A_Jump(110,3);
-		RAGC E 0 A_Jump(140,2);
-		RAGD E 0;
-		#### V 1 Offset(0,50);
-		#### V 1 Offset(0,30);
-		#### V 1 Offset(0,10);
-		#### VW 3 Offset(0,0);
-		#### A 0 A_StartSound("bandage/rip",CHAN_WEAPON,CHANF_OVERLAP,0.4);
-		#### XYZ 2;
-		#### U 3;
-		#### A 0 A_OverLay(26,"Try41");
-		#### U 8;
-		#### A 0 A_OverLay(26,"None");
-		#### A 0 A_Refire("BandageArm");
-		goto BandageArm;
+		RAGE AB 2;
+	EjectBullet:	
+		RAGE CDE 2;
+		RAGE FG 4;
+		---- A 0 A_StartSound("misc/smallslop",CHAN_VOICE);
+		RAGE GOGGP 1 A_MuzzleClimb(frandom(-4.4,4.4),frandom(-2.4,2.4));
+		---- A 0 A_StartSound("misc/smallslop",CHAN_VOICE);
+		RAGE PO 1 A_MuzzleClimb(frandom(-4.4,4.4),frandom(-2.4,2.4));
+		---- A 0 A_StartSound("misc/smallslop",CHAN_VOICE);
+		RAGE GG 1 A_MuzzleClimb(frandom(-4.4,4.4),frandom(-2.4,2.4));
+		---- A 0 A_StartSound("misc/smallslop",CHAN_VOICE);
+		RAGE GOOGPGGO 1 A_MuzzleClimb(frandom(-4.4,4.4),frandom(-2.4,2.4));
+		---- A 0 A_StartSound("weapons/rockopen",CHAN_VOICE);
+		RAGE H 5;
+		RAGE I 3;
+		---- A 0 A_StartSound("weapons/rocklaunch",Chan_BODY);
+		RAGE JK 3;
+		---- A 0 A_MuzzleClimb(frandom(-5.4,5.4),frandom(-2.4,2.4));
+		---- A 0{actor aaa=spawn(
+					"HDSpent9mm",
+					(pos.xy,pos.z+height-10)
+					+(cos(pitch)*cos(angle),cos(pitch)*sin(angle),sin(pitch))*7,
+					ALLOW_REPLACE);
+				invoker.weaponstatus[SFBS_WOUND]=0;}
+	BandageArm2:
+		TNT1 A 0 {invoker.bandagewound(frandom(5,10),self);}
+		RAGE L 4;
+		---- A 0 A_StartSound("weapons/pocket",CHAN_BODY,CHANF_OVERLAP);
+		RAGE LL 6 A_MuzzleClimb(frandom(-2.4,2.4),frandom(-2.4,2.4));
+		---- A 0 A_StartSound("weapons/pocket",CHAN_BODY,CHANF_OVERLAP);
+		RAGE LL 6 A_MuzzleClimb(frandom(-2.4,2.4),frandom(-2.4,2.4));
+		RAGE MN 3;
+		RAGE "[" 3;
+		#### A 0 A_StartSound("bandage/rustle",CHAN_BODY,CHANF_OVERLAP);
+		RAGE "]" 3;
+		RAGE QRSTUVWXYZZ 3;
+		RAGE Z 2 offset(10,38);
+		RAGF A 2;
+		---- A 0 offset(0,0);
+		goto Heal;
 	None:
 		TNT1 A 0;
 		Stop;
@@ -146,6 +234,9 @@ class SelfBandage:HDWoundFixer{
 		//TNT1 A 0 A_Jump(240,2);
 		RAGA ABCD 2;
 		Stop;
+	Try42:
+		RRGA ABCD 2;
+		Stop;
 	Try4:
 		TNT1 A 0 A_CheckFloor(2);
 		TNT1 A 0 A_Jump(240,2);
@@ -154,22 +245,9 @@ class SelfBandage:HDWoundFixer{
 			A_MuzzleClimb(frandom(-1.5,1.7),frandom(-2.4,2.4));
 			if(hdplayerpawn(self))hdplayerpawn(self).fatigue+=2;
 		}
-		//TNT1 A 0 A_Jump(240,2);
-		RAGA ABCD 2;
-		RAGA E 0 A_Jump(60,4);
-		RAGB E 0 A_Jump(110,3);
-		RAGC E 0 A_Jump(140,2);
+		TNT1 A 0 A_Jump(240,2);
 		RAGD E 0;
-	BandageArm:	
-		#### A 0 A_Jump(240,2);
-		#### A 0 A_PlaySkinSound(SKINSOUND_GRUNT,"*grunt");
-		//TNT1 A 0 A_Jump(140,2);
-		#### A 0 A_StartSound("bandage/rustle",CHAN_BODY,CHANF_OVERLAP);
-		#### EFFGHIJO 2;
-		#### A 0 A_StartSound("bandage/rustle",CHAN_BODY,CHANF_OVERLAP);
-		#### PFGHIJK 2;
-		#### LM 2;
-		RAGA N 2;
+		TNT1 A 0 A_Jump(140,2);
 		TNT1 A 0 A_JumpIf(IsMoving.Count(self)>=4,"abort");
 		TNT1 A 0 A_Refire("try5");
 		goto ready;	
@@ -178,12 +256,30 @@ class SelfBandage:HDWoundFixer{
 			A_MuzzleClimb(frandom(-1.6,1.8),frandom(-2.4,2.4));
 			if(hdplayerpawn(self))hdplayerpawn(self).fatigue+=2;
 		}
-		TNT1 A 0 A_Jump(200,2);
-		TNT1 A 0 A_StartSound("bandage/rustle",CHAN_BODY,CHANF_OVERLAP);
-		TNT1 A random(10,20);
-		TNT1 A 0 A_JumpIf(IsMoving.Count(self)>=4,"abort");
-		TNT1 A 0 A_Refire("try4");
-		goto ready;
+		TNT1 A random(1,2) A_Jump(32,2,4);
+		TNT1 A 0 A_Jump(256,2);
+		TNT1 A random(1,2) A_PlaySkinSound(SKINSOUND_GRUNT,"*usefail");
+		TNT1 A 0 A_Jump(256,2);
+		TNT1 A random(1,2) A_PlaySkinSound(SKINSOUND_GRUNT,"*grunt");
+		TNT1 A 0 A_Jump(90,"try4");
+		RAGA E 0 A_Jump(60,4);
+		RAGB E 0 A_Jump(110,3);
+		RAGC E 0 A_Jump(140,2);
+		RAGD E 0;
+		#### V 1 Offset(0,50);
+		#### V 1 Offset(0,30);
+		#### V 1 Offset(0,10);
+		#### VW 3 Offset(0,0);
+		#### A 0 A_StartSound("bandage/rip",CHAN_WEAPON,CHANF_OVERLAP,0.4);
+		#### XYZ 2;
+		#### A 0 A_Jump(128,"BandageArmRight1");
+		#### U 3;
+		#### A 0 A_OverLay(26,"Try41");
+		#### U 8;
+		#### A 0 A_OverLay(26,"None");
+		#### A 0 A_Refire("BandageArm");
+		//TNT1 A 0 A_JumpIf(IsMoving.Count(self)>=4,"abort");
+		goto BandageArm;
 	/*try4:
 		TNT1 A 0 A_CheckFloor(2);
 		TNT1 A 0 A_Jump(240,2);
@@ -200,18 +296,61 @@ class SelfBandage:HDWoundFixer{
 		TNT1 A 0 A_JumpIf(IsMoving.Count(self)>=4,"abort");
 		TNT1 A 0 A_Refire("try5");
 		goto ready;*/
+	TryingRight:
+		RRGA ABCD 2;
+		RRGA E 0 A_Jump(60,"BandageArmRight");
+		RRGB E 0 A_Jump(110,"BandageArmRight");
+		RRGC E 0 A_Jump(140,"BandageArmRight");
+		RRGD E 0;
+		Goto BandageArmRight;
+	BandageArmRight1:
+		#### A 0 A_OverLay(26,"Try42");
+		#### U 8;
+		#### A 0 A_OverLay(26,"None");
+		---- A 0 A_JumpIf(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("RAGAA0"),4);
+		---- A 0 A_JumpIf(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("RAGBA0"),4);
+		---- A 0 A_JumpIf(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("RAGCA0"),4);
+		---- A 0 A_JumpIf(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("RAGDA0"),4);
+		RRGA A 0 A_Jump(256,"BandageArmRight");
+		RRGB A 0 A_Jump(256,"BandageArmRight");
+		RRGC A 0 A_Jump(256,"BandageArmRight");
+		RRGD A 0;
+	BandageArmRight:	
+		#### A 0 A_Jump(240,2);
+		#### A 0 A_PlaySkinSound(SKINSOUND_GRUNT,"*grunt");
+		//TNT1 A 0 A_Jump(140,2);
+		#### A 0 A_StartSound("bandage/rustle",CHAN_BODY,CHANF_OVERLAP);
+		#### EFFGHIJO 2;
+		#### A 0 A_StartSound("bandage/rustle",CHAN_BODY,CHANF_OVERLAP);
+		#### PFGHIJK 2;
+		#### LM 2;
+		RRGA N 2;
+		Goto Heal;
 	try5:
 		TNT1 A 0 A_MuzzleClimb(frandom(-1.8,1.8),frandom(-2.4,2.4));
 		TNT1 A 0 A_Jump(8,"Try@");
-		TNT1 A 0 A_Jump(12,"try3");
+		TNT1 A 0 A_Jump(20,"try3");
 		TNT1 A 0 A_Jump(16,"try4");
-		TNT1 A 0 A_Jump(80,2);
-		TNT1 A 0 A_StartSound("bandage/rustle",CHAN_BODY);
-		TNT1 A random(10,20);
-		TNT1 A 0 A_Jump(80,2);
-		TNT1 A 0 A_StartSound("weapons/pocket",9);
-		TNT1 A random(10,20);
-		TNT1 A 0 A_JumpIf(IsMoving.Count(self)>=4,"abort");
+		//TNT1 A 0 A_Jump(80,2);
+	Trying:	
+		TNT1 A 0 A_Jump(128,"TryingRight");
+		RAGA ABCD 2;
+		RAGA E 0 A_Jump(60,4);
+		RAGB E 0 A_Jump(110,3);
+		RAGC E 0 A_Jump(140,2);
+		RAGD E 0;
+	BandageArm:	
+		#### A 0 A_Jump(240,2);
+		#### A 0 A_PlaySkinSound(SKINSOUND_GRUNT,"*grunt");
+		//TNT1 A 0 A_Jump(140,2);
+		#### A 0 A_StartSound("bandage/rustle",CHAN_BODY,CHANF_OVERLAP);
+		#### EFFGHIJO 2;
+		#### A 0 A_StartSound("bandage/rustle",CHAN_BODY,CHANF_OVERLAP);
+		#### PFGHIJK 2;
+		#### LM 2;
+		RAGA N 2;
+		//TNT1 A 0 A_JumpIf(IsMoving.Count(self)>=4,"abort");
+	Heal:	
 		TNT1 A 0 A_JumpIf(!!hdbleedingwound.findbiggest(self,0),2);
 		TNT1 A 0 {
 			if(DoHelpText())A_WeaponMessage("You seem to be stable.",144);
@@ -286,3 +425,6 @@ class SelfBandage:HDWoundFixer{
 	}
 }
 
+enum selfbandagestatus{
+	SFBS_WOUND=0,
+};
