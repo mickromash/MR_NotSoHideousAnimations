@@ -63,3 +63,7 @@ Added Tube Check Feature For Shotgun
 May 12
 
 Finished Arms Healing Animations
+
+May 16
+
+Added Stim Animation
