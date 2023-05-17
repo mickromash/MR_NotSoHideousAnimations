@@ -203,51 +203,60 @@ class HDStimpacker:HDWoundFixer{
 			A_WeaponReady();
 		}
 		Goto ReadyEnd;
+	None:
+		TNT1 A 1;
+		Stop;
+	Leg:
+		STLG A 1 {A_OverlayFlags(-26,PSPF_PLAYERTRANSLATED,1);A_OverlayOffset(-26, 0, (-pitch*2)+200);}
+		Loop;
 	fire:
-		STIG BCCD 1; 
-		STIG D 0 A_Refire("Hold");
-		STIG CB 1;
-		Goto ReadyEnd;
 	hold:
-		STIF A 1;
-		STIF A 0{
+		TNT1 A 0 A_OverLay(-26,"Leg");
+		STIG A 1;
+		STIG A 0{
 			if(hdplayerpawn(self))hdplayerpawn(self).gunbraced=false;
 			if(invoker.weaponstatus[0]&INJECTF_SPENT){
+				A_OverLay(-26,"None");
 				return resolvestate("nope");
 			}
 			let blockinv=HDWoundFixer.CheckCovered(self,CHECKCOV_ONLYFULL);
 			if(blockinv){
 				A_TakeOffFirst(blockinv.gettag(),2);
+				A_OverLay(-26,"None");
 				return resolvestate("nope");
 			}
-			if(pitch<55){
+			if(pitch<90){
 				A_MuzzleClimb(0,8);
 				A_Refire();
 				return resolvestate(null);
 			}
 			return resolvestate("inject");
-		}goto nope;
+		}
+		STIG A 0 A_OverLay(-26,"None");
+		goto nope;
 	inject:
-		STIF A 1 offset(0,36){
+		STIF CD 2;
+		STIF E 2{
 			A_SetBlend("7a 3a 18",0.1,4);
 			A_MuzzleClimb(0,2);
 			if(hdplayerpawn(self))A_StartSound(hdplayerpawn(self).medsound,CHAN_VOICE);
 			else A_StartSound("*usemeds",CHAN_VOICE);
 			A_StartSound("misc/injection",CHAN_WEAPON,CHANF_OVERLAP);
-		}
-		STIF AAAA 1 offset(0,40)A_MuzzleClimb(0,-0.5);
-		TNT1 A 0{actor a=spawn(invoker.injecttype,pos,ALLOW_REPLACE);
+			actor a=spawn(invoker.injecttype,pos,ALLOW_REPLACE);
 			a.accuracy=40;a.target=self;
 			invoker.weaponstatus[0]|=INJECTF_SPENT;}
-		STIF BCD 2;
-		TNT1 A 2;
+		STIF F 4;
+		STIF GGG 1 A_MuzzleClimb(0,-10);
+		TNT1 AAA 1 A_MuzzleClimb(0,-10);
+		TNT1 A 0 A_OverLay(-26,"None");
 		goto nope;
 	altfire:
-		TNT1 A 10;
+		STIF C 2;
 		TNT1 A 0 A_Refire();
 		goto nope;
 	althold:
-		TNT1 A 8{
+		STIF H 2;
+		TNT1 A 0{
 			bool helptext=DoHelpText();
 			flinetracedata injectorline;
 			linetrace(
@@ -267,20 +276,47 @@ class HDStimpacker:HDWoundFixer{
 						||ccc.health<10
 					){
 						if(helptext)A_WeaponMessage("They don't need it.",2);
-						return resolvestate("nope");
+						return resolvestate("UnInject");
 					}
-					invoker.weaponstatus[0]|=INJECTF_SPENT;
-					ccc.A_StartSound(ccc.painsound,CHAN_VOICE);
-					ccc.stunned=max(0,ccc.stunned>>1);
-					return resolvestate("injected");
-				}
+					return resolvestate("Injecting");
+				}}
 				if(helptext)A_WeaponMessage("Nothing to be done here.\n\nStimulate thyself? (press fire)");
-				return resolvestate("nope");
+				return resolvestate("UnInject");
 			}
+		Goto Injection;	
+		Injecting:
+		STIF HIJ 2;
+		TNT1 A 0{bool helptext=DoHelpText();
+			flinetracedata injectorline;
+			linetrace(
+				angle,42,pitch,
+				offsetz:gunheight()-2,
+				data:injectorline
+			);
+			let ccc=HDHumanoid(injectorline.hitactor);
+					ccc.A_StartSound(ccc.painsound,CHAN_VOICE);
+					ccc.stunned=max(0,ccc.stunned>>1);}
+		STIF JJKKLM	2;
+		TNT1 A 0{invoker.weaponstatus[0]|=INJECTF_SPENT;}
+		Goto Nope;
+		UnInject:
+		STIF C 6 A_Refire();
+		Goto Nope;
+		Injection:
+		STIF HIJ 2;
+		TNT1 A 0{
+			bool helptext=DoHelpText();
+			flinetracedata injectorline;
+			linetrace(
+				angle,42,pitch,
+				offsetz:gunheight()-2,
+				data:injectorline
+			);
+			let c=HDPlayerPawn(injectorline.hitactor);
 			let blockinv=HDWoundFixer.CheckCovered(self,CHECKCOV_ONLYFULL);
 			if(blockinv){
 				if(helptext)A_WeaponMessage("You'll need them to take off their "..blockinv.gettag().."...");
-				return resolvestate("nope");
+				return resolvestate("InjectFail");
 			}
 			if(IsMoving.Count(c)>4){
 				bool chelptext=DoHelpText(c);
@@ -291,7 +327,7 @@ class HDStimpacker:HDWoundFixer{
 					if(chelptext)HDWeapon.ForceWeaponMessage(c,string.format("Stop squirming!\n\n%s only wants to\n\ngive you some drugs...",player.getusername()));
 					if(helptext)A_WeaponMessage("You'll need them to stay still...");
 				}
-				return resolvestate("nope");
+				return resolvestate("InjectFail");
 			}
 			if(
 				//because poisoning people should count as friendly fire!
@@ -309,16 +345,30 @@ class HDStimpacker:HDWoundFixer{
 			){
 				if(DoHelpText(c))HDWeapon.ForceWeaponMessage(c,string.format("Run away!!!\n\n%s is trying to overdose you!",player.getusername()));
 				if(DoHelpText())A_WeaponMessage("They seem a bit fidgety already...");
-				return resolvestate("nope");
+				return resolvestate("InjectFail");
 			}
 			//and now...
-			invoker.weaponstatus[0]|=INJECTF_SPENT;
+			return resolvestate("injectDone");
+		}
+		Goto Nope;
+	InjectFail:
+		STIF JKC 2;
+		Goto ReadyEnd;
+	injectDone:
+		STIF J 1{flinetracedata injectorline;
+			linetrace(
+				angle,42,pitch,
+				offsetz:gunheight()-2,
+				data:injectorline
+			);
+			let c=HDPlayerPawn(injectorline.hitactor);
 			c.A_StartSound(hdplayerpawn(c).medsound,CHAN_VOICE);
 			c.A_SetBlend("7a 3a 18",0.1,4);
 			actor a=spawn(invoker.injecttype,c.pos,ALLOW_REPLACE);
-			a.accuracy=40;a.target=c;
-			return resolvestate("injected");
-		}
+			a.accuracy=40;a.target=c;}
+		STIF JJKKLM 2;
+		TNT1 A 0 {invoker.weaponstatus[0]|=INJECTF_SPENT;}
+		Goto Nope;
 	injected:
 		TNT1 A 8;
 		goto nope;
