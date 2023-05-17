@@ -67,3 +67,8 @@ Finished Arms Healing Animations
 May 16
 
 Added Stim Animation
+
+May 17
+
+Remade Stim Animation
+Added Stim Alt Fire Animation
