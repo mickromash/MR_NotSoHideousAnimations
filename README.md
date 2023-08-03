@@ -76,7 +76,9 @@ Added Stim Alt Fire Animation
 August 3
 
 Updated Addon To Main Version Of Hideous Destructor
+
 Added Slayer Reload Animation
+
 Sped Up Pistol Reloading
 Added Grenade And Stapler Death Animations
 
