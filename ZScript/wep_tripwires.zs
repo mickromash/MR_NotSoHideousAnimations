@@ -33,6 +33,7 @@ class Tripwire:HDWeapon{
 		tripwire.throwtype "TrippingFrag";
 		tripwire.spoontype "HDFragSpoon";
 		tripwire.weptype "HDFragGrenades";
+		tag "$TAG_TRIPWIRES";
 	}
 	override string,double getpickupsprite(){return "FRAGA0",0.6;}
 	override void DrawHUDStuff(HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl){
@@ -54,9 +55,10 @@ class Tripwire:HDWeapon{
 		}
 	}
 	override string gethelptext(){
+		LocalizeHelp();
 		return
-		WEPHELP_FIRE.."  Place "..(gumspot?"grenade":"end of string").."\n"
-		..WEPHELP_ALTFIRE.."  Abort\n"
+		LWPHELP_FIRE..StringTable.Localize("$TRPWH_FIRE")..(gumspot?StringTable.Localize("$TRPWH_GRENADE"):StringTable.Localize("$TRPWH_ENDOFSTRING")).."\n"
+		..LWPHELP_ALTFIRE..StringTable.Localize("$TRPWH_ALTFIRE")
 		;
 	}
 	override void DropOneAmmo(int amt){
@@ -74,9 +76,7 @@ class Tripwire:HDWeapon{
 		}
 		if(invoker.gumspot){
 			invoker.gumspot.destroy();
-			A_Log("Setup aborted.",true);
-			A_OverLay(26,"HandTakeGum");
-			A_OverLay(25,"GrenadeDown");
+			A_Log(StringTable.Localize("$TRIPWIRESABORT"),true);
 		}
 	}
 	override inventory CreateTossable(int amt){
@@ -154,7 +154,7 @@ class Tripwire:HDWeapon{
 			if(!countinv(invoker.grenadeammotype)){
 				if(helptext)A_Print("No grenades.");
 				A_SelectWeapon("HDFist");
-			}else if(helptext)A_WeaponMessage("\cp\--- \cqTRIPWIRES \cp---\c-\n\n\nHit fire to set one end of the line,\n\nthen hit fire again to plant the grenade.\nby human hands.\n\nMove carefully.");
+			}else if(helptext)A_WeaponMessage(StringTable.Localize("$TRIPWIRETXT"));
 			A_StartSound("weapons/pocket",9);
 			if(countinv("NulledWeapon"))A_SetTics(0);
 			A_OverLay(26, "HandTakeGum");
@@ -184,9 +184,8 @@ class Tripwire:HDWeapon{
 					&&gumline.hittype!=Trace_HitCeiling
 				)||hdf.linetracehitsky(gumline)
 			){
-				A_Log(string.format(
-					"You need to stick the %s on to something stable.",
-					invoker.gumspot?"wire":"grenade"
+				A_Log(string.format(StringTable.Localize("$TRIPWIRETXT1"),
+					invoker.gumspot?StringTable.Localize("$TRIPWIRETXT2"):StringTable.Localize("$TRIPWIRETXT3")
 				),true);
 				return;
 			}
@@ -196,7 +195,7 @@ class Tripwire:HDWeapon{
 				aaa.A_StartSound("tripwire/gumsplat",CHAN_BODY);
 				invoker.gumspot=aaa;
 				A_OverLay(26, "HandPlaceGum");
-				A_Log("Wire end secured. Now to set the grenade...",true);
+				A_Log(StringTable.Localize("$TRIPWIRETXT4"),true);
 				A_OverLay(25, "GrenadeUpL");
 			}else{
 				actor aaa=spawn(invoker.throwtype,gumline.hitlocation-gumline.hitdir*2,ALLOW_REPLACE);
@@ -207,7 +206,7 @@ class Tripwire:HDWeapon{
 				invoker.grenade.tracer=invoker.gumspot;
 				invoker.grenade.master=self;
 				invoker.grenade.target=self;
-				A_Log("Grenade secured! Now be very, very careful...",true);
+				A_Log(StringTable.Localize("$TRIPWIRETXT5"),true);
 				A_TakeInventory(invoker.grenadeammotype,1,TIF_NOTAKEINFINITE);
 				invoker.gumspot=null;
 				A_OverLay(25, "HandPlaceGrenade");
@@ -386,7 +385,7 @@ class GumAndString:IdleDummy{
 			trcr.A_StartSound("tripwire/break",CHAN_AUTO);
 			trc.destroy();
 		}else if(master)master.A_StartSound("tripwire/break",CHAN_AUTO);
-		if(master)master.A_Log("Welp, there goes that one. Try again?",true);
+		if(master)master.A_Log(StringTable.Localize("$TRIPWIRETXT6"),true);
 		destroy();
 	}
 }
@@ -409,7 +408,7 @@ class TrippingGrenade:HDUPK{
 		health int.MAX;painchance 256; mass 10;
 		radius 2;height 2;
 
-		hdupk.pickupmessage "Picked up a grenade.";
+		hdupk.pickupmessage "$PICKUP_GRENADE";
 	}
 	override bool OnGrab(actor grabber){
 		if(tracer)tracer.destroy();
@@ -420,6 +419,8 @@ class TrippingGrenade:HDUPK{
 	}
 	override void postbeginplay(){
 		super.postbeginplay();
+
+		bool mapplaced=!target&&level.time<10;
 
 		//add a gumwad if none exists
 		if(!tracer){
@@ -442,9 +443,17 @@ class TrippingGrenade:HDUPK{
 		stucktoheight=0;
 		stucktier=0;
 
-		//and now to find some shit
+
+		//find a wall to get stuck to
+		double diagrad=radius*HDCONST_SQRTTWO;
+
+		// if it's a map-placed grenade, check a bit further than normal
+		// NOTE TO MAPPERS: it should automatically stick to any line within
+		// 4 vertical or horizontal units
+		double stickdist=mapplaced?(4.*HDCONST_SQRTTWO):diagrad+0.1;
+
 		flinetracedata flt;
-		linetrace(angle,radius*HDCONST_SQRTTWO+0.1,pitch,flags:TRF_THRUACTORS,data:flt);
+		linetrace(angle,stickdist,pitch,flags:TRF_THRUACTORS,data:flt);
 
 		//let it drop if neither planted by player nor actually touching a wall
 		//used to prevent mappers from accidentally leaving things hovering in the air
@@ -455,6 +464,10 @@ class TrippingGrenade:HDUPK{
 			ongrab(self);
 			return;
 		}
+
+		//move grenade right up against the wall
+		setorigin(flt.hitlocation-flt.hitdir*diagrad,false);
+
 
 		sector othersector=hdmath.oppositesector(flt.hitline,flt.hitsector);
 

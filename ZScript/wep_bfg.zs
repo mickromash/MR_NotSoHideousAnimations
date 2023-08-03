@@ -15,17 +15,16 @@ class BFG9K:HDCellWeapon replaces BFG9000{
 		weapon.bobrangex 0.4;
 		weapon.bobrangey 1.1;
 		weapon.bobspeed 1.8;
+		inventory.pickupmessage "$PICKUP_BFG9000";
 		scale 0.7;
 		hdweapon.barrelsize 32,3.5,7;
 		hdweapon.refid HDLD_BFG;
 		tag "$TAG_BFG9000";
 	}
-	override string pickupmessage(){
-		return "You got the "..gettag().."! Oh yes.";
-	}
 	override string getobituary(actor victim,actor inflictor,name mod,bool playerattack){
-		if(bplayingid)return "%o was smacked by %k's big green gob.";
-		return "%o just got glassed and no one leaves here till we find out %k did it!";
+		String msg=Stringtable.Localize("OB_BFG9000");
+		if(bplayingid)msg=("OB_BFG9000ID");
+		return msg;
 	}
 	override bool AddSpareWeapon(actor newowner){return AddSpareWeaponRegular(newowner);}
 	override hdweapon GetSpareWeapon(actor newowner,bool reverse,bool doselect){return GetSpareWeaponRegular(newowner,reverse,doselect);}
@@ -47,7 +46,7 @@ class BFG9K:HDCellWeapon replaces BFG9000{
 		inflictor.A_StartSound("weapons/bfgfwoosh",CHAN_WEAPON,CHANF_OVERLAP);
 		weaponstatus[BFGS_CHARGE]=0;
 		weaponstatus[BFGS_BATTERY]=0;
-		weaponstatus[0]&=~BFGF_CRITICAL;
+		weaponstatus[BFGS_CRITTIMER]=0;
 		if(random(0,7))weaponstatus[0]&=~BFGF_DEMON;
 
 		vector3 ballvel=(cos(inflictor.pitch)*(cos(inflictor.angle),sin(inflictor.angle)),-sin(inflictor.pitch));
@@ -73,9 +72,6 @@ class BFG9K:HDCellWeapon replaces BFG9000{
 		return bbb;
 	}
 	override bool IsBeingWorn(){return weaponstatus[0]&BFGF_STRAPPED;}
-	override void ForceBasicAmmo(){
-		ForceOneBasicAmmo("HDBattery",2);
-	}
 	override inventory CreateTossable(int amt){
 		if(
 			weaponstatus[0]&BFGF_STRAPPED
@@ -96,7 +92,9 @@ class BFG9K:HDCellWeapon replaces BFG9000{
 		if(!owner)return;
 		if(owner.health<1){
 			weaponstatus[0]&=~BFGF_STRAPPED;
-			if(weaponstatus[0]&BFGF_CRITICAL)owner.A_DropInventory(getclass());
+			if(
+				weaponstatus[BFGS_CRITTIMER]>0
+			)owner.A_DropInventory(getclass());
 		}else if(
 			!owner.player
 			||(
@@ -164,13 +162,14 @@ class BFG9K:HDCellWeapon replaces BFG9000{
 		}
 	}
 	override string gethelptext(){
+		LocalizeHelp();
 		return
-		WEPHELP_FIRE.."  Shoot/Charge\n"
-		..WEPHELP_ALTFIRE.."  Toggle harness\n"
-		..WEPHELP_RELOAD.."  Abort charge/Reload battery\n"
-		..WEPHELP_ALTRELOAD.."  Reload depleted battery\n"
-		..WEPHELP_UNLOADUNLOAD
-		..WEPHELP_USE.."+"..WEPHELP_UNLOAD.."  Charge unattended"
+		LWPHELP_FIRE..StringTable.Localize("$BFGWH_FIRE")
+		..LWPHELP_ALTFIRE..StringTable.Localize("$BFGWH_ALTFIRE")
+		..LWPHELP_RELOAD..StringTable.Localize("$BFGWH_RELOAD")
+		..LWPHELP_ALTRELOAD..StringTable.Localize("$BFGWH_ALTRELOAD")
+		..LWPHELP_UNLOADUNLOAD
+		..LWPHELP_USE.."+"..LWPHELP_UNLOAD..StringTable.Localize("$BFGWH_USEPUNL")
 		;
 	}
 	override void consolidate(){
@@ -220,7 +219,7 @@ class BFG9K:HDCellWeapon replaces BFG9000{
 	ready:
 		BFGG A 1{
 			A_CheckIdSprite("B9KGA0","BFGGA0");
-			if(invoker.weaponstatus[0]&BFGF_CRITICAL)setweaponstate("shoot");
+			if(invoker.weaponstatus[BFGS_CRITTIMER]>0)setweaponstate("shoot");
 			A_WeaponReady(WRF_ALL);
 		}goto readyend;
 	select0:
@@ -318,8 +317,7 @@ class BFG9K:HDCellWeapon replaces BFG9000{
 	shoot:
 		#### B 0{
 			invoker.weaponstatus[BFGS_TIMER]=0;
-			invoker.weaponstatus[0]|=BFGF_CRITICAL;
-			invoker.weaponstatus[BFGS_CRITTIMER]=15;
+			invoker.weaponstatus[BFGS_CRITTIMER]=16;
 			A_StartSound("weapons/bfgf",CHAN_WEAPON);
 			hdmobai.frighten(self,512);
 		}
@@ -327,7 +325,7 @@ class BFG9K:HDCellWeapon replaces BFG9000{
 			invoker.weaponstatus[BFGS_CRITTIMER]--;
 			A_StartSound("weapons/bfgcharge",random(9005,9007));
 			BFG9k.Spark(self,1,gunheight()-2);
-			if(invoker.weaponstatus[BFGS_CRITTIMER]<1){
+			if(invoker.weaponstatus[BFGS_CRITTIMER]<=1){
 				invoker.weaponstatus[BFGS_CRITTIMER]=0;
 				player.setpsprite(PSP_WEAPON,invoker.findstate("reallyshoot"));
 			}else if(invoker.weaponstatus[BFGS_CRITTIMER]<10)A_SetTics(2);
@@ -694,7 +692,7 @@ class BFG9K:HDCellWeapon replaces BFG9000{
 
 	spawn:
 		BFUG A -1 nodelay{
-			if(invoker.weaponstatus[0]&BFGF_CRITICAL)invoker.setstatelabel("bwahahahaha");
+			if(invoker.weaponstatus[BFGS_CRITTIMER]>0)invoker.setstatelabel("bwahahahaha");
 			else if(invoker.weaponstatus[0]&BFGF_DROPCHARGE)invoker.setstatelabel("dropcharge");
 		}
 	bwahahahaha:
@@ -702,17 +700,18 @@ class BFG9K:HDCellWeapon replaces BFG9000{
 			invoker.weaponstatus[BFGS_CRITTIMER]--;
 			A_StartSound("weapons/bfgcharge",CHAN_AUTO);
 			BFG9k.Spark(self,1,6);
-			if(invoker.weaponstatus[BFGS_CRITTIMER]<1){
+			let ct=invoker.weaponstatus[BFGS_CRITTIMER];
+			if(ct<=1){
 				invoker.weaponstatus[BFGS_CRITTIMER]=0;
 				invoker.setstatelabel("heh");
-			}else if(invoker.weaponstatus[BFGS_CRITTIMER]<10)A_SetTics(2);
-			else if(invoker.weaponstatus[BFGS_CRITTIMER]<5)A_SetTics(1);
+			}else if(ct<5)A_SetTics(1);
+			else if(ct<10)A_SetTics(2);
 		}wait;
 	heh:
 		BFUG A 8;
 		BFUG A 4{
 			invoker.A_StartSound("weapons/bfgfwoosh",CHAN_AUTO);
-			invoker.weaponstatus[0]&=~BFGF_CRITICAL; //DO NOT DELETE THIS
+			invoker.weaponstatus[BFGS_CRITTIMER]=0;
 			invoker.weaponstatus[BFGS_CHARGE]=0;invoker.weaponstatus[BFGS_BATTERY]=0;
 			invoker.ShootBall(invoker,invoker.lastenemy);
 		}
@@ -763,10 +762,9 @@ class BFG9K:HDCellWeapon replaces BFG9000{
 	}
 }
 enum bfg9kstatus{
-	BFGF_CRITICAL=1,
-	BFGF_STRAPPED=2,
-	BFGF_DEMON=4,
-	BFGF_DROPCHARGE=8,
+	BFGF_STRAPPED=1,
+	BFGF_DEMON=2,
+	BFGF_DROPCHARGE=4,
 
 	BFGS_STATUS=0,
 	BFGS_CHARGE=1,
@@ -1090,7 +1088,7 @@ class BFGPuff:IdleDummy{
 				);
 
 				tracer.setorigin(teleportedto,false);
-				tracer.setz(clamp(tracer.pos.z,tracer.floorz,tracer.ceilingz-tracer.height));
+				tracer.setz(clamp(tracer.pos.z,tracer.floorz,max(tracer.floorz,tracer.ceilingz-tracer.height)));
 				tracer.vel=(frandom(-10,10),frandom(-10,10),frandom(10,20));
 				spawn("TeleFog",tracer.pos,ALLOW_REPLACE);
 			}

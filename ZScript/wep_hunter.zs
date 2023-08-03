@@ -13,7 +13,7 @@ class Hunter:HDShotgun{
 		weapon.bobrangex 0.21;
 		weapon.bobrangey 0.9;
 		scale 0.6;
-		inventory.pickupmessage "You got the pump-action shotgun!";
+		inventory.pickupmessage "$PICKUP_HUNTER";
 		hdweapon.barrelsize 30,0.5,2;
 		hdweapon.refid HDLD_HUNTER;
 		tag "$TAG_HUNTER";
@@ -43,7 +43,7 @@ class Hunter:HDShotgun{
 			spread:spread,speedfactor:speedfactor,amount:10
 		);
 		distantnoise.make(p,"world/shotgunfar");
-		caller.A_StartSound("weapons/hunter",CHAN_WEAPON);
+		caller.A_StartSound("weapons/hunter",CHAN_WEAPON,CHANF_OVERLAP);
 		return shotpower;
 	}
 	const HUNTER_MINSHOTPOWER=0.901;
@@ -58,9 +58,10 @@ class Hunter:HDShotgun{
 		invoker.shotpower=shotpower;
 	}
 	override string pickupmessage(){
-		if(weaponstatus[0]&HUNTF_CANFULLAUTO)return string.format("%s You notice some tool marks near the fire selector...",super.pickupmessage());
-		else if(weaponstatus[0]&HUNTF_EXPORT)return string.format("%s Where is the fire selector on this thing!?",super.pickupmessage());
-		return super.pickupmessage();
+		String msg=super.pickupmessage();
+		if(weaponstatus[0]&HUNTF_CANFULLAUTO)return msg..Stringtable.Localize("$PICKUP_HUNTER_AUTO");
+		if(weaponstatus[0]&HUNTF_EXPORT)return msg..Stringtable.Localize("$PICKUP_HUNTER_EXPORT");
+		return msg;
 	}
 	override string,double getpickupsprite(bool usespare){return "HUNT"..getpickupframe(usespare).."0",1.;}
 	override void DrawHUDStuff(HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl){
@@ -87,17 +88,16 @@ class Hunter:HDShotgun{
 		}
 	}
 	override string gethelptext(){
+		LocalizeHelp();
 		return
-		WEPHELP_USE.."+"..WEPHELP_FIREMODE.."  Safety\n"
-		..WEPHELP_FIRE.."  Shoot (choke: "..weaponstatus[HUNTS_CHOKE]..")\n"
-		..WEPHELP_ALTFIRE.."  Pump\n"
-		..WEPHELP_RELOAD.."  Reload (side saddles first)\n"
-		..WEPHELP_ZOOM.."+"..WEPHELP_RELOAD.."  Check Tube\n"
-		..WEPHELP_ALTRELOAD.."  Reload (pockets only)\n"
-		..(weaponstatus[0]&HUNTF_EXPORT?"":(WEPHELP_FIREMODE.."  Pump/Semi"..(weaponstatus[0]&HUNTF_CANFULLAUTO?"/Auto":"").."\n"))
-		..WEPHELP_FIREMODE.."+"..WEPHELP_RELOAD.."  Load side saddles\n"
-		..WEPHELP_USE.."+"..WEPHELP_UNLOAD.."  Steal ammo from Slayer\n"
-		..WEPHELP_UNLOADUNLOAD
+		LWPHELP_FIRE..StringTable.Localize("$SHOOT_CH")..weaponstatus[HUNTS_CHOKE]..")\n"
+		..LWPHELP_ALTFIRE..StringTable.Localize("$PUMP")
+		..LWPHELP_RELOAD..StringTable.Localize("$SHTG_REL1")
+		..LWPHELP_ALTRELOAD..StringTable.Localize("$SHTG_REL2")
+		..(weaponstatus[0]&HUNTF_EXPORT?"":(LWPHELP_FIREMODE..StringTable.Localize("$SHTG_FMODE")..(weaponstatus[0]&HUNTF_CANFULLAUTO?"/Auto":"").."\n"))
+		..LWPHELP_FIREMODE.."+"..LWPHELP_RELOAD..StringTable.Localize("$SHTG_SIDE")
+		..LWPHELP_USE.."+"..LWPHELP_UNLOAD..StringTable.Localize("$SHTG_STEAL")
+		..LWPHELP_UNLOADUNLOAD
 		;
 	}
 	override void DrawSightPicture(
@@ -478,8 +478,86 @@ class Hunter:HDShotgun{
 		TNT1 A 0 A_Light0();
 		TNT1 A 0 A_AlertMonsters();
 		stop;
+	CheckSide:
+		TNT1 A 0 A_OverLay(102, "SideCheck");
+		TNT1 A 13;
+		SHTG J 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>1,1);
+		Goto CheckingSide;
+		SHTG K 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>3,1);
+		Goto CheckingSide;
+		SHTG L 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>5,1);
+		Goto CheckingSide;
+		SHTG M 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>7,1);
+		Goto CheckingSide;
+		SHTG N 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>9,1);
+		Goto CheckingSide;
+		SHTG O 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>11,1);
+		Goto CheckingSide;
+		SHTG P 0;
+	CheckingSide:
+		SHTG # 5 A_JumpIf(!pressingaltreload(),"CheckSideEnd");
+		Loop;
+	CheckSideEnd:
+		TNT1 A 0 A_OverLay(102, "SideCheckEnd");
+		TNT1 # 12;
+		Goto Ready;
+	SideCheck:
+		SHTG B 1 A_OverLayOffset(102, -10, 30);
+		SHTG B 1 A_OverLayOffset(102, -20, 60);
+		SHTG C 1 A_OverLayOffset(102, -30, 90);
+		SHTG C 1 A_OverLayOffset(102, -40, 120);
+		SHTG C 1 A_OverLayOffset(102, -50, 150);
+		TNT1 A 2;
+		SHTG J 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>1,1);
+		Goto RaiseSide;
+		SHTG K 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>3,1);
+		Goto RaiseSide;
+		SHTG L 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>5,1);
+		Goto RaiseSide;
+		SHTG M 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>7,1);
+		Goto RaiseSide;
+		SHTG N 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>9,1);
+		Goto RaiseSide;
+		SHTG O 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>11,1);
+		Goto RaiseSide;
+		SHTG P 0;
+	RaiseSide:	
+		SHTG # 1 A_OverLayOffset(102, 50, 40);
+		SHTG # 1 A_OverLayOffset(102, 45, 35);
+		SHTG # 1 A_OverLayOffset(102, 35, 25);
+		SHTG # 1 A_OverLayOffset(102, 30, 20);
+		SHTG # 1 A_OverLayOffset(102, 20, 10);
+		SHTG # 1 A_OverLayOffset(102, 11, 0);
+		Stop;
+	SideCheckEnd:
+		SHTG J 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>1,1);
+		Goto LowSide;
+		SHTG K 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>3,1);
+		Goto LowSide;
+		SHTG L 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>5,1);
+		Goto LowSide;
+		SHTG M 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>7,1);
+		Goto LowSide;
+		SHTG N 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>9,1);
+		Goto LowSide;
+		SHTG O 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>11,1);
+		Goto LowSide;
+		SHTG P 0;
+	LowSide:	
+		SHTG # 1 A_OverLayOffset(102, 6, 0);
+		SHTG # 1 A_OverLayOffset(102, 16, 10);
+		SHTG # 1 A_OverLayOffset(102, 38, 35);
+		SHTG # 1 A_OverLayOffset(102, 50, 40);
+		TNT1 A 2;
+		SHTG C 1 A_OverLayOffset(102, -50, 150);
+		SHTG C 1 A_OverLayOffset(102, -40, 120);
+		SHTG C 1 A_OverLayOffset(102, -30, 90);
+		SHTG B 1 A_OverLayOffset(102, -20, 60);
+		SHTG B 1 A_OverLayOffset(102, -10, 30);
+		Stop;
 	altreload:
 	reloadfrompockets:
+		---- A 0 A_JumpIf(pressingzoom(),"CheckSide");
 		SHTG A 0{
 			if(!countinv("HDShellAmmo"))setweaponstate("nope");
 			else invoker.weaponstatus[0]|=HUNTF_FROMPOCKETS;
@@ -494,7 +572,8 @@ class Hunter:HDShotgun{
 		SHTG D 1 offset(0,34) A_MuzzleClimb(-frandom(1.2,2.4),frandom(1.2,2.4));
 	CheckLoop:	
 		---- A 0 {if(invoker.weaponstatus[HUNTS_TUBE]>0)A_OverLay(102,"Dumb");
-				if(invoker.weaponstatus[HUNTS_CHAMBER]>0)A_OverLay(103,"Dumb3");}
+				if(invoker.weaponstatus[HUNTS_CHAMBER]>0)A_OverLay(103,"Dumb3");
+				if(invoker.weaponstatus[HUNTS_FIREMODE]>0)A_OverLay(104,"Dumb4");}
 		SHTG D 5 offset(0,34) A_JumpIf(!pressingreload(),"CheckEnd");
 		Loop;		
 	CheckEnd:
@@ -526,6 +605,10 @@ class Hunter:HDShotgun{
 		STUP A 5 A_JumpIf(Invoker.WeaponStatus[HUNTS_CHAMBER]>1,1);
 		Stop;
 		STUP P 5;
+		Stop;
+	Dumb4:
+		STUP A 0 A_OverLayOffset(104,25,18);
+		STUP Q 5;
 		Stop;
 	Dumb2:
 		STUP B 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>1,1);

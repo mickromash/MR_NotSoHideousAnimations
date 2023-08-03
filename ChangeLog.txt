@@ -44,3 +44,13 @@ April 27
 Added Trembling Animations For Shotgun
 
 Added Safety To Pistol, Shotgun And Rocket Launcher
+
+August 3
+
+Added Slayer Reload Animation
+
+Sped Up Pistol Reloading
+
+Added Grenade And Stapler Death Animations
+
+Fixes

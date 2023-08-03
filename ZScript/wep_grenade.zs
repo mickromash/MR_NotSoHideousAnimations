@@ -74,13 +74,14 @@ class HDGrenadeThrower:HDWeapon{
 		}
 	}
 	override string gethelptext(){
+		LocalizeHelp();
 		if(weaponstatus[0]&FRAGF_SPOONOFF)return
-		WEPHELP_FIRE.."  Wind up, release to throw\n(\cxSTOP READING AND DO THIS"..WEPHELP_RGCOL..")";
+		LWPHELP_FIRE..StringTable.Localize("$GRENWH_FIRE1")..WEPHELP_RGCOL..")";
 		return
-		WEPHELP_FIRE.."  Pull pin/wind up (release to throw)\n"
-		..WEPHELP_ALTFIRE.."  Pull pin, again to drop spoon\n"
-		..WEPHELP_RELOAD.."  Abort/Replace pin\n"
-		..WEPHELP_ZOOM.."  Start planting tripwire traps"
+		LWPHELP_FIRE..StringTable.Localize("$GRENWH_FIRE2")
+		..LWPHELP_ALTFIRE..StringTable.Localize("$GRENWH_ALTFIRE")
+		..LWPHELP_RELOAD..StringTable.Localize("$GRENWH_RELOAD")
+		..LWPHELP_ZOOM..StringTable.Localize("$GRENWH_ZOOM")
 		;
 	}
 	override inventory CreateTossable(int amt){
@@ -100,7 +101,7 @@ class HDGrenadeThrower:HDWeapon{
 		}
 	}
 	override void ForceBasicAmmo(){
-		owner.A_SetInventory("HDFragGrenadeAmmo",1);
+		owner.A_SetInventory(grenadeammotype,1);
 	}
 	//for involuntary dropping
 	override void OnPlayerDrop(){
@@ -197,7 +198,7 @@ class HDGrenadeThrower:HDWeapon{
 		);
 		spn.vel+=owner.vel;
 		weaponstatus[0]|=FRAGF_SPOONOFF;
-		if(DoHelpText(owner))A_WeaponMessage("\cgThe fuze is lit!\n\n\n\n\cgRemember to throw!",100);
+		if(DoHelpText(owner))A_WeaponMessage(StringTable.Localize("$GREN_FUZE"),100);
 		owner.A_StartSound(spoonsound,8,attenuation:20);
 	}
 	//we need to start from the inventory itself so it can go into DoEffect
@@ -257,7 +258,21 @@ class HDGrenadeThrower:HDWeapon{
 		weaponstatus[0]&=~FRAGF_INHAND;
 		weaponstatus[0]|=FRAGF_JUSTTHREW;
 	}
+	Action void A_Dumb(bool work=true){invoker.ActuallyDumb(work);}
+	void ActuallyDumb(bool work=true){if(owner.health>0)setweaponstate("TakeAnother");}
 	states{
+	Exploding1:
+		TNT1 AAAAAAAAAAAA 1 A_JumpIf(Health < 1, "Exploding");
+		Stop;
+	Explode:
+		GRNG D 3 A_OverLay(27,"Exploding1");
+	Exploding:	
+		GRND BCDECBDCEDBCDEBCDECBDCEDBCDE 2 A_OverLayOffset(27,0,30);
+		GRND FG 3;
+		---- # 2 A_JumpIf(Health > 0, "TakeAnother");
+	Dead:
+		GRND G 1 A_Dumb();
+		Loop;
 	HandUp:
 		GRNH C 1 A_OverLayOffset(26, -20, 20);
 		GRNH C 1 A_OverLayOffset(26, -15, 15);
@@ -272,6 +287,7 @@ class HDGrenadeThrower:HDWeapon{
 		Stop;
 	TakeAnother:
 		TNT1 A 0 A_JumpIf(NoFrags(),"selectinstant");
+		GRNG D 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>136,"Explode");
 		TNT1 A 0 A_OverLay(26, "HandUp");
 		TNT1 A 0 A_OverLay(25, "GranUp");
 		TNT1 A 1 A_WeaponReady(WRF_NOFIRE);
@@ -319,19 +335,24 @@ class HDGrenadeThrower:HDWeapon{
 	deselectinstant:
 		TNT1 A 0 A_Lower(999);
 		wait;
-	None:
+	Non:
 		TNT1 A 1;
 		Stop;
 	HandReady:
-		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_SPOONOFF, "None");
+		GRNG D 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>135,"Non");
+		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_SPOONOFF, "Non");
 		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_PINOUT, "HandReadyPin");
 		GRNH C 1 A_OverLayOffset(26,0,0);
+		GRNG D 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>135,"Non");
 		Loop;
 	HandReadyPin:
-		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_SPOONOFF, "None");
+		GRNG D 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>135,"Non");
+		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_SPOONOFF, "Non");
 		GRNH D 1 A_OverLayOffset(26,-27,12);
+		GRNG D 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>135,"Non");
 		Loop;
 	ready:
+		GRNG D 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>135,"Explode");
 		GRNG A 0{
 			invoker.weaponstatus[FRAGS_FORCE]=0;
 			invoker.weaponstatus[FRAGS_REALLYPULL]=0;
@@ -340,7 +361,9 @@ class HDGrenadeThrower:HDWeapon{
 		GRNG D 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_SPOONOFF,3);
 		GRNG B 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_PINOUT,2);
 		GRNG A 0;
+		GRNG # 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>135,"Explode");
 		GRNG # 1 A_WeaponReady(WRF_ALL);
+		GRNG # 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>135,"Explode");
 		goto ready3;
 	ready3:
 		---- A 0{
@@ -362,30 +385,34 @@ class HDGrenadeThrower:HDWeapon{
 		loop;
 
 	altfire:
-		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_SPOONOFF,"nope");
-		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_PINOUT,"startcooking");
-		TNT1 A 0 A_JumpIf(NoFrags(),"selectinstant");
-		TNT1 A 0 A_Refire();
+		GRNG C 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_SPOONOFF,"readyend");
+		GRNG B 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_PINOUT,"startcooking");
+		GRNG A 0 A_JumpIf(NoFrags(),"selectinstant");
+		GRNG A 0 A_Refire();
 		goto ready;
 	althold:
 		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_SPOONOFF,"nope");
 		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_PINOUT,"nope");
 		TNT1 A 0 A_JumpIf(NoFrags(),"selectinstant");
-		goto startpull;
-	startpull:
-		GRNG A 1{
-			if(invoker.weaponstatus[FRAGS_REALLYPULL]>=26)setweaponstate("endpull");
-			else invoker.weaponstatus[FRAGS_REALLYPULL]++;
-		}
-		FRGG B 0 A_Refire();
-		goto ready;
-	endpull:
 		TNT1 A 0 A_OverLay(26, "HandPinOut1");
 		GRNG A 1 offset(-3,2);
 		#### A 1 offset(-6,4);
 		#### A 1 offset(-9,6);
-		TNT1 A 0 A_OverLay(26, "HandPinOut3");
-		GRNG A 1;
+		goto startpull;
+	startpull:
+		TNT1 A 0 A_OverLay(26, "HandPinHolding");
+		GRNG A 1{
+			if(invoker.weaponstatus[FRAGS_REALLYPULL]>=16)setweaponstate("endpull");
+			else invoker.weaponstatus[FRAGS_REALLYPULL]++;
+		}
+		GRNG A 0 A_Refire("startpull");
+		TNT1 A 0 A_OverLay(26, "HandPinOutAbort");
+		GRNG A 1 offset(-9,6);
+		#### A 1 offset(-6,4);
+		#### A 1 offset(-3,2);
+		goto ready;
+	endpull:
+		TNT1 A 0 A_OverLay(26, "HandPinOutAlready");
 		GRNG A 1;
 		#### A 3;
 		#### B 3 A_PullPin();
@@ -400,15 +427,33 @@ class HDGrenadeThrower:HDWeapon{
 		GRNH D 1 A_OverLayOffset(26, -45, 50);
 		Stop;
 	startcooking:
-		TNT1 A 0 A_OverLay(26, "HandCook");
+		GRNG C 0 A_OverLay(26, "HandCook");
 		GRNG C 6 A_StartCooking();
-		GRNG C 0 A_Refire("Nope");
+		//GRNG C 0 A_Refire("Nope");
 		goto ready;
 	HandPinOut1:
 		GRNH C 1 A_OverLayOffset(26, 4, -2);
 		GRNH C 1 A_OverLayOffset(26, 7, -4);
 		GRNH C 1 A_OverLayOffset(26, 11, -6);
+		GRNH C 1 A_OverLayOffset(26, 14, -8);
+		GRNH C 1 A_OverLayOffset(26, 18, -10);
 		Stop;
+	HandPinOutAbort:
+		GRNH C 1 A_OverLayOffset(26, 18, -10);
+		GRNH C 1 A_OverLayOffset(26, 14, -8);
+		GRNH C 1 A_OverLayOffset(26, 11, -6);
+		GRNH C 1 A_OverLayOffset(26, 7, -4);
+		GRNH C 1 A_OverLayOffset(26, 4, -2);
+		Stop;	
+	HandPinHolding:
+		GRNH D 1 A_OverLayOffset(26, 0, 0);
+		Stop;
+	HandPinOutAlready:
+		GRNH D 3 A_OverLayOffset(26, -1, 1);
+		GRNH D 1 A_OverLayOffset(26, -3, 2);
+		GRNH D 1 A_OverLayOffset(26, -6, 3);
+		GRNH D 1 A_OverLayOffset(26, -15, 8);
+		Goto HandReady;	
 	HandPinOut2:
 		GRNH C 1 A_OverLayOffset(26, 14, -8);
 		GRNH C 1 A_OverLayOffset(26, 18, -10);
@@ -475,7 +520,7 @@ class HDGrenadeThrower:HDWeapon{
 		Stop;
 	hold21:
 		TNT1 A 0 A_OverLay(25,"GranHold");
-		TNT1 A 0 A_OverLay(26,"None");
+		TNT1 A 0 A_OverLay(26,"Non");
 		TNT1 A 8;
 		Goto Hold2;
 	PreHold:
@@ -544,6 +589,7 @@ class HDGrenadeThrower:HDWeapon{
 		goto TakeAnother;
 	reload:
 		TNT1 A 0 A_JumpIf(NoFrags(),"selectinstant");
+		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_SPOONOFF,"Ready");
 		TNT1 A 0 A_JumpIf(invoker.weaponstatus[FRAGS_FORCE]>=1,"pinbackin");
 		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_PINOUT,"altpinbackin");
 		goto ready;
@@ -829,7 +875,7 @@ class HDFragGrenadeAmmo:HDAmmo{
 		inventory.amount 1;
 		scale 0.3;
 		inventory.maxamount 50;
-		inventory.pickupmessage "Picked up a fragmentation hand grenade.";
+		inventory.pickupmessage "$PICKUP_GRENADE";
 		inventory.pickupsound "weapons/pocket";
 		tag "$TAG_GREFRAG";
 		hdpickup.refid HDLD_GREFRAG;
@@ -847,7 +893,7 @@ class FragP:HDUPK{
 		scale 0.3;height 3;radius 3;
 		hdupk.amount 1;
 		hdupk.pickuptype "HDFragGrenadeAmmo";
-		hdupk.pickupmessage "Picked up a fragmentation hand grenade.";
+		hdupk.pickupmessage "$PICKUP_GRENADE";
 		hdupk.pickupsound "weapons/rifleclick2";
 		stamina 1;
 	}

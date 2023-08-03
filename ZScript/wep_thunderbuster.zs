@@ -11,12 +11,11 @@ class ThunderBuster:HDCellWeapon{
 		weapon.selectionorder 70;
 		weapon.slotnumber 6;
 		weapon.slotpriority 1;
-		weapon.ammouse 1;
 		weapon.bobrangex 0.2;
 		weapon.bobrangey 0.9;
 		scale 0.6;
-		inventory.pickupmessage "You got the particle beam gun!";
-		obituary "%o was hammered by %k's particle beam.";
+		inventory.pickupmessage "$PICKUP_THUNDERBUSTER";
+		obituary "$OB_THUNDERBUSTER";
 		hdweapon.barrelsize 28,1.6,3;
 		hdweapon.refid HDLD_THUNDER;
 		tag "$TAG_THUNDER";
@@ -59,13 +58,13 @@ class ThunderBuster:HDCellWeapon{
 		if(hdw.weaponstatus[TBF_SAFETY]==1)sb.drawimage("SAFETY",(-17,-16),sb.DI_SCREEN_CENTER_BOTTOM,scale:(1,1));	
 	}
 	override string gethelptext(){
+		LocalizeHelp();
 		return
-		WEPHELP_USE.."+"..WEPHELP_FIREMODE.."  Safety\n"
-		..WEPHELP_FIRESHOOT
-		..WEPHELP_ALTFIRE.."  Switch to "..(weaponstatus[0]&TBF_ALT?"detonator":"scattershot").." mode\n"
-		..WEPHELP_RELOADRELOAD
-		..WEPHELP_UNLOADUNLOAD
-		..WEPHELP_ALTRELOAD.."  Range finder"
+		LWPHELP_FIRESHOOT
+		..LWPHELP_ALTFIRE..StringTable.Localize("$THBWH_SWITCH")..(weaponstatus[0]&TBF_ALT?StringTable.Localize("$THBWH_DETONATOR"):StringTable.Localize("$THBWH_SCATTERSHOT"))..StringTable.Localize("$THBWH_MODE")
+		..LWPHELP_RELOADRELOAD
+		..LWPHELP_UNLOADUNLOAD
+		..LWPHELP_ALTRELOAD..StringTable.Localize("$THBWH_ALTRELOAD")
 		;
 	}
 	int rangefinder;
@@ -574,7 +573,6 @@ enum tbstatus{
 	TBF_ALT=1,
 	TBF_JUSTUNLOAD=2,
 	TBF_SAFETY=6,
-	
 	TBS_FLAGS=0,
 	TBS_BATTERY=1,
 	TBS_WARMUP=2,

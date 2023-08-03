@@ -122,10 +122,10 @@ class HDWeaponGrabber:HDWeapon{
 		grabbed.bnodropoff=gddo;
 		grabbed.setz(max(grabbed.pos.z,grabbed.floorz));
 
-		string grbng="dragging ";
-		if(grabbed.bcorpse){grbng=grbng.."corpse"; setweaponstate("grabcorpse");}
-		else if(inventory(grabbed)||hdupk(grabbed)){grbng=grbng.."item"; setweaponstate("grabitem");}
-		else {grbng=grbng.."object"; setweaponstate("grabcorpse");}
+		string grbng=StringTable.Localize("$FIST_DRAG");
+		if(grabbed.bcorpse){grbng=grbng..StringTable.Localize("$FIST_CORPSE"); setweaponstate("Grabcorpse");}
+		else if(inventory(grabbed)||hdupk(grabbed)){grbng=grbng..StringTable.Localize("$FIST_ITEM"); setweaponstate("Grabitem");}
+		else {grbng=grbng..StringTable.Localize("$FIST_OBJECT"); setweaponstate("Grabcorpse");}
 		if(hd_debug>0)grbng=grbng.."\n"..HDMath.GetName(grabbed);
 		A_WeaponMessage(grbng.."...",3);
 
@@ -253,10 +253,10 @@ class HDWeaponGrabber:HDWeapon{
 		grabbed.bnodropoff=gddo;
 		grabbed.setz(max(grabbed.pos.z,grabbed.floorz));
 
-		string grbng="dragging ";
-		if(grabbed.bcorpse){grbng=grbng.."corpse"; setweaponstate("Draggingcorpse");}
-		else if(inventory(grabbed)||hdupk(grabbed)){grbng=grbng.."item"; setweaponstate("Draggingitem");}
-		else {grbng=grbng.."object"; setweaponstate("Draggingcorpse");}
+		string grbng=StringTable.Localize("$FIST_DRAG");
+		if(grabbed.bcorpse){grbng=grbng..StringTable.Localize("$FIST_CORPSE"); setweaponstate("Draggingcorpse");}
+		else if(inventory(grabbed)||hdupk(grabbed)){grbng=grbng..StringTable.Localize("$FIST_ITEM"); setweaponstate("Draggingitem");}
+		else {grbng=grbng..StringTable.Localize("$FIST_OBJECT"); setweaponstate("Draggingcorpse");}
 		if(hd_debug>0)grbng=grbng.."\n"..HDMath.GetName(grabbed);
 		A_WeaponMessage(grbng.."...",3);
 
@@ -337,7 +337,7 @@ class HDFist:HDWeaponGrabber replaces Fist{
 		+hdweapon.dontdisarm
 		+hdweapon.dontnull
 		+nointeraction
-		obituary "%o was knocked out by %k.";
+		obituary "$OB_FIST";
 		weapon.selectionorder 100;
 		weapon.kickback 120;
 		weapon.bobstyle "Alpha";
@@ -354,14 +354,15 @@ class HDFist:HDWeaponGrabber replaces Fist{
 		if(ww.targethealth)sb.drawwepnum(ww.targethealth,ww.targetspawnhealth);
 	}
 	override string gethelptext(){
+		LocalizeHelp();
 		return
-		WEPHELP_FIRE.."  Punch\n"
-		..WEPHELP_ALTFIRE.."   Lunge\n"
-		..WEPHELP_RELOAD.."   Distracting strike\n"
-		..WEPHELP_FIREMODE.."   Grab/Drag\n"
-		..WEPHELP_UNLOAD.."   Distracting projectile\n"
-		..WEPHELP_ZOOM.."+"..WEPHELP_SPEED.."+"..WEPHELP_USE.."   Kick down door\n"
-		..WEPHELP_ZOOM.."+"..WEPHELP_DROP.."   Drop misc. items\n"
+		LWPHELP_FIRE..StringTable.Localize("$FISTWH_FIRE")
+		..LWPHELP_ALTFIRE..StringTable.Localize("$FISTWH_ALTFIRE")
+		..LWPHELP_RELOAD..StringTable.Localize("$FISTWH_RELOAD")
+		..LWPHELP_FIREMODE..StringTable.Localize("$FISTWH_FMODE")
+		..LWPHELP_UNLOAD..StringTable.Localize("$FISTWH_UNLOAD")
+		..LWPHELP_ZOOM.."+"..LWPHELP_SPEED.."+"..LWPHELP_USE..StringTable.Localize("$FISTWH_ZPSPED")
+		..LWPHELP_ZOOM.."+"..LWPHELP_DROP..StringTable.Localize("$FISTWH_ZPDROP")
 		;
 	}
 	override inventory CreateTossable(int amt){
@@ -418,8 +419,8 @@ class HDFist:HDWeaponGrabber replaces Fist{
 		if(zerk){
 			strength*=1.2;
 			if(!random[zrkbs](0,70)){
-				static const string zrkbs[]={"kill","k i l l","k I L L","K\n   I\n       L\n          L","Kill.","KILL","k i l l","Kill!","K  I  L  L","kill...","Kill...","k i l l . . .","      kill","  ... kill ...","kill,","kiiiilllll!!!","kill~","kill <3","kill uwu"};
-				hdp.usegametip("\cr"..zrkbs[random(0,zrkbs.size()-1)]);
+				string zrkbs[]={"$FIST_KILL1","$FIST_KILL2","$FIST_KILL3","$FIST_KILL4","$FIST_KILL5","$FIST_KILL6","$FIST_KILL7","$FIST_KILL8","$FIST_KILL9","$FIST_KILL10","$FIST_KILL11","$FIST_KILL12","$FIST_KILL13","$FIST_KILL14","$FIST_KILL15","$FIST_KILL16","$FIST_KILL17","$FIST_KILL18","$FIST_KILL19"};
+				hdp.usegametip("\cr"..Stringtable.Localize(zrkbs[random(0,zrkbs.size()-1)]));
 			}
 		}
 	}

@@ -38,7 +38,6 @@ class HDHandgun:HDWeapon{
 	}
 }
 class HDPistol:HDHandgun replaces Pistol{
-	string LogMag;
 	default{
 		+hdweapon.fitsinbackpack
 		+hdweapon.reverseguninertia
@@ -51,11 +50,13 @@ class HDPistol:HDHandgun replaces Pistol{
 		weapon.bobrangey 0.6;
 		weapon.bobspeed 2.5;
 		weapon.bobstyle "normal";
-		obituary "%o got capped by %k's pea shooter.";
-		inventory.pickupmessage "You got the pistol!";
+		obituary "$OB_PISTOL";
+		inventory.pickupmessage "$PICKUP_PISTOL";
 		tag "$TAG_PISTOL";
 		hdweapon.refid HDLD_PISTOL;
 		hdweapon.barrelsize 19,0.3,0.5;
+
+		hdweapon.ammo1 "HD9mMag15",1;
 
 		hdweapon.loadoutcodes "
 			\cuselectfire - 0/1, whether it has a fire selector
@@ -98,7 +99,7 @@ class HDPistol:HDHandgun replaces Pistol{
 				sb.SHADER_VERT,sb.DI_SCREEN_CENTER_BOTTOM
 			);
 			sb.drawnum(hpl.countinv("HD9mMag15"),-43,-8,sb.DI_SCREEN_CENTER_BOTTOM);
-			}
+		}
 		if(hdw.weaponstatus[PISF_SAFETY]==1)sb.drawimage("SAFETY",(-17,-12),sb.DI_SCREEN_CENTER_BOTTOM,scale:(1,1));	
 		if(hdw.weaponstatus[0]&PISF_SELECTFIRE)sb.drawwepcounter(hdw.weaponstatus[0]&PISF_FIREMODE,
 			-22,-10,"RBRSA3A7","STFULAUT"
@@ -107,16 +108,15 @@ class HDPistol:HDHandgun replaces Pistol{
 		if(hdw.weaponstatus[PISS_CHAMBER]==2)sb.drawrect(-19,-11,3,1);
 	}
 	override string gethelptext(){
+		LocalizeHelp();
 		return
-		WEPHELP_USE.."+"..WEPHELP_FIREMODE.."  Safety\n"
-		..WEPHELP_FIRESHOOT
-		..((weaponstatus[0]&PISF_SELECTFIRE)?(WEPHELP_FIREMODE.."  Semi/Auto\n"):"")
-		..WEPHELP_ALTRELOAD.."  Quick-Swap (if available)\n"
-		..WEPHELP_RELOAD.."  Reload mag\n"
-		..WEPHELP_USE.."+"..WEPHELP_RELOAD.."  Reload chamber\n"
-		..WEPHELP_ZOOM.."+"..WEPHELP_RELOAD.."  Check Mag\n"
-		..WEPHELP_MAGMANAGER
-		..WEPHELP_UNLOADUNLOAD
+		LWPHELP_FIRESHOOT
+		..((weaponstatus[0]&PISF_SELECTFIRE)?(LWPHELP_FIREMODE..StringTable.Localize("$PISWH_FMODE")):"")
+		..LWPHELP_ALTRELOAD..StringTable.Localize("$PISWH_ALTRELOAD")
+		..LWPHELP_RELOAD..StringTable.Localize("$PISWH_RELOAD")
+		..LWPHELP_USE.."+"..LWPHELP_RELOAD..StringTable.Localize("$PISWH_UPRELOAD")
+		..LWPHELP_MAGMANAGER
+		..LWPHELP_UNLOADUNLOAD
 		;
 	}
 	override void DrawSightPicture(
@@ -129,15 +129,7 @@ class HDPistol:HDHandgun replaces Pistol{
 		vector2 bobb=bob*1.3;
 
 		//if slide is pushed back, throw sights off line
-		if(hpl.player.getpsprite(PSP_WEAPON).frame==1){
-			sb.SetClipRect(
-				-8+bob.x,-9+bob.y,16,15,
-				sb.DI_SCREEN_CENTER
-			);
-			bobb.y-=1;
-			scc=(0.6,0.6);
-		}
-		else if(hpl.player.getpsprite(PSP_WEAPON).frame>=2){
+		if(hpl.player.getpsprite(PSP_WEAPON).frame>=2){
 			sb.SetClipRect(
 				-10+bob.x,-10+bob.y,20,19,
 				sb.DI_SCREEN_CENTER
@@ -344,11 +336,11 @@ class HDPistol:HDHandgun replaces Pistol{
 		#### A 0 A_JumpIf((player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR4A0"))||(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR3A0")),2);
 		PSR1 A 0 A_Jump(256,2);
 		PSR3 A 0;
-		#### F 3 offset(0,0);
+		#### F 2 offset(0,0);
 		#### A 0 A_JumpIf((player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR4A0"))||(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR3A0")),3);
-		PSR2 F 4 offset(10,10);
+		PSR2 F 2 offset(10,10);
 		#### A 0 A_Jump(256,2);
-		PSR4 A 4 offset(-10,10);
+		PSR4 A 2 offset(0,10);
 		#### F 0 offset(10,10){
 			A_MuzzleClimb(frandom(0.4,0.5),-frandom(0.6,0.8));
 			A_StartSound("weapons/pischamber2",8);
@@ -373,9 +365,9 @@ class HDPistol:HDHandgun replaces Pistol{
 			}
 		}
 		#### A 0 A_JumpIf((player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR4A0"))||(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR3A0")),3);
-		#### F 7 offset(5,20);
+		#### F 4 offset(5,20);
 		#### A 0 A_Jump(256,2);
-		PSR4 F 7 Offset(-5,20);
+		PSR4 F 4 Offset(0,20);
 		#### A 0 A_JumpIf((player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR4A0"))||(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR3A0")),2);
 		PSR1 A 0 A_Jump(256,2);
 		PSR3 A 0;
@@ -643,34 +635,42 @@ class HDPistol:HDHandgun replaces Pistol{
 		PSR1 Q 0 A_Jump(256,2); 
 		PSR3 A 0;
 		#### Q 1 offset(0,0)A_SetCrosshair(21);
-		#### Q 2;
-		#### SR 2;
+		#### Q 1 offset(0,30){A_JumpIfInventory("HD9mMag15",0,"null");
+			if(invoker.weaponstatus[PISS_MAG]>-1){a_overlay(-26,"magouting");}}
+		#### S 1;
+		#### R 1 offset(0,0);
 		#### R 0 A_JumpIf((player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR3R0"))&&(invoker.weaponstatus[PISS_CHAMBER]>0),4);
 		#### R 0 A_JumpIf(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR3R0"),5);
 		PSR2 A 0 A_JumpIf(invoker.weaponstatus[PISS_CHAMBER]>0,7);
 		PSR1 A 0 A_Jump(256,6);
-		PSR4 F 2 offset(-5,15); 
+		PSR4 F 1 offset(0,0); 
 		#### F 0 A_Jump(256,4);
-		PSR3 F 2 offset(-5,15);
+		PSR3 F 1 offset(0,0);
 		#### F 0 A_Jump(256,2);
-		#### F 2 offset(5,15);
+		#### F 1 offset(5,0);
 		#### F 0 offset(0,0);
 		#### A 0{
 			if(invoker.weaponstatus[PISS_MAG]==-1)setweaponstate("magout");
-			else if(
-				(!PressingUnload()&&!PressingReload())
-				||A_JumpIfInventory("HD9mMag15",0,"null")
-			){
-				setweaponstate("magouting");
-			}
 			else{
 				//A_StartSound("weapons/pocket",9);
 				setweaponstate("pocketmag"); 
 			}
 		}
+		Goto magout;
 	magouting:
 		---- R 0;
-		#### R 0 A_JumpIf(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR4R0"),4);
+		#### A 0; 
+		TNT1 AAAA 1{if(!PressingUnload()&&!PressingReload()&&invoker.weaponstatus[PISS_MAG]>-1){
+				int pmg=invoker.weaponstatus[PISS_MAG];
+				invoker.weaponstatus[PISS_MAG]=-1;			
+				A_StartSound("weapons/pismagclick",8,CHANF_OVERLAP);
+				HDMagAmmo.SpawnMag(self,"HD9mMag15",pmg);}}
+		TNT1 A 0;		
+		Stop;	
+	none:
+		TNT1 A 0;
+		Stop;
+		/*#### R 0 A_JumpIf(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR4R0"),4);
 		#### R 0 A_JumpIf(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR3R0"),4);
 		PSR2 A 0 A_JumpIf(invoker.weaponstatus[PISS_CHAMBER]>0,4);
 		PSR1 A 0 A_Jump(256,3);
@@ -681,9 +681,9 @@ class HDPistol:HDHandgun replaces Pistol{
 		#### A 0 A_JumpIf(invoker.weaponstatus[PISS_MAG]<1,"magoutingempty");
 		#### HG 1 offset(0,15);
 		#### F 2 offset(0,0);
-		goto magout;
+		goto magout;*/
 	magoutingempty:
-		#### DE 1 offset(0,15);
+		#### DE 1 offset(0,0);
 		#### F 2 offset(0,0);
 		goto magout;
 	pocketmag:
@@ -697,9 +697,9 @@ class HDPistol:HDHandgun replaces Pistol{
 		#### NMLJJ 1 offset(0,15) {A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));if((HDPlayerPawn(self).bloodpressure>19)||(Health<41))A_SetTics(2);}
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<20)&&(Health>40),2);
 		#### J 2 offset(0,15) A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));
-		#### I 3{A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4)); A_StartSound("weapons/pismagclick",8,CHANF_OVERLAP);if((HDPlayerPawn(self).bloodpressure>25)||(Health<41))A_SetTics(4);}
+		#### I 2{A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4)); A_StartSound("weapons/pismagclick",8,CHANF_OVERLAP);if((HDPlayerPawn(self).bloodpressure>25)||(Health<41))A_SetTics(4);}
 		#### A 0 A_JumpIf(invoker.weaponstatus[PISS_MAG]<1,"pocketmagempty");
-		#### HG 3 offset(0,15) {A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));if((HDPlayerPawn(self).bloodpressure>19)||(Health<41))A_SetTics(4);}
+		#### H 2 offset(0,15) {A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));if((HDPlayerPawn(self).bloodpressure>19)||(Health<41))A_SetTics(4);}
 		#### FF 3 {A_StartSound("weapons/pocket",9);if((HDPlayerPawn(self).bloodpressure>19)||(Health<41))A_SetTics(4);}
 		goto magout;
 	pocketmagempty:
@@ -710,22 +710,24 @@ class HDPistol:HDHandgun replaces Pistol{
 		PSR1 A 0 A_Jump(256,3);
 		PSR4 A 0 A_JumpIf(invoker.weaponstatus[PISS_CHAMBER]>0,2);
 		PSR3 A 0;
-		#### DE 3 offset(0,15) {A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));if((HDPlayerPawn(self).bloodpressure>25)||(Health<41))A_SetTics(4);}
+		#### D 2 offset(0,15) {A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));if((HDPlayerPawn(self).bloodpressure>25)||(Health<41))A_SetTics(4);}
 		#### FF 3 {A_StartSound("weapons/pocket",9);if((HDPlayerPawn(self).bloodpressure>19)||(Health<41))A_SetTics(4);}
 		goto magout;
 	magout:
 		#### A 0{
+			if(invoker.weaponstatus[PISS_MAG]==-1&&!invoker.weaponstatus[0]&PISF_JUSTUNLOAD){setweaponstate("loadmag");}
+			else{
 			int pmg=invoker.weaponstatus[PISS_MAG];
 			invoker.weaponstatus[PISS_MAG]=-1;
 			//if(pmg<0)setweaponstate("unmag");
-			if(
+			/*(
 				(!PressingUnload()&&!PressingReload())
 				||A_JumpIfInventory("HD9mMag15",0,"null")
 			){
 				HDMagAmmo.SpawnMag(self,"HD9mMag15",pmg);
 				//setweaponstate("magouting");
-			}
-			else{
+			}*/
+			
 				HDMagAmmo.GiveMag(self,"HD9mMag15",pmg);
 				//A_StartSound("weapons/pocket",9);
 				//setweaponstate("pocketmag");
@@ -751,14 +753,15 @@ class HDPistol:HDHandgun replaces Pistol{
 			}
 		}
 		#### A 0 A_JumpIf(invoker.weaponstatus[PISS_MAG]<1,"loadmagempty");
-		#### G 3 offset(0,15) A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));
+		#### G 2 offset(0,0) A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));
 		#### A 0 A_StartSound("weapons/pocket",9);
-		#### H 3 offset(0,15) {A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));if((HDPlayerPawn(self).bloodpressure>19)||(Health<41))A_SetTics(4);}
-		#### I 3 offset(0,15){if((HDPlayerPawn(self).bloodpressure>25)||(Health<41))A_SetTics(5);}
+		#### H 2 offset(0,0) {A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));if((HDPlayerPawn(self).bloodpressure>19)||(Health<41))A_SetTics(4);}
+		#### I 2 offset(0,0){if((HDPlayerPawn(self).bloodpressure>25)||(Health<41))A_SetTics(5);}
 		#### A 0 A_StartSound("weapons/pismagclick",8);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<20)&&(Health>40),2);
-		#### J 2 offset(0,15);
-		#### JL 4 offset(0,15);
+		#### J 2 offset(0,0);
+		#### J 2 offset(0,0);
+		#### L 4 offset(0,0);
 		goto reloadend;
 	loadmagempty:
 		---- R 0;
@@ -768,14 +771,15 @@ class HDPistol:HDHandgun replaces Pistol{
 		PSR1 A 0 A_Jump(256,3);
 		PSR4 A 0 A_JumpIf(invoker.weaponstatus[PISS_CHAMBER]>0,2);
 		PSR3 A 0;
-		#### E 3 offset(0,15) A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));
+		#### E 2 offset(0,0) A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));
 		#### A 0 A_StartSound("weapons/pocket",9);
-		#### D 3 offset(0,15) {A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));if((HDPlayerPawn(self).bloodpressure>19)||(Health<41))A_SetTics(4);}
-		#### I 3 offset(0,15){if((HDPlayerPawn(self).bloodpressure>25)||(Health<41))A_SetTics(5);}
+		#### D 2 offset(0,0) {A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));if((HDPlayerPawn(self).bloodpressure>19)||(Health<41))A_SetTics(4);}
+		#### I 2 offset(0,0){if((HDPlayerPawn(self).bloodpressure>25)||(Health<41))A_SetTics(5);}
 		#### A 0 A_StartSound("weapons/pismagclick",8);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<20)&&(Health>40),2);
-		#### J 2 offset(0,15);
-		#### JL 4 offset(0,15);
+		#### J 2 offset(0,0);
+		#### J 2 offset(0,0);
+		#### L 4 offset(0,0);
 	reloadend:
 		#### A 0 A_JumpIf(invoker.weaponstatus[PISF_SAFETY]==0&&!(invoker.weaponstatus[0]&PISF_JUSTUNLOAD)&&invoker.weaponstatus[PISS_MAG]>0&&invoker.weaponstatus[PISS_CHAMBER]==0,"chamber_manualReload");
 		---- R 0;
@@ -783,15 +787,15 @@ class HDPistol:HDHandgun replaces Pistol{
 		#### R 0 A_JumpIf(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR3R0"),4);
 		PSR2 A 0 A_JumpIf(invoker.weaponstatus[PISS_CHAMBER]>0,6);
 		PSR1 A 0 A_Jump(256,5);
-		PSR4 F 3 offset(-5,20);
+		PSR4 F 1 offset(0,0);
 		#### A 0 A_Jump(256,4);
-		PSR3 F 3 offset(-5,20);
+		PSR3 F 1 offset(0,0);
 		#### A 0 A_Jump(256,2);
-		#### F 3 offset(5,20);
+		#### F 1 offset(0,0);
 		#### A 0 A_JumpIf((player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR4A0"))||(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR3A0")),2);
 		PSR1 A 0 A_Jump(256,2);
 		PSR3 A 0;
-		#### RSQ 2 offset(0,0);
+		#### RSSQ 1 offset(0,0);
 		#### Q 0 A_JumpIf((player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR4Q0"))||(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR3Q0")),2);
 		PISG A 0 A_Jump(256,3);
 		PI2G A 1 offset(2,-5);
@@ -905,6 +909,7 @@ enum pistolstatus{
 	PISF_FIREMODE=2,
 	PISF_SAFETY=3,
 	PISF_JUSTUNLOAD=4,
+
 	PISS_FLAGS=0,
 	PISS_MAG=1,
 	PISS_CHAMBER=2, //0 empty, 1 spent, 2 loaded

@@ -60,10 +60,10 @@ class PortableStimpack:HDInjectorMaker{
 
 		scale 0.37;
 		-hdpickup.droptranslation
-		inventory.pickupmessage "Picked up a stimpack.";
+		inventory.pickupmessage "$PICKUP_STIMPACK";
 		inventory.icon "STIMA0";
 		hdpickup.bulk ENC_STIMPACK;
-		tag "stimpack";
+		tag "$TAG_STIMPACK";
 		hdpickup.refid HDLD_STIMPAK;
 		+inventory.ishealth
 		hdinjectormaker.injectortype "HDStimpacker";
@@ -86,7 +86,7 @@ class HDStimpacker:HDWoundFixer{
 	string mainhelptext;property mainhelptext:mainhelptext;
 
 	override string,double getpickupsprite(){return "STIMA0",1.;}
-	override string gethelptext(){return WEPHELP_INJECTOR;}
+	override string gethelptext(){LocalizeHelp();return LWPHELP_INJECTOR;}
 	override void DrawHUDStuff(HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl){
 		sb.drawimage(
 			injectoricon,(-23,-7),
@@ -100,8 +100,8 @@ class HDStimpacker:HDWoundFixer{
 		weapon.selectionorder 1003;
 		hdstimpacker.injectoricon "STIMA0";
 		hdstimpacker.injectortype "PortableStimpack";
-		tag "stimpack";
-		hdstimpacker.mainhelptext "\cd<<< \cjSTIMPACK \cd>>>\c-\n\n\nStimpacks help reduce\nbleeding temporarily\n\nand boost performance when injured.\n\n\Press altfire to use on someone else.\n\n\cgDO NOT OVERDOSE.";
+		tag "$TAG_STIMPACK";
+		hdstimpacker.mainhelptext "$STIMPACK_HELPTEXT";
 	}
 	action void A_SpawnSpent(){invoker.SpawnSpent(self);}
 	actor SpawnSpent(actor onr){
@@ -110,7 +110,7 @@ class HDStimpacker:HDWoundFixer{
 		if(!a)return null;
 		a.target=onr;
 		a.angle=onr.angle;a.vel=onr.vel;a.A_ChangeVelocity(-2,1,4,CVF_RELATIVE);
-		a.A_StartSound("weapons/grenopen",CHAN_VOICE);
+		a.A_StartSound("misc/stimdrop",CHAN_VOICE);
 		return a;
 	}
 	states{
@@ -157,7 +157,7 @@ class HDStimpacker:HDWoundFixer{
 	select0:
 		STIS A 1{
 			bool helptext=DoHelpText();
-			if(helptext)A_WeaponMessage(invoker.mainhelptext);
+			if(helptext)A_WeaponMessage(Stringtable.Localize(invoker.mainhelptext));
 			A_StartSound("weapons/pocket",8,CHANF_OVERLAP,volume:0.5);
 
 			//take away one item in inventory.
@@ -203,12 +203,27 @@ class HDStimpacker:HDWoundFixer{
 			A_WeaponReady();
 		}
 		Goto ReadyEnd;
-	None:
+	Non:
 		TNT1 A 1;
 		Stop;
 	Leg:
-		STLG A 1 {A_OverlayFlags(-26,PSPF_PLAYERTRANSLATED,1);A_OverlayOffset(-26, 0, (-pitch*2)+200);}
+		STLG B 0 A_JumpIf(Health < 1, "Non");
+		STLG B 0 A_JumpIf(Height < 40 && IsMoving.Count(self)>0, "LegCrouMov");
+		STLG B 0 A_JumpIf(Height < 40, 2);
+		STLG A 0 A_JumpIf(IsMoving.Count(self)>0,3);
+		STLG # 1 {A_OverlayFlags(-26,PSPF_PLAYERTRANSLATED,1);A_OverlayOffset(-26, 0, (-pitch*2)+200);}
 		Loop;
+		#### AAA 0;
+		WALK ABC 2 {A_OverlayFlags(-26,PSPF_PLAYERTRANSLATED,1);A_OverlayOffset(-26, 0, (-pitch*2)+200); if(IsMoving.Count(self)<2)A_SetTics(4);}
+		STLG A 0 A_JumpIf(IsMoving.Count(self)<1,"Leg");
+		WALK DEF 2 {A_OverlayFlags(-26,PSPF_PLAYERTRANSLATED,1);A_OverlayOffset(-26, 0, (-pitch*2)+200);if(IsMoving.Count(self)<2)A_SetTics(4);}
+		STLG A 0 A_JumpIf(IsMoving.Count(self)<1,"Leg");
+		WALK G 2 {A_OverlayFlags(-26,PSPF_PLAYERTRANSLATED,1);A_OverlayOffset(-26, 0, (-pitch*2)+200);if(IsMoving.Count(self)<2)A_SetTics(4);}
+		Goto Leg;
+	LegCrouMov:
+		#### AAA 0;
+		CROU ABBA 3 {A_OverlayFlags(-26,PSPF_PLAYERTRANSLATED,1);A_OverlayOffset(-26, 0, (-pitch*2)+200);if(IsMoving.Count(self)<2)A_SetTics(5);}
+		Goto Leg;
 	fire:
 	hold:
 		TNT1 A 0 A_OverLay(-26,"Leg");
@@ -216,13 +231,13 @@ class HDStimpacker:HDWoundFixer{
 		STIG A 0{
 			if(hdplayerpawn(self))hdplayerpawn(self).gunbraced=false;
 			if(invoker.weaponstatus[0]&INJECTF_SPENT){
-				A_OverLay(-26,"None");
+				A_OverLay(-26,"Non");
 				return resolvestate("nope");
 			}
 			let blockinv=HDWoundFixer.CheckCovered(self,CHECKCOV_ONLYFULL);
 			if(blockinv){
 				A_TakeOffFirst(blockinv.gettag(),2);
-				A_OverLay(-26,"None");
+				A_OverLay(-26,"Non");
 				return resolvestate("nope");
 			}
 			if(pitch<90){
@@ -235,6 +250,7 @@ class HDStimpacker:HDWoundFixer{
 		STIG A 0 A_OverLay(-26,"None");
 		goto nope;
 	inject:
+		TNT1 A 0 A_JumpIf(Height < 40, "Crouch");
 		STIF CD 2;
 		STIF E 2{
 			A_SetBlend("7a 3a 18",0.1,4);
@@ -248,7 +264,23 @@ class HDStimpacker:HDWoundFixer{
 		STIF F 4;
 		STIF GGG 1 A_MuzzleClimb(0,-10);
 		TNT1 AAA 1 A_MuzzleClimb(0,-10);
-		TNT1 A 0 A_OverLay(-26,"None");
+		TNT1 A 0 A_OverLay(-26,"Non");
+		goto nope;
+	Crouch:
+		STIF NO 2;
+		STIF P 2{
+			A_SetBlend("7a 3a 18",0.1,4);
+			A_MuzzleClimb(0,2);
+			if(hdplayerpawn(self))A_StartSound(hdplayerpawn(self).medsound,CHAN_VOICE);
+			else A_StartSound("*usemeds",CHAN_VOICE);
+			A_StartSound("misc/injection",CHAN_WEAPON,CHANF_OVERLAP);
+			actor a=spawn(invoker.injecttype,pos,ALLOW_REPLACE);
+			a.accuracy=40;a.target=self;
+			invoker.weaponstatus[0]|=INJECTF_SPENT;}
+		STIF PQ 2;
+		STIF QRR 1 A_MuzzleClimb(0,-10);
+		TNT1 AAA 1 A_MuzzleClimb(0,-10);
+		TNT1 A 0 A_OverLay(-26,"Non");
 		goto nope;
 	altfire:
 		STIF C 2;
@@ -280,7 +312,7 @@ class HDStimpacker:HDWoundFixer{
 					}
 					return resolvestate("Injecting");
 				}}
-				if(helptext)A_WeaponMessage("Nothing to be done here.\n\nStimulate thyself? (press fire)");
+				if(helptext)A_WeaponMessage(Stringtable.Localize("$STIMPACK_NOTHINGTOBEDONE"));
 				return resolvestate("UnInject");
 			}
 		Goto Injection;	
@@ -315,17 +347,17 @@ class HDStimpacker:HDWoundFixer{
 			let c=HDPlayerPawn(injectorline.hitactor);
 			let blockinv=HDWoundFixer.CheckCovered(self,CHECKCOV_ONLYFULL);
 			if(blockinv){
-				if(helptext)A_WeaponMessage("You'll need them to take off their "..blockinv.gettag().."...");
+				if(helptext)A_WeaponMessage(Stringtable.Localize("$STIMPACK_TAKEOFFOTHER")..blockinv.gettag()..Stringtable.Localize("$STIMPACK_ELIPSES"));
 				return resolvestate("InjectFail");
 			}
 			if(IsMoving.Count(c)>4){
 				bool chelptext=DoHelpText(c);
 				if(c.countinv("HDStim")){
-					if(chelptext)HDWeapon.ForceWeaponMessage(c,string.format("Run away!!!\n\n%s is trying to overdose you!",player.getusername()));
-					if(helptext)A_WeaponMessage("They seem a bit fidgety...");
+					if(chelptext)HDWeapon.ForceWeaponMessage(c,string.format(Stringtable.Localize("$STIMPACK_OVERDOSEPLAYER"),player.getusername()));
+					if(helptext)A_WeaponMessage(Stringtable.Localize("$STIMPACK_FIDGETY"));
 				}else{
-					if(chelptext)HDWeapon.ForceWeaponMessage(c,string.format("Stop squirming!\n\n%s only wants to\n\ngive you some drugs...",player.getusername()));
-					if(helptext)A_WeaponMessage("You'll need them to stay still...");
+					if(chelptext)HDWeapon.ForceWeaponMessage(c,string.format(Stringtable.Localize("$STIMPACK_STOPSQUIRMING"),player.getusername()));
+					if(helptext)A_WeaponMessage(Stringtable.Localize("$STIMPACK_STAYSTILLOTHER"));
 				}
 				return resolvestate("InjectFail");
 			}
@@ -343,8 +375,8 @@ class HDStimpacker:HDWoundFixer{
 					)
 				)
 			){
-				if(DoHelpText(c))HDWeapon.ForceWeaponMessage(c,string.format("Run away!!!\n\n%s is trying to overdose you!",player.getusername()));
-				if(DoHelpText())A_WeaponMessage("They seem a bit fidgety already...");
+				if(DoHelpText(c))HDWeapon.ForceWeaponMessage(c,string.format(Stringtable.Localize("$STIMPACK_OVERDOSEPLAYER"),player.getusername()));
+				if(DoHelpText())A_WeaponMessage(Stringtable.Localize("$STIMPACK_SEEMFIDGETY"));
 				return resolvestate("InjectFail");
 			}
 			//and now...
@@ -451,11 +483,11 @@ class PortableBerserkPack:hdinjectormaker{
 		//$Title "Berserk"
 		//$Sprite "PSTRA0"
 
-		inventory.pickupmessage "Picked up a berserk pack.";
+		inventory.pickupmessage "$PICKUP_ZERKPACK";
 		inventory.icon "PSTRA0";
 		scale 0.3;
 		hdpickup.bulk ENC_STIMPACK;
-		tag "berserk pack";
+		tag "$TAG_ZERKPACK";
 		hdpickup.refid HDLD_BERSERK;
 		+inventory.ishealth
 		hdinjectormaker.injectortype "HDBerserker";
@@ -473,8 +505,8 @@ class HDBerserker:HDStimpacker{
 		weapon.selectionorder 1002;
 		hdstimpacker.injectoricon "PSTRA0";
 		hdstimpacker.injectortype "PortableBerserkPack";
-		tag "berserk pack";
-		hdstimpacker.mainhelptext "\cr*** \caBERSERK \cr***\c-\n\n\nBerserk packs help increase\ncombat capabilities temporarily.\n\n\Press altfire to use on someone else.";
+		tag "$TAG_ZERKPACK";
+		hdstimpacker.mainhelptext "$ZERKPACK_MAINHELPTEXT";
 	}
 	override string,double getpickupsprite(){return "PSTRA0",1.;}
 }
@@ -649,13 +681,11 @@ class HDZerk:HDDrug{
 	}
 }
 
-
-
-
-class SpentZerk:HDDebris{
+class SpentStim:HDDebris{
 	default{
+		translation "176:191=80:95";
 		xscale 0.32;yscale 0.28;radius 3;height 3;
-		bouncesound "misc/fragknock";
+		bouncesound "misc/zerkdrop";
 	}
 	states{
 	spawn:
@@ -671,16 +701,29 @@ class SpentZerk:HDDebris{
 		}stop;
 	}
 }
-class SpentStim:SpentZerk{
+class SpentZerk:SpentStim{
 	default{
-		translation "176:191=80:95";
+		translation "none";
 	}
 	states{
 	spawn:
-		SYRG A 0 nodelay A_JumpIf(Wads.CheckNumForName("id",0)==-1,1);
+		SYRB A 0 nodelay A_JumpIf(Wads.CheckNumForName("id",0)==-1,"freed");
 		goto spawn2;
-		STIM A 0 A_SetScale(0.37,0.37);
-		STIM A 0 A_SetTranslation("FreeStimSpent");
+	freed:
+		PSTR B 0{scale=getdefaultbytype("PortableBerserkPack").scale;}
+		goto spawn2;
+	}
+}
+
+
+class SpentPolyp:SpentStim{
+	default{
+		alpha 0.6;renderstyle "translucent";
+		bouncesound "potion/bounce";bouncefactor 0.1;scale 0.3;
+	}
+	states{
+	spawn:
+		BON1 F 0 A_SetTranslation("FreeStimSpent");
 		goto spawn2;
 		death:
 		---- A -1{
@@ -694,7 +737,7 @@ class SpentStim:SpentZerk{
 class SpentBottle:SpentStim{
 	default{
 		alpha 0.6;renderstyle "translucent";
-		bouncesound "misc/casing";bouncefactor 0.4;scale 0.3;radius 4;height 4;
+		bouncesound "potion/bounce";bouncefactor 0.4;scale 0.3;
 		translation "10:15=241:243","150:151=206:207";
 	}
 	override void ondestroy(){
@@ -735,7 +778,3 @@ class SpentCork:SpentBottle{
 		wait;
 	}
 }
-
-
-
-

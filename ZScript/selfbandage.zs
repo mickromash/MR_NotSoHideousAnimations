@@ -6,7 +6,7 @@ class SelfBandage:HDWoundFixer{
 		+hdweapon.dontdisarm
 		weapon.selectionorder 1004;
 		weapon.slotnumber 9;
-		tag "improvised bandaging";
+		tag "$TAG_BANDAGES";
 	}
 	void bandagewound(double amt,actor itg){
 		if(itg){
@@ -25,16 +25,17 @@ class SelfBandage:HDWoundFixer{
 			}
 			if(tgw)tgw.patch(amt,false);
 			else{
-				wepmsg="There is no wound to treat.";
+				wepmsg=Stringtable.Localize("$BANDAGES_NOWOUNDS");
 				msgtimer=70;
 				if(owner.player)owner.player.setpsprite(PSP_WEAPON,findstate("nope"));
 			}
 		}
 	}
 	override string,double getpickupsprite(){return "BLUDC0",1.;}
-	override string gethelptext(){return WEPHELP_INJECTOR
-		.."\n"..WEPHELP_ALTRELOAD.."  Remove blood feeder"
-		..(owner.countinv("BloodBagWorn")?"":"(if any)");}
+	override string gethelptext(){LocalizeHelp();
+		return WEPHELP_INJECTOR
+		.."\n"..WEPHELP_ALTRELOAD..StringTable.Localize("$BANDWH_ALTRELOAD")
+		..(owner.countinv("BloodBagWorn")?"":StringTable.Localize("$BANDWH_IFANY"));}
 	override void DrawHUDStuff(HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl){
 		int of=0;
 
@@ -65,13 +66,13 @@ class SelfBandage:HDWoundFixer{
 		TNT1 A 0{
 			if(Random(0,2))invoker.weaponstatus[SFBS_WOUND]=1;
 			if(!DoHelpText()) return;
-			if(!!hdbleedingwound.findbiggest(self,0))A_WeaponMessage("\cu--- \ccBANDAGING \cu---\c-\n\n\nPress and hold Fire\n\nwhile standing still\n\nto try to not die.",210);
-			else A_WeaponMessage("\cu--- \ccBANDAGING \cu---\c-\n\n\nPress and hold Fire to bandage\n\nyourself when you are bleeding.\n\n\n\nPress and hold Altfire\n\nto bandage someone else.",210);
+			if(!!hdbleedingwound.findbiggest(self,0))A_WeaponMessage(Stringtable.Localize("$BANDAGES_TEXT1"),210);
+			else A_WeaponMessage(Stringtable.Localize("$BANDAGES_TEXT2"),210);
 		}
 		Goto Super::Select;
 	abort:
 		#### A 1{
-			if(DoHelpText())A_WeaponMessage("You must stay still\n\nto bandage yourself!",70);
+			if(DoHelpText())A_WeaponMessage(Stringtable.Localize("$BANDAGES_STAYSTILL"),70);
 		}
 		TNT1 A 0 A_Refire("Lower");
 		goto Ready;
@@ -85,7 +86,7 @@ class SelfBandage:HDWoundFixer{
 				nope=true;
 			}
 			else if(!hdbleedingwound.findbiggest(self,0)){
-				if(DoHelpText())A_WeaponMessage("You are not bleeding.",70);
+				if(DoHelpText())A_WeaponMessage(Stringtable.Localize("$BANDAGES_NOTBLEEDING"),70);
 				nope=true;
 			}
 			if(nope)player.setpsprite(PSP_WEAPON,invoker.findstate("nope"));
@@ -139,7 +140,7 @@ class SelfBandage:HDWoundFixer{
 		RRGE JK 3;
 		---- A 0 A_MuzzleClimb(frandom(-5.4,5.4),frandom(-2.4,2.4));
 		---- A 0{actor aaa=spawn(
-					"HDSpent9mm",
+					"TwistedBulletChunk",
 					(pos.xy,pos.z+height-10)
 					+(cos(pitch)*cos(angle),cos(pitch)*sin(angle),sin(pitch))*7,
 					ALLOW_REPLACE);
@@ -199,7 +200,7 @@ class SelfBandage:HDWoundFixer{
 		RAGE JK 3;
 		---- A 0 A_MuzzleClimb(frandom(-5.4,5.4),frandom(-2.4,2.4));
 		---- A 0{actor aaa=spawn(
-					"HDSpent9mm",
+					"TwistedBulletChunk",
 					(pos.xy,pos.z+height-10)
 					+(cos(pitch)*cos(angle),cos(pitch)*sin(angle),sin(pitch))*7,
 					ALLOW_REPLACE);
@@ -278,24 +279,7 @@ class SelfBandage:HDWoundFixer{
 		#### U 8;
 		#### A 0 A_OverLay(26,"None");
 		#### A 0 A_Refire("BandageArm");
-		//TNT1 A 0 A_JumpIf(IsMoving.Count(self)>=4,"abort");
 		goto BandageArm;
-	/*try4:
-		TNT1 A 0 A_CheckFloor(2);
-		TNT1 A 0 A_Jump(240,2);
-		TNT1 A 0 A_ChangeVelocity(frandom(-0.3,0.3),frandom(-0.3,0.3),frandom(-1,2));
-		TNT1 A 0{
-			A_MuzzleClimb(frandom(-1.5,1.7),frandom(-2.4,2.4));
-			if(hdplayerpawn(self))hdplayerpawn(self).fatigue+=2;
-		}
-		TNT1 A 0 A_Jump(240,2);
-		TNT1 A random(1,3) A_PlaySkinSound(SKINSOUND_GRUNT,"*grunt");
-		TNT1 A 0 A_Jump(140,2);
-		TNT1 A 0 A_StartSound("bandage/rustle",CHAN_BODY,CHANF_OVERLAP);
-		TNT1 A random(10,20);
-		TNT1 A 0 A_JumpIf(IsMoving.Count(self)>=4,"abort");
-		TNT1 A 0 A_Refire("try5");
-		goto ready;*/
 	TryingRight:
 		RRGA ABCD 2;
 		RRGA E 0 A_Jump(60,"BandageArmRight");
@@ -331,7 +315,6 @@ class SelfBandage:HDWoundFixer{
 		TNT1 A 0 A_Jump(8,"Try@");
 		TNT1 A 0 A_Jump(20,"try3");
 		TNT1 A 0 A_Jump(16,"try4");
-		//TNT1 A 0 A_Jump(80,2);
 	Trying:	
 		TNT1 A 0 A_Jump(128,"TryingRight");
 		RAGA ABCD 2;
@@ -342,18 +325,16 @@ class SelfBandage:HDWoundFixer{
 	BandageArm:	
 		#### A 0 A_Jump(240,2);
 		#### A 0 A_PlaySkinSound(SKINSOUND_GRUNT,"*grunt");
-		//TNT1 A 0 A_Jump(140,2);
 		#### A 0 A_StartSound("bandage/rustle",CHAN_BODY,CHANF_OVERLAP);
 		#### EFFGHIJO 2;
 		#### A 0 A_StartSound("bandage/rustle",CHAN_BODY,CHANF_OVERLAP);
 		#### PFGHIJK 2;
 		#### LM 2;
 		RAGA N 2;
-		//TNT1 A 0 A_JumpIf(IsMoving.Count(self)>=4,"abort");
 	Heal:	
 		TNT1 A 0 A_JumpIf(!!hdbleedingwound.findbiggest(self,0),2);
 		TNT1 A 0 {
-			if(DoHelpText())A_WeaponMessage("You seem to be stable.",144);
+			if(DoHelpText())A_WeaponMessage(Stringtable.Localize("$BANDAGES_STABLE"),144);
 		}goto nope;
 		TNT1 A 0 A_Jump(42,2);
 		TNT1 A 0 A_JumpIf(HDWoundFixer.CheckCovered(self,CHECKCOV_CHECKBODY),2);
@@ -375,16 +356,16 @@ class SelfBandage:HDWoundFixer{
 			);
 			let c=a.tracer;
 			if(!HDBleedingWound.canbleed(c)){
-				A_WeaponMessage("Nothing to be done here.\n\nHeal thyself?");
+				A_WeaponMessage(Stringtable.Localize("$BANDAGES_NOTHINGDONE"));
 				return resolvestate("nope");
 			}
 			if(IsMoving.Count(c)>4){
-				c.A_Print(string.format("%s is trying to bandage you.\n\nStay still to let them or\ntell them to leave...",player.getusername()));
-				A_WeaponMessage("You'll need them to stay still...");
+				c.A_Print(string.format(Stringtable.Localize("$BANDAGES_SOMEONEBANDAGING"),player.getusername()));
+				A_WeaponMessage(Stringtable.Localize("$BANDAGES_STAYSTILLOTHER"));
 				return resolvestate("nope");
 			}
 			if(!hdbleedingwound.findbiggest(c)){
-				A_WeaponMessage("They're not bleeding.");
+				A_WeaponMessage(Stringtable.Localize("$BANDAGES_OTHERNOTBLEEDING"));
 				return resolvestate("nope");
 			}
 			invoker.target=c;
@@ -397,7 +378,7 @@ class SelfBandage:HDWoundFixer{
 	injectbandage:
 		TNT1 A random(7,14){
 			if(invoker.target){
-				A_WeaponMessage("Working on "..HDMath.GetName(invoker.target).."...",20);
+				A_WeaponMessage(Stringtable.Localize("$BANDAGES_WORKINGON")..HDMath.GetName(invoker.target).."...",20);
 				if(random(0,2)){
 					if(!random(0,2))invoker.target.A_StartSound("bandage/rustle",CHAN_BODY);
 					return;
@@ -428,3 +409,7 @@ class SelfBandage:HDWoundFixer{
 enum selfbandagestatus{
 	SFBS_WOUND=0,
 };
+
+class TwistedBulletChunk:WallChunk{
+	default{scale 0.12;translation "1:255=86:99";}
+}

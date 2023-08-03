@@ -14,11 +14,14 @@ class HDRL:HDWeapon{
 		weapon.bobrangex 0.3;
 		weapon.bobrangey 0.9;
 		scale 0.6;
-		inventory.pickupmessage "You got the rocket launcher!";
+		inventory.pickupmessage "$PICKUP_RL";
 		obituary "$OB_ROCKET";
 		hdweapon.barrelsize 32,3.1,5;
 		hdweapon.refid HDLD_LAUNCHR;
 		tag "$TAG_RL";
+
+		hdweapon.ammo1 "HDRocketAmmo",1;
+		hdweapon.ammo2 "HEATAmmo",1;
 
 		hdweapon.loadoutcodes"
 			\cuheat - 0/1, whether you start with a H.E.A.T. loaded
@@ -33,11 +36,11 @@ class HDRL:HDWeapon{
 	}
 	override double gunmass(){
 		return (weaponstatus[0]&RLF_NOMAG)?
-			9+weaponstatus[RLS_CHAMBER]
-			:(10+weaponstatus[RLS_MAG]+weaponstatus[RLS_CHAMBER]);
+			7+weaponstatus[RLS_CHAMBER]
+			:(8+weaponstatus[RLS_MAG]+weaponstatus[RLS_CHAMBER]);
 	}
 	override double weaponbulk(){
-		double blx=(weaponstatus[0]&RLF_NOMAG)?120:(175+weaponstatus[RLS_MAG]*ENC_ROCKETLOADED);
+		double blx=(weaponstatus[0]&RLF_NOMAG)?100:(125+weaponstatus[RLS_MAG]*ENC_ROCKETLOADED);
 
 		int chmb=weaponstatus[RLS_CHAMBER];
 		if(chmb>1)blx+=ENC_HEATROCKETLOADED;
@@ -77,28 +80,28 @@ class HDRL:HDWeapon{
 			sb.drawrect(-23,-26,1,16);
 			sb.drawrect(-25,-26,1,16);
 		}
-		if(hdw.weaponstatus[RLF_SAFETY]==1)sb.drawimage("SAFETY",(-17,-16),sb.DI_SCREEN_CENTER_BOTTOM,scale:(1,1));	
 		if(ab)sb.drawstring(
 			sb.mAmountFont,string.format("%.2f",ab*0.01),
 			(-32,-15),sb.DI_SCREEN_CENTER_BOTTOM|sb.DI_TEXT_ALIGN_RIGHT,
 			ab?Font.CR_WHITE:Font.CR_DARKGRAY
 		);
+		if(hdw.weaponstatus[RLF_SAFETY]==1)sb.drawimage("SAFETY",(-17,-16),sb.DI_SCREEN_CENTER_BOTTOM,scale:(1,1));	
 		if(!(hdw.weaponstatus[0]&RLF_NOMAG))sb.drawwepnum(hdw.weaponstatus[RLS_MAG],6);
 		if(hdw.weaponstatus[RLS_CHAMBER]>0)sb.drawrect(-19,-11,3,1);
 	}
 	override string gethelptext(){
+		LocalizeHelp();
 		return
-		WEPHELP_USE.."+"..WEPHELP_FIREMODE.."  Safety\n"
-		..WEPHELP_FIRESHOOT
-		..WEPHELP_ALTFIRE.."  "..(weaponstatus[0]&RLF_GRENADEMODE?"Rocket":"Grenade").." mode\n"
+		LWPHELP_FIRESHOOT
+		..LWPHELP_ALTFIRE.."  "..(weaponstatus[0]&RLF_GRENADEMODE?StringTable.Localize("$RLWH_ROCK"):StringTable.Localize("$RLWH_GREN"))..StringTable.Localize("$RLWH_MODE")
 		..(weaponstatus[RLS_CHAMBER]>1?(
-			WEPHELP_ALTRELOAD.." or "..WEPHELP_RELOAD.."  Remove H.E.A.T. round\n"
+			LWPHELP_ALTRELOAD..StringTable.Localize("$RLWH_OR")..LWPHELP_RELOAD..StringTable.Localize("$RLWH_REMOVHEAT")
 		):(
-			WEPHELP_ALTRELOAD.."  Load H.E.A.T. round\n"
-			..WEPHELP_RELOADRELOAD
+			LWPHELP_ALTRELOAD..StringTable.Localize("$RLWH_LOAD")
+			..LWPHELP_RELOADRELOAD
 		))
-		..WEPHELP_FIREMODE.."+"..WEPHELP_UPDOWN.."  Airburst\n"
-		..WEPHELP_UNLOADUNLOAD
+		..LWPHELP_FIREMODE.."+"..LWPHELP_UPDOWN..StringTable.Localize("$RLWH_AIRBURST")
+		..LWPHELP_UNLOADUNLOAD
 		;
 	}
 	int rangefinder;
@@ -218,6 +221,7 @@ class HDRL:HDWeapon{
 		MISG # 0 A_CheckIdSprite("LAUGA0","MISGA0");
 		---- A 0;
 		goto deselect0small;
+		
 	Safety:
 		---- A 0 {
 		if(invoker.weaponstatus[RLF_SAFETY]==1)invoker.weaponstatus[RLF_SAFETY]=0;
@@ -260,7 +264,7 @@ class HDRL:HDWeapon{
 
 
 	fire:
-		#### A 1 A_JumpIf(invoker.weaponstatus[RLF_SAFETY]==1,"Nope");
+		#### A 1;
 		goto shoot;
 	althold:
 	hold:
@@ -278,56 +282,60 @@ class HDRL:HDWeapon{
 				return;
 			}
 
-			gyrogrenade rkt;
+			RocketGrenade rkt;
 			if(
 				invoker.weaponstatus[0]&RLF_GRENADEMODE
 				&&chm==1
 			){
 				//shoot a grenade
-				A_ZoomRecoil(0.995);
 				A_FireHDGL();
 				invoker.weaponstatus[RLS_SMOKE]+=5;
 				invoker.weaponstatus[RLS_CHAMBER]=0;
+				invoker.weaponstatus[RLS_RECOIL]=0;
+			}else{
+				A_FireHDGL(chm>1?2:1);
+				invoker.weaponstatus[RLS_SMOKE]+=5;
+				invoker.weaponstatus[RLS_CHAMBER]=0;
+
+				if(chm>1)invoker.weaponstatus[RLS_RECOIL]=2;
+				else invoker.weaponstatus[RLS_RECOIL]=1;
+			}
+		}
+		#### B 2{
+			switch(invoker.weaponstatus[RLS_RECOIL]){
+			case 2:
+				A_ZoomRecoil(0.99);
+				A_MuzzleClimb(
+					0,0,
+					-0.8,-1.6,
+					-0.2,-0.6,
+					-0.3,-0.9
+				);
+				break;
+			case 1:
+				A_ZoomRecoil(0.995);
+				A_MuzzleClimb(
+					0,0,
+					-0.4,-0.8,
+					-0.1,-0.3,
+					-0.2,-0.6
+				);
+				break;
+			case 0:
+			default:
+				A_ZoomRecoil(0.995);
 				A_MuzzleClimb(
 					0,0,
 					-0.4,-0.8,
 					-0.1,-0.3
 				);
-				if(invoker.weaponstatus[0]&RLF_NOMAG)setweaponstate("nope");
-				else setweaponstate("chamber");
-			}else{
-				//shoot a rocket
-				class<actor> rrr;
-				if(chm>1){
-					rrr="HDHEAT";
-					A_ChangeVelocity(cos(pitch),0,sin(pitch),CVF_RELATIVE);
-				}else rrr="GyroGrenade";
-				vector3 gpos=pos+gunpos((0,0,-getdefaultbytype(rrr).height*0.6));
-				rkt=gyrogrenade(spawn(rrr,gpos,ALLOW_REPLACE));
-				invoker.weaponstatus[RLS_SMOKE]+=50;
-				rkt.target=self;rkt.master=self;
-
-				let hdp=hdplayerpawn(self);
-				if(hdp){
-					rkt.angle=hdp.gunangle;
-					rkt.pitch=hdp.gunpitch;
-				}else{
-					rkt.angle=angle;
-					rkt.pitch=pitch;
-				}
-
-				rkt.primed=false;
-				rkt.isrocket=true;
-				if(
-					chm==1
-					&&invoker.airburst
-				)rkt.airburst=int(max(1000,abs(invoker.airburst))*HDCONST_ONEMETRE*0.01);
-				if(!(player.cmd.buttons&BT_ZOOM))invoker.airburst=0;
-				invoker.weaponstatus[RLS_CHAMBER]=0;
-				A_StartSound("weapons/rockignite",CHAN_WEAPON,CHANF_OVERLAP);
-				A_StartSound("weapons/rockboom",CHAN_WEAPON,CHANF_OVERLAP);
+				break;
 			}
 		}
+		---- A 0 A_JumpIf(!(invoker.weaponstatus[0]&RLF_NOMAG),"chamber");
+		goto nope;
+
+	hardlaunchrecoil:  //unused
 		#### A 2{
 			A_ZoomRecoil(0.7);
 			if(gunbraced()){
@@ -850,13 +858,14 @@ class HDRL:HDWeapon{
 enum rocketstatus{
 	RLF_GRENADEMODE=2,
 	RLF_NOMAG=4,
-	RLF_SAFETY=6,
+	RLF_SAFETY=7,
 	RLS_STATUS=0,
 	RLS_MAG=1,
 	RLS_CHAMBER=2,
 	RLS_AIRBURST=3,
 	RLS_SMOKE=4,
 	RLS_DOT=5,
+	RLS_RECOIL=6,
 };
 
 
@@ -881,11 +890,13 @@ class Blooper:HDWeapon{
 		weapon.slotnumber 5;
 		weapon.slotpriority 3;
 		scale 0.6;
-		inventory.pickupmessage "You got the grenade launcher!";
-		obituary "%o was blooped by %k.";
+		inventory.pickupmessage "$PICKUP_BLOOPER";
+		obituary "$OB_BLOOPER";
 		hdweapon.barrelsize 24,1.6,3;
 		tag "$TAG_GL";
 		hdweapon.refid HDLD_BLOOPER;
+
+		hdweapon.ammo1 "HDRocketAmmo",2;
 	}
 	override bool AddSpareWeapon(actor newowner){return AddSpareWeaponRegular(newowner);}
 	override hdweapon GetSpareWeapon(actor newowner,bool reverse,bool doselect){return GetSpareWeaponRegular(newowner,reverse,doselect);}
@@ -917,12 +928,13 @@ class Blooper:HDWeapon{
 		sb.drawrect(-25,-42,1,32);
 	}
 	override string gethelptext(){
+		LocalizeHelp();
 		return
-		WEPHELP_FIRESHOOT
-		..WEPHELP_ALTFIRE.."  Reset airburst\n"
-		..WEPHELP_RELOADRELOAD
-		..WEPHELP_FIREMODE.."+"..WEPHELP_UPDOWN.."  Airburst\n"
-		..WEPHELP_UNLOADUNLOAD
+		LWPHELP_FIRESHOOT
+		..LWPHELP_ALTFIRE..StringTable.Localize("$BLOPWH_ALTFIRE")
+		..LWPHELP_RELOADRELOAD
+		..LWPHELP_FIREMODE.."+"..LWPHELP_UPDOWN..StringTable.Localize("$BLOPWH_AIRBURST")
+		..LWPHELP_UNLOADUNLOAD
 		;
 	}
 	override void DrawSightPicture(
@@ -964,12 +976,14 @@ class Blooper:HDWeapon{
 		goto nope;
 	reallyshoot:
 		BLOG A 1{
-			A_ZoomRecoil(0.9);
 			A_FireHDGL();
 			invoker.weaponstatus[0]&=~BLOPF_LOADED;
 		}
 		BLOG A 1 offset(0,34);
-		BLOG B 0 A_MuzzleClimb(-frandom(2.,2.7),-frandom(3.4,5.2));
+		BLOG B 0{
+			A_ZoomRecoil(0.9);
+			A_MuzzleClimb(-frandom(2.,2.7),-frandom(3.4,5.2));
+		}
 		goto nope;
 	loadcommon:
 		BLOG B 1 offset(2,34)A_StartSound("weapons/rockopen",8);
@@ -1090,7 +1104,7 @@ class RocketBigPickup:HDUPK{
 		//$Sprite "BROKA0"
 
 		scale 0.5;
-		hdupk.pickupmessage "Picked up a box of rockets.";
+		hdupk.pickupmessage "$PICKUP_ROCKETBOX";
 		hdupk.pickuptype "HDRocketAmmo";
 		hdupk.amount 5;
 	}

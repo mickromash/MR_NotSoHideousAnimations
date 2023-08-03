@@ -15,11 +15,13 @@ class HDRevolver:HDHandgun{
 		weapon.bobrangey 0.6;
 		weapon.bobspeed 2.5;
 		weapon.bobstyle "normal";
-		obituary "%o got capped by %k's six-pea shooter.";
-		inventory.pickupmessage "You got the revolver!";
+		obituary "$OB_REVOLVER";
+		inventory.pickupmessage "$PICKUP_REVOLVER";
 		tag "$TAG_REVOLVER";
 		hdweapon.refid HDLD_REVOLVER;
 		hdweapon.barrelsize 20,0.3,0.5; //physically longer than auto but can shoot at contact
+
+		hdweapon.ammo1 "HDRevolverAmmo",6;
 	}
 	override double gunmass(){
 		double blk=0;
@@ -60,17 +62,10 @@ class HDRevolver:HDHandgun{
 			if(plf==4){
 				drawangle-=45.;
 				cylpos=(-30,-14);
-			}else if((cylinderopen)&&((plf==6)||(plf==9))){
-				drawangle-=330.;
-				cylpos=(-34,-12);}
-			else if(cylinderopen){
+			}else if(cylinderopen){
+				drawangle-=90;
 				cylpos=(-34,-12);
-			}
-			else if((plf==1)||(plf==10)){
-				drawangle-=330.;
-				cylpos=(-22,-20);
-			}
-			else{
+			}else{
 				cylpos=(-22,-20);
 			}
 			double cdrngl=cos(drawangle);
@@ -95,17 +90,18 @@ class HDRevolver:HDHandgun{
 		}
 	}
 	override string gethelptext(){
+		LocalizeHelp();
 		if(cylinderopen)return
-		WEPHELP_FIRE.." Close cylinder\n"
-		..WEPHELP_ALTFIRE.." Cycle cylinder \(Hold "..WEPHELP_ZOOM.." to reverse\)\n"
-		..WEPHELP_UNLOAD.." Hit extractor \(double-tap to dump live rounds\)\n"
-		..WEPHELP_RELOAD.." Load round \(Hold "..WEPHELP_FIREMODE.." to force using 9mm\)\n"
+		LWPHELP_FIRE..StringTable.Localize("$REVCWH_FIRE")//" Close cylinder\n"
+		..LWPHELP_ALTFIRE..StringTable.Localize("$REVCWH_ALTFIRE")..LWPHELP_ZOOM..StringTable.Localize("$REVCWH_ALTZOOM")
+		..LWPHELP_UNLOAD..StringTable.Localize("$REVCWH_UNLOAD")
+		..LWPHELP_RELOAD..StringTable.Localize("$REVCWH_RELOAD")..LWPHELP_FIREMODE..StringTable.Localize("$REVCWH_FMODPRELOAD")
 		;
 		return
-		WEPHELP_FIRESHOOT
-		..WEPHELP_ALTFIRE.." Pull back hammer\n"
-		..WEPHELP_ALTRELOAD.."/"..WEPHELP_FIREMODE.."  Quick-Swap (if available)\n"
-		..WEPHELP_UNLOAD.."/"..WEPHELP_RELOAD.." Open cylinder\n"
+		LWPHELP_FIRESHOOT
+		..LWPHELP_ALTFIRE..StringTable.Localize("$REVWH_ALTFIRE")
+		..LWPHELP_ALTRELOAD.."/"..LWPHELP_FIREMODE..StringTable.Localize("$REVWH_ARELOADPFMOD")
+		..LWPHELP_UNLOAD.."/"..LWPHELP_RELOAD..StringTable.Localize("$REVWH_RELOAD")
 		;
 	}
 	override void DrawSightPicture(
@@ -386,9 +382,9 @@ class HDRevolver:HDHandgun{
 	B ready cylinder midframe
 	C hammer fully cocked (maybe renumber these lol)
 	D recoil frame
-	E cylinder swinging out - left hand
-	F cylinder swung out - held in Left hand, working chamber in middle
-	G cylinder swung out midframe Left Hand
+	E cylinder swinging out - left hand passing to right
+	F cylinder swung out - held in right hand, working chamber in middle
+	G cylinder swung out midframe
 */
 	states{
 	spawn:
@@ -554,22 +550,20 @@ class HDRevolver:HDHandgun{
 	HandLoadRndR:
 		RVHB C 1 A_OverLayOffset(500,52,0);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),2);
-		#### C 1 A_OverLayOffset(500,48,6);
+		//#### C 1 A_OverLayOffset(500,48,6);
 		#### C 1 A_OverLayOffset(500,44,18);
 		#### C 1 A_OverLayOffset(500,30,28);
 		#### C 1 A_OverLayOffset(500,26,38);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),6);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<20)&&(Health>40),4);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>30),2);
-		#### X 3;
-		#### X 3;
+		#### X 1;
+		#### X 2;
 		#### X 2;
 		#### X 1;
 		#### D 1 A_OverLayOffset(500,7,38);
-		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<20)&&(Health>30),4);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>40),2);
 		#### D 1 A_OverLayOffset(500,5,31);
-		#### D 1 A_OverLayOffset(500,6,28);
 		#### D 1 A_OverLayOffset(500,5,24);
 		#### D 1 A_OverLayOffset(500,3,18);
 		#### E 1 A_OverLayOffset(500,1,7);
@@ -579,10 +573,9 @@ class HDRevolver:HDHandgun{
 		#### E 0 A_LoadRound();
 		#### E 1 A_OverLayOffset(500,0,0);
 		#### E 1 A_OverLayOffset(500,0,0);
-		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),6);
-		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<20)&&(Health>40),4);
+		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),4);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>30),2);
-		#### E 1 A_OverLayOffset(500,0,2);
+		//#### E 1 A_OverLayOffset(500,0,2);
 		#### E 1 A_OverLayOffset(500,-1,1);
 		#### E 1 A_OverLayOffset(500,1,2);
 		#### D 1 A_OverLayOffset(500,1,1);
@@ -596,21 +589,19 @@ class HDRevolver:HDHandgun{
 		#### C 1 A_OverLayOffset(500,-32,0);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),2);
 		#### C 1 A_OverLayOffset(500,-31,6);
-		#### C 1 A_OverLayOffset(500,-31,18);
+		//#### C 1 A_OverLayOffset(500,-31,18);
 		#### C 1 A_OverLayOffset(500,-30,28);
 		#### C 1 A_OverLayOffset(500,-30,38);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),6);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<20)&&(Health>40),4);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>30),2);
-		#### X 3;
-		#### X 3;
+		#### X 1;
+		#### X 2;
 		#### X 2;
 		#### X 1;
 		#### D 1 A_OverLayOffset(500,7,38);
-		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<20)&&(Health>30),4);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>40),2);
 		#### D 1 A_OverLayOffset(500,8,31);
-		#### D 1 A_OverLayOffset(500,8,28);
 		#### D 1 A_OverLayOffset(500,5,24);
 		#### D 1 A_OverLayOffset(500,3,18);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<17)&&(Health>40),2);
@@ -618,10 +609,9 @@ class HDRevolver:HDHandgun{
 		#### E 1 A_OverLayOffset(500,1,7);
 		#### E 0 A_LoadRound();
 		#### E 1 A_OverLayOffset(500,0,0);
-		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),6);
-		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<20)&&(Health>40),4);
+		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),4);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>30),2);
-		#### E 1 A_OverLayOffset(500,0,2);
+		//#### E 1 A_OverLayOffset(500,0,2);
 		#### E 1 A_OverLayOffset(500,-1,1);
 		#### E 1 A_OverLayOffset(500,1,2);
 		#### E 1 A_OverLayOffset(500,0,0);
@@ -991,46 +981,4 @@ enum DeinovolverStats{
 
 	BUGF_RIGHTHANDED=1,
 	BUGF_COCKED=2,
-}
-class HDSpent355:HDSpent9mm{default{yscale 0.85;}}
-class HDRevolverAmmo:HDPistolAmmo{
-	default{
-		xscale 0.7;
-		yscale 0.85;
-		inventory.pickupmessage "Picked up a .355 round.";
-		hdpickup.refid HDLD_355;
-		tag ".355 round";
-		hdpickup.bulk ENC_355;
-	}
-	override void GetItemsThatUseThis(){
-		itemsthatusethis.push("HDRevolver");
-	}
-	override void SplitPickup(){
-		SplitPickupBoxableRound(10,72,"HD355BoxPickup","TEN9A0","PRNDA0");
-	}
-}
-class HD355BoxPickup:HDUPK{
-	default{
-		//$Category "Ammo/Hideous Destructor/"
-		//$Title "Box of .355"
-		//$Sprite "3BOXA0"
-		scale 0.4;
-		hdupk.amount 72;
-		hdupk.pickupsound "weapons/pocket";
-		hdupk.pickupmessage "Picked up some .355 ammo.";
-		hdupk.pickuptype "HDRevolverAmmo";
-	}
-	states{
-	spawn:
-		3BOX A -1;
-	}
-}
-class DeinoSpawn:actor{
-	override void postbeginplay(){
-		super.postbeginplay();
-		let box=spawn("HD355BoxPickup",pos,ALLOW_REPLACE);
-		if(box)HDF.TransferSpecials(self,box);
-		spawn("HDRevolver",pos,ALLOW_REPLACE);
-		self.Destroy();
-	}
 }
