@@ -86,6 +86,7 @@ class Slayer:HDShotgun replaces HDShotgun{
 		..LWPHELP_FIREMODE.."+"..LWPHELP_RELOAD..StringTable.Localize("$SLAWH_FMODPRELOAD")
 		..LWPHELP_USE.."+"..LWPHELP_UNLOAD..StringTable.Localize("$SLAWH_UPUNL")//"  Steal ammo from Hunter\n"
 		..LWPHELP_UNLOADUNLOAD
+		..LWPHELP_USE.."+"..LWPHELP_FIREMODE..StringTable.Localize("$LWPHELP_SAFETY")
 		;
 	}
 	override void DrawSightPicture(

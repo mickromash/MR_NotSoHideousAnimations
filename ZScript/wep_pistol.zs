@@ -117,6 +117,7 @@ class HDPistol:HDHandgun replaces Pistol{
 		..LWPHELP_USE.."+"..LWPHELP_RELOAD..StringTable.Localize("$PISWH_UPRELOAD")
 		..LWPHELP_MAGMANAGER
 		..LWPHELP_UNLOADUNLOAD
+		..LWPHELP_USE.."+"..LWPHELP_FIREMODE..StringTable.Localize("$LWPHELP_SAFETY")
 		;
 	}
 	override void DrawSightPicture(

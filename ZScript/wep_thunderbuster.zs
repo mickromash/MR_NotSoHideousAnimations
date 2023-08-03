@@ -64,7 +64,8 @@ class ThunderBuster:HDCellWeapon{
 		..LWPHELP_ALTFIRE..StringTable.Localize("$THBWH_SWITCH")..(weaponstatus[0]&TBF_ALT?StringTable.Localize("$THBWH_DETONATOR"):StringTable.Localize("$THBWH_SCATTERSHOT"))..StringTable.Localize("$THBWH_MODE")
 		..LWPHELP_RELOADRELOAD
 		..LWPHELP_UNLOADUNLOAD
-		..LWPHELP_ALTRELOAD..StringTable.Localize("$THBWH_ALTRELOAD")
+		..LWPHELP_ALTRELOAD..StringTable.Localize("$THBWH_ALTRELOAD").."\n"
+		..LWPHELP_USE.."+"..LWPHELP_FIREMODE..StringTable.Localize("$LWPHELP_SAFETY")
 		;
 	}
 	int rangefinder;

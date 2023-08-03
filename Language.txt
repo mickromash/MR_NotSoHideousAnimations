@@ -1,0 +1,3 @@
+[ en ]
+
+LWPHELP_SAFETY = "  Switch safety\n";

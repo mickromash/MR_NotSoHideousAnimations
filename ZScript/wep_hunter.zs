@@ -98,6 +98,7 @@ class Hunter:HDShotgun{
 		..LWPHELP_FIREMODE.."+"..LWPHELP_RELOAD..StringTable.Localize("$SHTG_SIDE")
 		..LWPHELP_USE.."+"..LWPHELP_UNLOAD..StringTable.Localize("$SHTG_STEAL")
 		..LWPHELP_UNLOADUNLOAD
+		..LWPHELP_USE.."+"..LWPHELP_FIREMODE..StringTable.Localize("$LWPHELP_SAFETY")
 		;
 	}
 	override void DrawSightPicture(

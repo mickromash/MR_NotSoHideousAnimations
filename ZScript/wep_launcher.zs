@@ -102,6 +102,7 @@ class HDRL:HDWeapon{
 		))
 		..LWPHELP_FIREMODE.."+"..LWPHELP_UPDOWN..StringTable.Localize("$RLWH_AIRBURST")
 		..LWPHELP_UNLOADUNLOAD
+		..LWPHELP_USE.."+"..LWPHELP_FIREMODE..StringTable.Localize("$LWPHELP_SAFETY")
 		;
 	}
 	int rangefinder;
