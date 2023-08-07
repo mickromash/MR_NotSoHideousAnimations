@@ -139,6 +139,7 @@ class Hunter:HDShotgun{
 		if(newfm>newmax)newfm=0;
 		else if(newfm<0)newfm=newmax;
 		invoker.weaponstatus[HUNTS_FIREMODE]=newfm;
+		A_StartSound("weapons/fmswitch",CHAN_WEAPON,CHANF_OVERLAP,0.4);
 	}
 	action void A_SetAltHold(bool which){
 		if(which)invoker.weaponstatus[0]|=HUNTF_ALTHOLDING;
@@ -253,7 +254,7 @@ class Hunter:HDShotgun{
 		---- A 0 A_JumpIf(pressingfiremode()&&invoker.weaponstatus[SHOTS_SIDESADDLE]<12,"firemodehold");
 		goto nope;
 	Safety:
-		---- A 0 {
+		---- A 0 {A_StartSound("weapons/fmswitch",CHAN_WEAPON,CHANF_OVERLAP,0.4);
 		if(invoker.weaponstatus[HUNTF_SAFETY]==1)invoker.weaponstatus[HUNTF_SAFETY]=0;
 		else invoker.weaponstatus[HUNTF_SAFETY]=1;}
 		Goto Nope;
@@ -482,9 +483,9 @@ class Hunter:HDShotgun{
 	CheckSide:
 		TNT1 A 0 A_OverLay(102, "SideCheck");
 		TNT1 A 13;
-		SHTG J 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>1,1);
+		STKG J 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>1,1);
 		Goto CheckingSide;
-		SHTG K 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>3,1);
+		STKG K 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>3,1);
 		Goto CheckingSide;
 		SHTG L 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>5,1);
 		Goto CheckingSide;
@@ -496,22 +497,22 @@ class Hunter:HDShotgun{
 		Goto CheckingSide;
 		SHTG P 0;
 	CheckingSide:
-		SHTG # 5 A_JumpIf(!pressingaltreload(),"CheckSideEnd");
+		#### # 5 A_JumpIf(!pressingaltreload(),"CheckSideEnd");
 		Loop;
 	CheckSideEnd:
 		TNT1 A 0 A_OverLay(102, "SideCheckEnd");
 		TNT1 # 12;
 		Goto Ready;
 	SideCheck:
-		SHTG B 1 A_OverLayOffset(102, -10, 30);
+		SHTG G 1 A_OverLayOffset(102, -10, 30);
 		SHTG B 1 A_OverLayOffset(102, -20, 60);
-		SHTG C 1 A_OverLayOffset(102, -30, 90);
-		SHTG C 1 A_OverLayOffset(102, -40, 120);
+		SHTG H 1 A_OverLayOffset(102, -30, 90);
+		SHTG I 1 A_OverLayOffset(102, -40, 120);
 		SHTG C 1 A_OverLayOffset(102, -50, 150);
 		TNT1 A 2;
-		SHTG J 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>1,1);
+		STKG J 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>1,1);
 		Goto RaiseSide;
-		SHTG K 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>3,1);
+		STKG K 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>3,1);
 		Goto RaiseSide;
 		SHTG L 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>5,1);
 		Goto RaiseSide;
@@ -523,17 +524,17 @@ class Hunter:HDShotgun{
 		Goto RaiseSide;
 		SHTG P 0;
 	RaiseSide:	
-		SHTG # 1 A_OverLayOffset(102, 50, 40);
-		SHTG # 1 A_OverLayOffset(102, 45, 35);
-		SHTG # 1 A_OverLayOffset(102, 35, 25);
-		SHTG # 1 A_OverLayOffset(102, 30, 20);
-		SHTG # 1 A_OverLayOffset(102, 20, 10);
-		SHTG # 1 A_OverLayOffset(102, 11, 0);
+		#### # 1 A_OverLayOffset(102, 50, 40);
+		#### # 1 A_OverLayOffset(102, 45, 35);
+		#### # 1 A_OverLayOffset(102, 35, 25);
+		#### # 1 A_OverLayOffset(102, 30, 20);
+		#### # 1 A_OverLayOffset(102, 20, 10);
+		#### # 1 A_OverLayOffset(102, 11, 0);
 		Stop;
 	SideCheckEnd:
-		SHTG J 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>1,1);
+		STKG J 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>1,1);
 		Goto LowSide;
-		SHTG K 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>3,1);
+		STKG K 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>3,1);
 		Goto LowSide;
 		SHTG L 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>5,1);
 		Goto LowSide;
@@ -545,16 +546,16 @@ class Hunter:HDShotgun{
 		Goto LowSide;
 		SHTG P 0;
 	LowSide:	
-		SHTG # 1 A_OverLayOffset(102, 6, 0);
-		SHTG # 1 A_OverLayOffset(102, 16, 10);
-		SHTG # 1 A_OverLayOffset(102, 38, 35);
-		SHTG # 1 A_OverLayOffset(102, 50, 40);
+		#### # 1 A_OverLayOffset(102, 6, 0);
+		#### # 1 A_OverLayOffset(102, 16, 10);
+		#### # 1 A_OverLayOffset(102, 38, 35);
+		#### # 1 A_OverLayOffset(102, 50, 40);
 		TNT1 A 2;
 		SHTG C 1 A_OverLayOffset(102, -50, 150);
-		SHTG C 1 A_OverLayOffset(102, -40, 120);
-		SHTG C 1 A_OverLayOffset(102, -30, 90);
+		SHTG I 1 A_OverLayOffset(102, -40, 120);
+		SHTG H 1 A_OverLayOffset(102, -30, 90);
 		SHTG B 1 A_OverLayOffset(102, -20, 60);
-		SHTG B 1 A_OverLayOffset(102, -10, 30);
+		SHTG G 1 A_OverLayOffset(102, -10, 30);
 		Stop;
 	altreload:
 	reloadfrompockets:
@@ -565,23 +566,23 @@ class Hunter:HDShotgun{
 		}goto startreload;
 	CheckTube:
 		SHTG A 1;
-		SHTG BC 4 A_MuzzleClimb(frandom(1.2,2.4),-frandom(1.2,2.4));
-		SHTG C 1 offset(0,34);
-		SHTG C 1 offset(0,36) A_StartSound("weapons/huntopen",8);
+		SHTG GB 4 A_MuzzleClimb(frandom(1.2,2.4),-frandom(1.2,2.4));
+		SHTG H 1 offset(0,34);
+		SHTG I 1 offset(0,36) A_StartSound("weapons/huntopen",8);
 		SHTG C 1 offset(0,38);
 		SHTG C 4 offset(0,36) A_MuzzleClimb(-frandom(1.2,2.4),frandom(1.2,2.4));
-		SHTG D 1 offset(0,34) A_MuzzleClimb(-frandom(1.2,2.4),frandom(1.2,2.4));
+		SHTG J 1 offset(0,34) A_MuzzleClimb(-frandom(1.2,2.4),frandom(1.2,2.4));
 	CheckLoop:	
 		---- A 0 {if(invoker.weaponstatus[HUNTS_TUBE]>0)A_OverLay(102,"Dumb");
 				if(invoker.weaponstatus[HUNTS_CHAMBER]>0)A_OverLay(103,"Dumb3");
 				if(invoker.weaponstatus[HUNTS_FIREMODE]>0)A_OverLay(104,"Dumb4");}
-		SHTG D 5 offset(0,34) A_JumpIf(!pressingreload(),"CheckEnd");
+		SHTG J 5 offset(0,34) A_JumpIf(!pressingreload(),"CheckEnd");
 		Loop;		
 	CheckEnd:
 		SHTG C 4 offset(0,34) A_StartSound("weapons/huntopen",8);
-		SHTG C 1 offset(0,36);
-		SHTG C 1 offset(0,34);
-		SHTG CBA 3;
+		SHTG I 1 offset(0,36);
+		SHTG H 1 offset(0,34);
+		SHTG BGA 3;
 		SHTG A 0 A_JumpIf(invoker.weaponstatus[0]&HUNTF_HOLDING,"nope");
 		goto ready;
 	Dumb:
@@ -645,7 +646,10 @@ class Hunter:HDShotgun{
 				else setweaponstate("nope");
 			}
 		}
-		SHTG AB 4 A_MuzzleClimb(frandom(.6,.7),-frandom(.6,.7));
+		---- A 0 A_MuzzleClimb(frandom(.6,.7),-frandom(.6,.7));
+		SHTG GB 2;
+		---- A 0 A_MuzzleClimb(frandom(.6,.7),-frandom(.6,.7));
+		SHTG HI 2;
 	reloadstarthand:
 		SHTG C 1 offset(0,36);
 		SHTG C 1 offset(0,38);
@@ -716,9 +720,9 @@ class Hunter:HDShotgun{
 		}goto reloadashell;
 	reloadend:
 		SHTG C 4 offset(0,34) A_StartSound("weapons/huntopen",8);
-		SHTG C 1 offset(0,36) EmptyHand(careful:true);
-		SHTG C 1 offset(0,34);
-		SHTG CBA 3;
+		SHTG I 1 offset(0,36) EmptyHand(careful:true);
+		SHTG H 1 offset(0,34);
+		SHTG BGA 3;
 		SHTG A 0 A_JumpIf(invoker.weaponstatus[0]&HUNTF_HOLDING,"nope");
 		goto ready;
 
@@ -788,14 +792,14 @@ class Hunter:HDShotgun{
 		SHHA B 1 A_OverLayOffset(-26, 22, 29);
 		Stop;	
 	HandUnloadCham:
-		RVHA C 1 A_OverLayOffset(26, -40, 50);
-		RVHA C 1 A_OverLayOffset(26, -50, 40);
-		RVHA C 1 A_OverLayOffset(26, -60, 30);
-		SHHA B 1 A_OverLayOffset(26, -10, 17);
-		SHHA B 1 A_OverLayOffset(26, -14, 16);
-		SHHA A 1 A_OverLayOffset(26, -30, 16);
-		SHHA A 1 A_OverLayOffset(26, -22, 23);
-		SHHA A 1 A_OverLayOffset(26, -17, 32);
+		RVHA C 2 A_OverLayOffset(26, -60, 50);
+		RVHA C 2 A_OverLayOffset(26, -70, 40);
+		RVHA C 1 A_OverLayOffset(26, -80, 30);
+		SHHA B 1 A_OverLayOffset(26, -30, 17);
+		SHHA B 2 A_OverLayOffset(26, -34, 16);
+		SHHA A 1 A_OverLayOffset(26, -50, 16);
+		SHHA A 1 A_OverLayOffset(26, -42, 23);
+		SHHA A 1 A_OverLayOffset(26, -37, 32);
 		Stop;
 	unload:
 		SHTG A 1{
@@ -808,9 +812,9 @@ class Hunter:HDShotgun{
 				&&invoker.weaponstatus[HUNTS_TUBE]<1
 			)setweaponstate("nope");
 		}
-		SHTG BC 4 A_MuzzleClimb(frandom(1.2,2.4),-frandom(1.2,2.4));
-		SHTG C 1 offset(0,34);
-		SHTG C 1 offset(0,36) A_StartSound("weapons/huntopen",8);
+		SHTG GB 4 A_MuzzleClimb(frandom(1.2,2.4),-frandom(1.2,2.4));
+		SHTG H 1 offset(0,34);
+		SHTG I 1 offset(0,36) A_StartSound("weapons/huntopen",8);
 		SHTG C 1 offset(0,38);
 		SHTG C 4 offset(0,36){
 			A_MuzzleClimb(-frandom(1.2,2.4),frandom(1.2,2.4));
@@ -819,7 +823,7 @@ class Hunter:HDShotgun{
 			}else A_StartSound("weapons/huntrack",8,CHANF_OVERLAP);
 		}
 		---- A 0 A_OverLay(26, "HandUnloadCham");
-		SHTG D 8 offset(0,34){
+		SHTG J 3 offset(0,36){
 			A_MuzzleClimb(-frandom(1.2,2.4),frandom(1.2,2.4));
 			int chm=invoker.weaponstatus[HUNTS_CHAMBER];
 			invoker.weaponstatus[HUNTS_CHAMBER]=0;
@@ -842,10 +846,11 @@ class Hunter:HDShotgun{
 				vel.y+cos(pitch)*sin(angle-random(86,90))*5,
 				vel.z+sin(pitch)*random(4,6),
 				0,SXF_ABSOLUTEMOMENTUM|SXF_NOCHECKPOSITION|SXF_TRANSFERPITCH
-			); A_OverLay(26, "None");}
+			); /*A_OverLay(26, "None");*/}
 		}
+		SHTG K 5 offset(0,36);
 		SHTG C 0 A_JumpIf(!pressingunload(),"reloadend");
-		SHTG C 4 offset(0,40);
+		SHTG JC 2 offset(0,40);
 	unloadtube:
 		---- A 0 A_OverLay(-26,"HandUnload");
 		SHTG C 6 offset(0,40) EmptyHand(careful:true);

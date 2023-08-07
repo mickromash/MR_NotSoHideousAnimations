@@ -163,7 +163,7 @@ class Slayer:HDShotgun replaces HDShotgun{
 		SH2G A 0;
 		goto deselect0small;
 	Safety:
-		---- A 0 {
+		---- A 0 {A_StartSound("weapons/fmswitch",CHAN_WEAPON,CHANF_OVERLAP,0.4);
 		if(invoker.weaponstatus[SLAYF_SAFETY]==1)invoker.weaponstatus[SLAYF_SAFETY]=0;
 		else invoker.weaponstatus[SLAYF_SAFETY]=1;}
 		Goto Nope;	

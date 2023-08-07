@@ -22,3 +22,5 @@ Heat Rocket In Hand - By Marcelus (taken from His HD Sprites mod)
 Grenade Frames - By Mickromash
 
 Slayer Reload Frames - Perkristian (taken from SmoothDoom mod)
+
+Shotgun Reload Frames - Perkristian (taken from SmoothDoom mod)

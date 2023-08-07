@@ -284,7 +284,7 @@ class ThunderBuster:HDCellWeapon{
 	}
 	states{
 	Safety:
-		---- A 0 {
+		---- A 0 {A_StartSound("weapons/fmswitch",CHAN_WEAPON,CHANF_OVERLAP,0.4);
 		if(invoker.weaponstatus[TBF_SAFETY]==1)invoker.weaponstatus[TBF_SAFETY]=0;
 		else invoker.weaponstatus[TBF_SAFETY]=1;}
 		Goto Nope;

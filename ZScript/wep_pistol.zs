@@ -206,10 +206,11 @@ class HDPistol:HDHandgun replaces Pistol{
 		goto ready;
 	user2:
 	firemode:
-		---- A 0{if(pressinguse()){if(invoker.weaponstatus[PISF_SAFETY]==1){invoker.weaponstatus[PISF_SAFETY]=0;setweaponstate("Nope");} else {invoker.weaponstatus[PISF_SAFETY]=1;setweaponstate("Nope");}}}
+		---- A 0{if(pressinguse()){A_StartSound("weapons/fmswitch",CHAN_WEAPON,CHANF_OVERLAP,0.4);if(invoker.weaponstatus[PISF_SAFETY]==1){invoker.weaponstatus[PISF_SAFETY]=0;setweaponstate("Nope");} else {invoker.weaponstatus[PISF_SAFETY]=1;setweaponstate("Nope");}}}
 		---- A 0{
 			if(invoker.weaponstatus[0]&PISF_SELECTFIRE)
-			invoker.weaponstatus[0]^=PISF_FIREMODE;
+			{invoker.weaponstatus[0]^=PISF_FIREMODE;
+			A_StartSound("weapons/fmswitch",CHAN_WEAPON,CHANF_OVERLAP,0.4);}
 			else invoker.weaponstatus[0]&=~PISF_FIREMODE;
 		}goto nope;
 	altfire:
