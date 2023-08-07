@@ -84,3 +84,13 @@ Sped Up Pistol Reloading
 Added Grenade And Stapler Death Animations
 
 Fixes
+
+August 7 
+
+Added Boss Reload Animations
+
+Added Fire Mode And Safety Switch Sound
+
+Added More Frames To Shotgun Reload Animations
+
+Fixes
