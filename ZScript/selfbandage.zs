@@ -33,8 +33,8 @@ class SelfBandage:HDWoundFixer{
 	}
 	override string,double getpickupsprite(){return "BLUDC0",1.;}
 	override string gethelptext(){LocalizeHelp();
-		return LWEPHELP_INJECTOR
-		.."\n"..LWEPHELP_ALTRELOAD..StringTable.Localize("$BANDWH_ALTRELOAD")
+		return LWPHELP_INJECTOR
+		.."\n"..LWPHELP_ALTRELOAD..StringTable.Localize("$BANDWH_ALTRELOAD")
 		..(owner.countinv("BloodBagWorn")?"":StringTable.Localize("$BANDWH_IFANY"));}
 	override void DrawHUDStuff(HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl){
 		int of=0;
