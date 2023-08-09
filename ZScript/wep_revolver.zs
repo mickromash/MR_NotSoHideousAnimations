@@ -62,7 +62,9 @@ class HDRevolver:HDHandgun{
 			if(plf==4){
 				drawangle-=45.;
 				cylpos=(-30,-14);
-			}else if(cylinderopen){
+			}else if(cylinderopen&&wronghand){
+				cylpos=(-34,-12);
+			}else if(cylinderopen&&!wronghand){
 				drawangle-=90;
 				cylpos=(-34,-12);
 			}else{
@@ -558,7 +560,6 @@ class HDRevolver:HDHandgun{
 		RVHB C 1 A_OverLayOffset(500,52,0);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),2);
 		//#### C 1 A_OverLayOffset(500,48,6);
-		#### C 1 A_OverLayOffset(500,44,18);
 		#### C 1 A_OverLayOffset(500,30,28);
 		#### C 1 A_OverLayOffset(500,26,38);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),6);
@@ -572,7 +573,6 @@ class HDRevolver:HDHandgun{
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>40),2);
 		#### D 1 A_OverLayOffset(500,5,31);
 		#### D 1 A_OverLayOffset(500,5,24);
-		#### D 1 A_OverLayOffset(500,3,18);
 		#### E 1 A_OverLayOffset(500,1,7);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<17)&&(Health>40),2);
 		#### E 1 A_OverLayOffset(500,0,4);
@@ -988,4 +988,5 @@ enum DeinovolverStats{
 
 	BUGF_RIGHTHANDED=1,
 	BUGF_COCKED=2,
+	BUGF_RIGHT=3,
 }
