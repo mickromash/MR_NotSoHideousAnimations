@@ -90,6 +90,7 @@ class Tripwire:HDWeapon{
 	altfire:
 		TNT1 A 0 UndoAll();
 		goto nope;
+	Non:	
 	None:
 		TNT1 A 1;
 		Stop;
@@ -101,6 +102,7 @@ class Tripwire:HDWeapon{
 		Goto HandGum;
 	HandGum:
 		TNT1 A 0 A_JumpIf(Invoker.gumspot, "None");
+		---- A 0 A_JumpIf(Health < 1, "Non");
 		GRNH E 1 A_OverLayOffset(26,0,0);
 		Loop;
 	HandPlaceGum:
@@ -121,6 +123,7 @@ class Tripwire:HDWeapon{
 		GRNG A 1 A_OverLayOffset(25,10,10);
 	GrenadeRed:
 		TNT1 A 0 A_JumpIf(invoker.grenade==null, "None");
+		---- A 0 A_JumpIf(Health < 1, "Non");
 		GRNG A 1 A_OverLayOffset(25,0,0);
 		Loop;
 	GrenadeDown:	

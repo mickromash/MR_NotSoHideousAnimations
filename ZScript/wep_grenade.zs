@@ -258,8 +258,6 @@ class HDGrenadeThrower:HDWeapon{
 		weaponstatus[0]&=~FRAGF_INHAND;
 		weaponstatus[0]|=FRAGF_JUSTTHREW;
 	}
-	Action void A_Dumb(bool work=true){invoker.ActuallyDumb(work);}
-	void ActuallyDumb(bool work=true){if(owner.health>0)setweaponstate("TakeAnother");}
 	states{
 	Exploding1:
 		TNT1 AAAAAAAAAAAA 1 A_JumpIf(Health < 1, "Exploding");
@@ -271,7 +269,7 @@ class HDGrenadeThrower:HDWeapon{
 		GRND FG 3;
 		---- # 2 A_JumpIf(Health > 0, "TakeAnother");
 	Dead:
-		GRND G 1 A_Dumb();
+		GRND G 1;
 		Loop;
 	HandUp:
 		GRNH C 1 A_OverLayOffset(26, -20, 20);

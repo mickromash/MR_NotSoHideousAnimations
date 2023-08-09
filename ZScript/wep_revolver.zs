@@ -521,15 +521,22 @@ class HDRevolver:HDHandgun{
 		#### C 1 A_OverLayOffset(500,-28,-9);
 		Goto HandHoldCyl;
 	HandHoldCy2:
+		---- A 0 A_JumpIf(Health < 1, "Non");
 		RVHB A 1 A_OverLayOffset(500,0,0);
 		Loop;
 	HandHoldCyl:
+		---- A 0 A_JumpIf(Health < 1, "Non");
 		RVHA A 1 A_OverLayOffset(500,0,0);
 		Loop;
+	Non:
+		TNT1 A 1;
+		Stop;
 	HandHoldCy2Rotate:
+		---- A 0 A_JumpIf(Health < 1, "Non");
 		RVHB B 1 A_OverLayOffset(500,0,0);
 		Loop;
 	HandHoldCylRotate:
+		---- A 0 A_JumpIf(Health < 1, "Non");
 		RVHA B 1 A_OverLayOffset(500,0,0);
 		Loop;
 	HandCloseR:
