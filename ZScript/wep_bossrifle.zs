@@ -268,7 +268,6 @@ class BossRifle:HDWeapon{
 		Goto Nope;
 		
 	ready:
-		---- A 0 A_JumpIf(pressinguse()&&pressingFiremode(),"Safety");
 		BARG A 1{
 			if(pressingzoom()){
 				if(player.cmd.buttons&BT_USE){
@@ -276,8 +275,10 @@ class BossRifle:HDWeapon{
 				}else if(invoker.weaponstatus[0]&BOSSF_FRONTRETICLE)A_ZoomAdjust(BOSSS_ZOOM,12,40);
 				else A_ZoomAdjust(BOSSS_ZOOM,5,60);
 				A_WeaponReady(WRF_NONE);
-			}else A_WeaponReady(WRF_ALL);
-		}goto readyend;
+			}else if(pressinguse()&&pressingfiremode())setweaponstate("Safety"); 
+			else A_WeaponReady(WRF_ALL);
+		}
+		goto readyend;
 	user3:
 		---- A 0 A_MagManager("HD7mClip");
 		goto ready;
@@ -878,7 +879,7 @@ enum bossstatus{
 	BOSSF_FRONTRETICLE=1,
 	BOSSF_CUSTOMCHAMBER=2,
 	BOSSF_UNLOADONLY=4,
-	BOSSF_SAFETY=6,
+	BOSSF_SAFETY=7,
 	BOSSF_DONTUSECLIPS=8,
 	BOSSF_RECAST=16,
 
