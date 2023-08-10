@@ -846,7 +846,7 @@ class Hunter:HDShotgun{
 				vel.y+cos(pitch)*sin(angle-random(86,90))*5,
 				vel.z+sin(pitch)*random(4,6),
 				0,SXF_ABSOLUTEMOMENTUM|SXF_NOCHECKPOSITION|SXF_TRANSFERPITCH
-			); /*A_OverLay(26, "None");*/}
+			); A_OverLay(26, "None");}
 		}
 		SHTG K 5 offset(0,36);
 		SHTG C 0 A_JumpIf(!pressingunload(),"reloadend");
