@@ -749,6 +749,8 @@ class BossRifle:HDWeapon{
 		BOSR E 1 A_OverLayOffset(-27, -28, 0);
 		BOSR E 2 A_OverLayOffset(-27, -24, 6);
 		BOSR E 2 A_OverLayOffset(-27, -20, 12);
+		TNT1 A 2;
+		TNT1 A 0 A_OverLay(26, "ClipFall");
 		Stop;
 	loadwholeclip:
 		BARG A 5 offset(11,40) A_OverLay(-26, "HandLoadClip"); 
@@ -782,7 +784,7 @@ class BossRifle:HDWeapon{
 		}goto reloaddone;
 	reloaddone:
 		BARG A 1 offset(4,40);
-		BARG A 1 offset(2,36) A_OverLay(26, "ClipFall");
+		BARG A 1 offset(2,36);
 		BARG A 1 offset(0,34);
 		goto nope;
 	unload:
