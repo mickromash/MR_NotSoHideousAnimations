@@ -286,8 +286,85 @@ class Slayer:HDShotgun replaces HDShotgun{
 	recoil:
 		#### K 1;
 		goto ready;
-
+	CheckSide:
+		TNT1 A 0 A_OverLay(102, "SideCheck");
+		TNT1 A 13;
+		STKG J 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>1,1);
+		Goto CheckingSide;
+		STKG K 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>3,1);
+		Goto CheckingSide;
+		SHTG L 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>5,1);
+		Goto CheckingSide;
+		SHTG M 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>7,1);
+		Goto CheckingSide;
+		SHTG N 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>9,1);
+		Goto CheckingSide;
+		SHTG O 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>11,1);
+		Goto CheckingSide;
+		SHTG P 0;
+	CheckingSide:
+		#### # 5 A_JumpIf(!pressingaltreload(),"CheckSideEnd");
+		Loop;
+	CheckSideEnd:
+		TNT1 A 0 A_OverLay(102, "SideCheckEnd");
+		TNT1 # 12;
+		Goto Ready;
+	SideCheck:
+		SH2G A 1 A_OverLayOffset(102, -10, 30);
+		SH2G A 1 A_OverLayOffset(102, -20, 60);
+		SH2G A 1 A_OverLayOffset(102, -30, 90);
+		SH2G A 1 A_OverLayOffset(102, -40, 120);
+		SH2G A 1 A_OverLayOffset(102, -50, 150);
+		TNT1 A 2;
+		STKG J 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>1,1);
+		Goto RaiseSide;
+		STKG K 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>3,1);
+		Goto RaiseSide;
+		SHTG L 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>5,1);
+		Goto RaiseSide;
+		SHTG M 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>7,1);
+		Goto RaiseSide;
+		SHTG N 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>9,1);
+		Goto RaiseSide;
+		SHTG O 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>11,1);
+		Goto RaiseSide;
+		SHTG P 0;
+	RaiseSide:	
+		#### # 1 A_OverLayOffset(102, 50, 40);
+		#### # 1 A_OverLayOffset(102, 45, 35);
+		#### # 1 A_OverLayOffset(102, 35, 25);
+		#### # 1 A_OverLayOffset(102, 30, 20);
+		#### # 1 A_OverLayOffset(102, 20, 10);
+		#### # 1 A_OverLayOffset(102, 11, 0);
+		Stop;
+	SideCheckEnd:
+		STKG J 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>1,1);
+		Goto LowSide;
+		STKG K 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>3,1);
+		Goto LowSide;
+		SHTG L 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>5,1);
+		Goto LowSide;
+		SHTG M 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>7,1);
+		Goto LowSide;
+		SHTG N 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>9,1);
+		Goto LowSide;
+		SHTG O 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>11,1);
+		Goto LowSide;
+		SHTG P 0;
+	LowSide:	
+		#### # 1 A_OverLayOffset(102, 6, 0);
+		#### # 1 A_OverLayOffset(102, 16, 10);
+		#### # 1 A_OverLayOffset(102, 38, 35);
+		#### # 1 A_OverLayOffset(102, 50, 40);
+		TNT1 A 2;
+		SH2G A 1 A_OverLayOffset(102, -50, 150);
+		SH2G A 1 A_OverLayOffset(102, -40, 120);
+		SH2G A 1 A_OverLayOffset(102, -30, 90);
+		SH2G A 1 A_OverLayOffset(102, -20, 60);
+		SH2G A 1 A_OverLayOffset(102, -10, 30);
+		Stop;
 	altreload:
+		---- A 0 A_JumpIf(pressingzoom(),"CheckSide");
 		#### A 0{
 			if(
 				countinv("HDShellAmmo")
