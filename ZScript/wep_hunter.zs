@@ -571,12 +571,14 @@ class Hunter:HDShotgun{
 		SHTG I 1 offset(0,36) A_StartSound("weapons/huntopen",8);
 		SHTG C 1 offset(0,38);
 		SHTG C 4 offset(0,36) A_MuzzleClimb(-frandom(1.2,2.4),frandom(1.2,2.4));
-		SHTG J 1 offset(0,34) A_MuzzleClimb(-frandom(1.2,2.4),frandom(1.2,2.4));
+		SHTG J 0 A_JumpIf(invoker.weaponstatus[HUNTS_CHAMBER]>0,2);
+		SHTG Q 0;
+		SHTG # 1 offset(0,34) A_MuzzleClimb(-frandom(1.2,2.4),frandom(1.2,2.4));
 	CheckLoop:	
-		---- A 0 {if(invoker.weaponstatus[HUNTS_TUBE]>0)A_OverLay(102,"Dumb");
+		---- # 0 {if(invoker.weaponstatus[HUNTS_TUBE]>0)A_OverLay(102,"Dumb");
 				if(invoker.weaponstatus[HUNTS_CHAMBER]>0)A_OverLay(103,"Dumb3");
 				if(invoker.weaponstatus[HUNTS_FIREMODE]>0)A_OverLay(104,"Dumb4");}
-		SHTG J 5 offset(0,34) A_JumpIf(!pressingreload(),"CheckEnd");
+		SHTG # 5 offset(0,34) A_JumpIf(!pressingreload(),"CheckEnd");
 		Loop;		
 	CheckEnd:
 		SHTG C 4 offset(0,34) A_StartSound("weapons/huntopen",8);
@@ -816,14 +818,15 @@ class Hunter:HDShotgun{
 		SHTG H 1 offset(0,34);
 		SHTG I 1 offset(0,36) A_StartSound("weapons/huntopen",8);
 		SHTG C 1 offset(0,38);
-		SHTG C 4 offset(0,36){
+		---- A 0 {If(invoker.weaponstatus[HUNTS_CHAMBER]>1)A_OverLay(26, "HandUnloadCham");}
+		SHTG J 4 offset(0,36){
 			A_MuzzleClimb(-frandom(1.2,2.4),frandom(1.2,2.4));
 			if(invoker.weaponstatus[HUNTS_CHAMBER]<1){
+				A_OverLay(26, "Non");
 				setweaponstate("unloadtube");
 			}else A_StartSound("weapons/huntrack",8,CHANF_OVERLAP);
 		}
-		---- A 0 A_OverLay(26, "HandUnloadCham");
-		SHTG J 3 offset(0,36){
+		SHTG Q 3 offset(0,36){
 			A_MuzzleClimb(-frandom(1.2,2.4),frandom(1.2,2.4));
 			int chm=invoker.weaponstatus[HUNTS_CHAMBER];
 			invoker.weaponstatus[HUNTS_CHAMBER]=0;
@@ -848,9 +851,9 @@ class Hunter:HDShotgun{
 				0,SXF_ABSOLUTEMOMENTUM|SXF_NOCHECKPOSITION|SXF_TRANSFERPITCH
 			); A_OverLay(26, "None");}
 		}
-		SHTG K 5 offset(0,36);
+		SHTG R 5 offset(0,36);
 		SHTG C 0 A_JumpIf(!pressingunload(),"reloadend");
-		SHTG JC 2 offset(0,40);
+		SHTG QC 2 offset(0,40);
 	unloadtube:
 		---- A 0 A_OverLay(-26,"HandUnload");
 		SHTG C 6 offset(0,40) EmptyHand(careful:true);
