@@ -5,14 +5,14 @@ class PortableMedikit:HDPickup{
 	default{
 		//$Category "Items/Hideous Destructor/Supplies"
 		//$Title "Medikit"
-		//$Sprite "MEDIA0"
+		//$Sprite "PMEDA0"
 
 		-hdpickup.droptranslation
-		inventory.pickupmessage "$PICKUP_MEDIKIT";
+		inventory.pickupmessage "Picked up a medikit.";
 		inventory.icon "MEDIA0";
 		scale 0.4;
 		hdpickup.bulk ENC_MEDIKIT;
-		tag "$TAG_MEDIKIT";
+		tag "medikit";
 		hdpickup.refid HDLD_MEDIKIT;
 		+inventory.ishealth
 	}
@@ -34,8 +34,7 @@ class PortableMedikit:HDPickup{
 				else A_GiveInventory("SecondBlood");
 				A_TakeInventory("PortableMedikit",1);
 			}else{
-				A_Log(Stringtable.Localize("$MEDIKIT_USEUNWRAPPED"),true);
-				if(HDWeapon.CheckDoHelpText(self))A_Log(Stringtable.Localize("$MEDIKIT_USEUNWRAPPEDHELP"),true);
+				A_Log("You pull out the medikit you've already unwrapped.",true);
 			}
 			if(!hdplayerpawn(self)||!hdplayerpawn(self).incapacitated)A_SelectWeapon("HDMedikitter");
 			A_StartSound("weapons/pocket",9);
@@ -48,7 +47,7 @@ enum MediNums{
 	MEDIKIT_FLESHGIVE=5,
 	MEDIKIT_MAXFLESH=42,
 	MEDIKIT_NOTAPLAYER=MAXPLAYERS+1,
-
+	
 	MEDS_SECONDFLESH=1,
 	MEDS_USEDON=2,
 	MEDS_ACCURACY=3,
@@ -68,27 +67,20 @@ class HDMedikitter:HDWoundFixer{
 		-nointeraction
 		weapon.selectionorder 1001;
 		weapon.slotnumber 9;
-		scale 0.5;
-		tag "$TAG_2NDFLESHAPP";
+		scale 0.3;
+		tag "Second Flesh applicator";
 		hdweapon.refid HDLD_FINJCTR;
-		inventory.icon "MEDIB0";
-		inventory.pickupmessage "$PICKUP_OPENAPPLICATOR";
-	}
-	override string pickupmessage(){
-		string msg=super.pickupmessage();
-		if(weaponstatus[MEDS_USEDON]!=-1)msg=Stringtable.Localize("$PICKUP_USEDAPPLICATOR");
-		return msg;
 	}
 	override void initializewepstats(bool idfa){
 		weaponstatus[MEDS_SECONDFLESH]=MEDIKIT_MAXFLESH;
 		weaponstatus[MEDS_USEDON]=-1;
-		patientname=Stringtable.Localize("$MEDIKIT_UNKNOWN");
+		patientname="** UNKNOWN **";
 	}
 	override double weaponbulk(){
 		return ENC_MEDIKIT;
 	}
 	override string,double getpickupsprite(){
-		return (weaponstatus[MEDS_USEDON]<0)?"MEDIB0":"MEDIC0",0.5;
+		return (weaponstatus[MEDS_USEDON]<0)?"MEDIB0":"MEDIC0",0.6;
 	}
 	string patientname;
 	override void DrawHUDStuff(HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl){
@@ -150,12 +142,12 @@ class HDMedikitter:HDWoundFixer{
 		LocalizeHelp();
 		int usedon=weaponstatus[MEDS_USEDON];
 		return
-		LWPHELP_RELOAD..StringTable.Localize("$SFAWH_RELOAD")
-		..LWPHELP_INJECTOR
+		WEPHELP_RELOAD..StringTable.Localize("$SFAWH_RELOAD")
+		..WEPHELP_INJECTOR
 		..StringTable.Localize("$SFAWH_WPRESS")
 		..StringTable.Localize("$SFAWH_NOTHING")..WEPHELP_RGCOL..StringTable.Localize("$SFAWH_FIRE")
-		.."  "..LWPHELP_ZOOM..StringTable.Localize("$SFAWH_ZOOM")
-		.."  "..LWPHELP_FIREMODE..StringTable.Localize("$SFAWH_FMODE")
+		.."  "..WEPHELP_ZOOM..StringTable.Localize("$SFAWH_ZOOM")
+		.."  "..WEPHELP_FIREMODE..StringTable.Localize("$SFAWH_FMODE")
 		;
 	}
 	action void A_MedikitReady(){
@@ -166,7 +158,7 @@ class HDMedikitter:HDWoundFixer{
 		if(
 			invoker.icon==invoker.default.icon
 			&&invoker.weaponstatus[MEDS_USEDON]>=0
-		)invoker.icon=texman.checkfortexture("MEDIC0",TexMan.Type_MiscPatch);
+		)invoker.icon=texman.checkfortexture("BLUDIKIT",TexMan.Type_MiscPatch);
 
 		//don't do the other stuff if holding reload
 		//LET THE RELOAD STATE HANDLE EVERYTHING ELSE
@@ -188,7 +180,7 @@ class HDMedikitter:HDWoundFixer{
 				&&!(bt&BT_ZOOM)
 			)setweaponstate("diagnoseother");
 			else if(invoker.weaponstatus[MEDS_SECONDFLESH]<1){
-				A_WeaponMessage(Stringtable.Localize("$MEDIKIT_NOSUTURES"));
+					A_WeaponMessage(Stringtable.Localize("$MEDIKIT_NOSUTURES"));
 				setweaponstate("nope");
 			}else setweaponstate("fireother");
 			return;
@@ -264,42 +256,32 @@ class HDMedikitter:HDWoundFixer{
 			);
 		}
 	}
-	Action void A_Dumb(){invoker.ActuallyDumb();}
-	void ActuallyDumb(){if(owner.health<1)A_Jump(256,"none");}
 	states{
-	reload:
-		#### # 4{
-			if(player&&!(player.oldbuttons&BT_RELOAD))HDPlayerPawn.CheckStrip(self,self,silent:true);
-			A_ClearRefire();
-		}
-		goto readyend;
-	select0:
+	death:
+		#### A 0 A_OverLay(26,"None");
+		#### # 0 A_OverLay(-10,"None");
+		---- A 0 A_GunBounce();
+		goto spawn;
+	deselect:
+		1HLS C 0 A_Jumpif(invoker.weaponstatus[MEDS_BLOOD]>0,2);
+		HELS C 0;
+		#### A 0 A_OverLay(26,"None");
+		#### # 0 A_OverLay(-10,"None");
+		#### # 0 A_StartDeselect();
+	deselect0:
+		#### # 0 A_Lower();
+		wait;
+	select:
 		TNT1 A 10{
 			if(!DoHelpText()) return;
 			A_WeaponMessage(Stringtable.Localize("$MEDIKIT_FIRETOHEAL"),175);
 		}
-		1HLS C 0 A_Jumpif(invoker.weaponstatus[MEDS_BLOOD]>0,2);
-		HELS C 0;
-		#### A 0;
-		goto select0small;
-	/*deselect0:
-		---- A 0 {A_OverLay(26, "Non");A_OverLay(-10, "Non");}
-		1HLS A 0 A_Jumpif(invoker.weaponstatus[MEDS_BLOOD]>0,2);
-		HELS A 0;
-		#### # 1;
-	deselect0small:
-		//---- A 0 A_JumpIfInventory("NulledWeapon",1,"deselect1small");
-		---- A 1 A_Lower(1);
-		---- AA 1 A_Lower(2);
-		---- AA 1 A_Lower();
-		---- A 1 A_Lower(12);
-		---- A 1 A_Lower(30);
-		---- A 1 A_Lower(36);
-		---- A 1 A_Lower();
-		wait;*/
+		goto super::select;
 	ready:
 		1HLS C 0 A_Jumpif(invoker.weaponstatus[MEDS_BLOOD]>0,2);
 		HELS C 0;
+		#### A 0 A_OverLay(26,"None");
+		#### # 0 A_OverLay(-10,"None");
 		#### A 1 A_MedikitReady();
 		goto readyend;
 	flashstaple:
@@ -523,25 +505,16 @@ class HDMedikitter:HDWoundFixer{
 		2HLF # 0;
 		#### C 2 A_OverLayOffset(26, 0, 28);
 		#### D 2 A_OverLayOffset(26, 0, 51);
-		#### C 2 A_OverLayOffset(26, 0, 28);
+		#### D 2 A_OverLayOffset(26, 0, 28);
 		Stop;
 	StaplerRHand1:
-		1HLF EFEFGEGEFDDDEFEFGEGEFDDDEFEFGEGEFDDD 1 A_OverLayOffset(26, 0, 51);
-		1HLF DCB 3;
-	DeadStapler1:	
-		1HLF A 1 A_OverLayOffset(26, 0, 51);
+		1HLF EFEFGEGEFDDD 1 A_OverLayOffset(26, 0, 51);
 		Loop;
 	PatchUpRHand1:
 		2HLF A 0 A_JumpIf(Invoker.WeaponStatus[MEDS_WOUND]>0,2);
 		2HLF C 0;
 		2HLF # 0;
-		2HLF ################## 3 A_OverLayOffset(-10, Random(-1,1), Random(-1,1));
-		2HLF # 3 A_OverLayOffset(-10, 10, 34);
-		2HLF # 3 A_OverLayOffset(-10, 20, 37);
-		2HLF # 3 A_OverLayOffset(-10, 30, 41);
-		2HLF # 3 A_OverLayOffset(-10, 40, 44);
-	DeadRHand1:
-		2HLF # 1 A_OverLayOffset(-10, 50, 44);
+		2HLF # 3 A_OverLayOffset(-10, Random(-1,1), Random(-1,1));
 		Loop;
 	StaplerRHandEnd:
 		1HLF D 2 A_OverLayOffset(26, 0, 38);
@@ -643,36 +616,20 @@ class HDMedikitter:HDWoundFixer{
 		#### C 2 A_OverLayOffset(26, 0, 28);
 		Stop;
 	PatchBrunStapler1:
-		---- A 0 A_Dumb();
 		1HLF C 0 A_Jumpif(invoker.weaponstatus[MEDS_BLOOD]>0,"PatchBrunStapler12");
-		1HLF D 4 A_OverLayOffset(26, 0, 51);
-		1HLF EFGDEFGDEFGDEFGDEFGDEFGDEFGDEFGD 2 A_OverLayOffset(26, Frandom(-3,6), Frandom(45,51));
-		1HLF DCB 3;
-	DeadStapler11:	
-		1HLF A 1 A_OverLayOffset(26, 0, 51);
+		HELF D 4 A_OverLayOffset(26, 0, 51);
+		HELF EFGD 2 A_OverLayOffset(26, Frandom(-3,6), Frandom(45,51));
 		Loop;
 	PatchBrunStapler12:
-		---- A 0 A_Dumb();
 		1HLF D 10 A_OverLayOffset(26, 0, 51);
-		1HLF HIJDHJIHIJDHIJDHJIHIJDHIJDHJIHIJ 2 A_OverLayOffset(26, Frandom(-3,6), Frandom(45,51));
-		1HLF DCB 3;
-	DeadStapler12:	
-		1HLF A 1 A_OverLayOffset(26, 0, 51);
+		1HLF HIJDHJIHIJD 2 A_OverLayOffset(26, Frandom(-3,6), Frandom(45,51));
 		Loop;
-		
 	PatchBrunHand1:
-		---- A 0 A_Dumb();
 		2HLF E 10 A_OverLayOffset(-10, Random(-1,1), Random(-1,1));
 		2HLF EEEEE 2 A_OverLayOffset(-10, Random(-1,1), Random(-1,1));
 		2HLF FFFFF 2 A_OverLayOffset(-10, Random(-1,1), Random(-1,1));
 		2HLF GGGGG 2 A_OverLayOffset(-10, Random(-1,1), Random(-1,1));
-		2HLF HHHHHHHHHHHH 2 A_OverLayOffset(-10, Random(-1,1), Random(-1,1));
-		2HLF # 3 A_OverLayOffset(-10, 10, 34);
-		2HLF # 3 A_OverLayOffset(-10, 20, 37);
-		2HLF # 3 A_OverLayOffset(-10, 30, 41);
-		2HLF # 3 A_OverLayOffset(-10, 40, 44);
-	DeadRHand2:
-		2HLF # 1 A_OverLayOffset(-10, 50, 44);
+		2HLF H 2 A_OverLayOffset(-10, Random(-1,1), Random(-1,1));
 		Loop;
 	PatchBrunStaplerEnd:
 		1HLF D 0 A_Jumpif(invoker.weaponstatus[MEDS_BLOOD]>0,2);
@@ -770,7 +727,7 @@ class HDMedikitter:HDWoundFixer{
 		}
 		#### A 0 A_ScanResults(self,12);
 		#### E 10;
-		#### A 0 A_Refire("nope");
+		TNT1 A 0 A_Refire("nope");
 		goto readyend;
 	diagnoseother:
 		1HLF B 0 A_Jumpif(invoker.weaponstatus[MEDS_BLOOD]>0,2);
@@ -807,7 +764,7 @@ class HDMedikitter:HDWoundFixer{
 		}
 		#### A 0 A_ScanResults(invoker.target,invoker.weaponstatus[MEDS_ACCURACY]);
 		#### E 14;
-		#### A 0 A_Refire("nope");
+		TNT1 A 0 A_Refire("nope");
 		goto readyend;
 
 	spawn:

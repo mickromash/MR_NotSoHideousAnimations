@@ -193,14 +193,13 @@ class HDRevolver:HDHandgun{
 		}
 	}
 	action void A_LoadRound(){
-		if(invoker.weaponstatus[BUGS_CYL1]>0)return;
 		bool useninemil=(
 			player.cmd.buttons&BT_FIREMODE
 			||!countinv("HDRevolverAmmo")
 		);
 		if(useninemil&&!countinv("HDPistolAmmo"))return;
 		class<inventory>ammotype=useninemil?"HDPistolAmmo":"HDRevolverAmmo";
-		A_TakeInventory(ammotype,1,TIF_NOTAKEINFINITE);
+		invoker.WeaponStatus[BUGS_HAND]--;
 		invoker.weaponstatus[BUGS_CYL1]=useninemil?BUGS_NINEMIL:BUGS_MASTERBALL;
 		A_StartSound("weapons/deinoload",8,CHANF_OVERLAP);
 	}
@@ -558,29 +557,66 @@ class HDRevolver:HDHandgun{
 		Stop;
 	HandLoadRndR:
 		RVHB C 1 A_OverLayOffset(500,52,0);
-		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),2);
+		//#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),2);
 		//#### C 1 A_OverLayOffset(500,48,6);
-		#### C 1 A_OverLayOffset(500,30,28);
+		//#### C 1 A_OverLayOffset(500,30,28);
 		#### C 1 A_OverLayOffset(500,26,38);
-		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),5);
+		/*#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),6);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<20)&&(Health>40),4);
-		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>30),2);
+		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>30),2);*/
+		#### X 0 setweaponstate("open_loadhandRight");
+	HandLoadRndCntRight:	
 		#### X 1;
 		#### X 1;
-		#### X 1;
+		#### X 2;
+		#### X 0 A_JumpIf(!pressingReload()||invoker.WeaponStatus[BUGS_HAND]==3||(
+				(
+					invoker.weaponstatus[BUGS_CYL1]>0
+					&&invoker.weaponstatus[BUGS_CYL2]>0
+					&&invoker.weaponstatus[BUGS_CYL3]>0
+					&&invoker.weaponstatus[BUGS_CYL4]>0
+					&&invoker.weaponstatus[BUGS_CYL5]>0
+					&&invoker.weaponstatus[BUGS_CYL6]>0
+				)||(
+					!countinv("HDPistolAmmo")
+					&&!countinv("HDRevolverAmmo")
+				)
+			),2);
+		#### X 1 SetWeaponState("open_loadhandRight");
+		/*#### X 1 {if(invoker.WeaponStatus[BUGS_HAND]<3){
+			if(
+				(
+					invoker.weaponstatus[BUGS_CYL1]==0
+					||invoker.weaponstatus[BUGS_CYL2]==0
+					||invoker.weaponstatus[BUGS_CYL3]==0
+					||invoker.weaponstatus[BUGS_CYL4]==0
+					||invoker.weaponstatus[BUGS_CYL5]==0
+					||invoker.weaponstatus[BUGS_CYL6]==0
+				)||(
+					countinv("HDPistolAmmo")
+					||countinv("HDRevolverAmmo")
+				)
+			)setweaponstate("open_loadhandRight");}}*/
 		#### D 1 A_OverLayOffset(500,7,38);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>40),2);
 		#### D 1 A_OverLayOffset(500,5,31);
+	HandLoadRndEndRight:	
 		#### D 1 A_OverLayOffset(500,5,24);
 		#### E 1 A_OverLayOffset(500,1,7);
-		//#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<17)&&(Health>40),2);
-		//#### E 1 A_OverLayOffset(500,0,4);
+		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<17)&&(Health>40),2);
+		#### E 1 A_OverLayOffset(500,0,4);
 		#### E 1 A_OverLayOffset(500,1,2);
 		#### E 0 A_LoadRound();
 		#### E 1 A_OverLayOffset(500,0,0);
 		#### E 1 A_OverLayOffset(500,0,0);
-		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),2);
-		//#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>30),2);
+		#### E 0 {if(Invoker.WeaponStatus[BUGS_HAND]>0&&invoker.weaponstatus[BUGS_CYL1]==0
+					&&invoker.weaponstatus[BUGS_CYL2]==0
+					&&invoker.weaponstatus[BUGS_CYL3]==0
+					&&invoker.weaponstatus[BUGS_CYL4]==0
+					&&invoker.weaponstatus[BUGS_CYL5]==0
+					&&invoker.weaponstatus[BUGS_CYL6]==0)SetWeaponState("open_rotatecylinder2Right");}
+		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),4);
+		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>30),2);
 		//#### E 1 A_OverLayOffset(500,0,2);
 		#### E 1 A_OverLayOffset(500,-1,1);
 		#### E 1 A_OverLayOffset(500,1,2);
@@ -593,29 +629,47 @@ class HDRevolver:HDHandgun{
 	HandLoadRnd:
 		RVHA C 0;
 		#### C 1 A_OverLayOffset(500,-32,0);
-		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),2);
-		#### C 1 A_OverLayOffset(500,-31,6);
+		//#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),2);
+		//#### C 1 A_OverLayOffset(500,-31,6);
 		//#### C 1 A_OverLayOffset(500,-31,18);
 		#### C 1 A_OverLayOffset(500,-30,28);
 		#### C 1 A_OverLayOffset(500,-30,38);
-		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),5);
+		/*#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),6);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<20)&&(Health>40),4);
-		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>30),2);
+		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>30),2);*/
+		#### X 0 setweaponstate("open_loadhand");
+	HandLoadRndCnt:	
 		#### X 1;
 		#### X 1;
-		#### X 1;
+		#### X 2;
+		#### X 1 {if(justpressed(BT_RELOAD)&&invoker.WeaponStatus[BUGS_HAND]<3){
+			if(
+				(
+					invoker.weaponstatus[BUGS_CYL1]==0
+					||invoker.weaponstatus[BUGS_CYL2]==0
+					||invoker.weaponstatus[BUGS_CYL3]==0
+					||invoker.weaponstatus[BUGS_CYL4]==0
+					||invoker.weaponstatus[BUGS_CYL5]==0
+					||invoker.weaponstatus[BUGS_CYL6]==0
+				)||(
+					countinv("HDPistolAmmo")
+					||countinv("HDRevolverAmmo")
+				)
+			)setweaponstate("open_loadhand");}}
 		#### D 1 A_OverLayOffset(500,7,38);
-		//#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>40),2);
-		//#### D 1 A_OverLayOffset(500,8,31);
+		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>40),2);
+		#### D 1 A_OverLayOffset(500,8,31);
 		#### D 1 A_OverLayOffset(500,5,24);
+	HandLoadRndEnd:	
 		#### D 1 A_OverLayOffset(500,3,18);
 		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<17)&&(Health>40),2);
 		#### E 1 A_OverLayOffset(500,0,11);
 		#### E 1 A_OverLayOffset(500,1,7);
 		#### E 0 A_LoadRound();
 		#### E 1 A_OverLayOffset(500,0,0);
-		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),2);
-		//#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>30),2);
+		#### E 0 {A_RotateCylinder();A_JumpIf(Invoker.WeaponStatus[BUGS_HAND]>0,"HandLoadRndEnd");}
+		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<12)&&(Health>40),4);
+		#### A 0 A_JumpIf((HDPlayerPawn(self).bloodpressure<30)&&(Health>30),2);
 		//#### E 1 A_OverLayOffset(500,0,2);
 		#### E 1 A_OverLayOffset(500,-1,1);
 		#### E 1 A_OverLayOffset(500,1,2);
@@ -716,6 +770,38 @@ class HDRevolver:HDHandgun{
 		---- A 0 A_OverLay(500,"HandLoadRnd");
 		REVG F 40;
 		goto open_rotatecylinder;
+	open_loadhand:
+		REVG F 0{if(invoker.weaponstatus[BUGS_CYL1]>0)return;
+		bool useninemil=(
+			player.cmd.buttons&BT_FIREMODE
+			||!countinv("HDRevolverAmmo")
+		);
+		if(useninemil&&!countinv("HDPistolAmmo"))return;
+		class<inventory>ammotype=useninemil?"HDPistolAmmo":"HDRevolverAmmo";
+		A_TakeInventory(ammotype,1,TIF_NOTAKEINFINITE);
+		Invoker.WeaponStatus[BUGS_HAND]++;}
+		//---- A 0{if(invoker.weaponstatus[BUGS_CYL1]>0) setweaponstate("open_rotatecylinder");}	
+		---- A 0 A_OverLay(500,"HandLoadRndCnt");
+		REVG F 40;
+		goto open_rotatecylinder;
+	open_loadhandRight:
+		RRVG I 0{if(invoker.weaponstatus[BUGS_CYL1]>0)return;
+		bool useninemil=(
+			player.cmd.buttons&BT_FIREMODE
+			||!countinv("HDRevolverAmmo")
+		);
+		if(useninemil&&!countinv("HDPistolAmmo"))return;
+		class<inventory>ammotype=useninemil?"HDPistolAmmo":"HDRevolverAmmo";
+		A_TakeInventory(ammotype,1,TIF_NOTAKEINFINITE);
+		Invoker.WeaponStatus[BUGS_HAND]++;}
+		//---- A 0{if(invoker.weaponstatus[BUGS_CYL1]>0) setweaponstate("open_rotatecylinderRight");}	
+		---- A 0 A_OverLay(500,"HandLoadRndCntRight");
+		RRVG I 40;
+		goto open_rotatecylinder;
+	open_rotatecylinder2Right:
+		RRVG J 2 A_OverLay(500, "HandLoadRndEndRight");
+		RRVG I 40;
+		Stop;
 	open_loadroundRight:
 		RRVG I 1;
 		---- A 0{if(invoker.weaponstatus[BUGS_CYL1]>0) setweaponstate("open_rotatecylinderRight");}	
@@ -782,15 +868,13 @@ class HDRevolver:HDHandgun{
 					||invoker.weaponstatus[BUGS_CYL4]==BUGS_MASTERBALLSPENT
 					||invoker.weaponstatus[BUGS_CYL5]==BUGS_MASTERBALLSPENT
 					||invoker.weaponstatus[BUGS_CYL6]==BUGS_MASTERBALLSPENT
-					
-				)&&!(
-					invoker.weaponstatus[BUGS_CYL1]==BUGS_NINEMIL
+					||invoker.weaponstatus[BUGS_CYL1]==BUGS_NINEMIL
 					||invoker.weaponstatus[BUGS_CYL2]==BUGS_NINEMIL
 					||invoker.weaponstatus[BUGS_CYL3]==BUGS_NINEMIL
 					||invoker.weaponstatus[BUGS_CYL4]==BUGS_NINEMIL
 					||invoker.weaponstatus[BUGS_CYL5]==BUGS_NINEMIL
 					||invoker.weaponstatus[BUGS_CYL6]==BUGS_NINEMIL
-					))setweaponstate("readyopen");
+				))setweaponstate("readyopen");
 				else A_OverLay(-20,"HandUnload2");}
 		REVG F 3;
 		REVG F 3 A_HitExtractor();
@@ -808,15 +892,13 @@ class HDRevolver:HDHandgun{
 					||invoker.weaponstatus[BUGS_CYL4]==BUGS_MASTERBALLSPENT
 					||invoker.weaponstatus[BUGS_CYL5]==BUGS_MASTERBALLSPENT
 					||invoker.weaponstatus[BUGS_CYL6]==BUGS_MASTERBALLSPENT
-					
-				)&&!(
-					invoker.weaponstatus[BUGS_CYL1]==BUGS_NINEMIL
+					||invoker.weaponstatus[BUGS_CYL1]==BUGS_NINEMIL
 					||invoker.weaponstatus[BUGS_CYL2]==BUGS_NINEMIL
 					||invoker.weaponstatus[BUGS_CYL3]==BUGS_NINEMIL
 					||invoker.weaponstatus[BUGS_CYL4]==BUGS_NINEMIL
 					||invoker.weaponstatus[BUGS_CYL5]==BUGS_NINEMIL
 					||invoker.weaponstatus[BUGS_CYL6]==BUGS_NINEMIL
-					))setweaponstate("readyopenRight");
+				))setweaponstate("readyopenRight");
 				else A_OverLay(-20,"HandUnload2R");}
 		RRVG I 3;
 		RRVG I 3 A_HitExtractor();
@@ -987,6 +1069,7 @@ enum DeinovolverStats{
 	BUGS_NINEMIL=2,
 	BUGS_MASTERBALLSPENT=3,
 	BUGS_MASTERBALL=4,
+	BUGS_HAND=5,
 
 	BUGF_RIGHTHANDED=1,
 	BUGF_COCKED=2,
