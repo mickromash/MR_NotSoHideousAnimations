@@ -28,8 +28,25 @@ class PortableMedikit:HDPickup{
 			){
 				let mdk=HDMedikitter(spawn("HDMedikitter",pos));
 				mdk.actualpickup(self,true);
-				if(A_JumpIfInventory("PortableStimpack",0,"null"))A_DropItem("PortableStimpack");
-				else A_GiveInventory("PortableStimpack");
+				//if(A_JumpIfInventory("PortableStimpack",0,"null"))A_DropItem("PortableStimpack");
+				//else A_GiveInventory("PortableStimpack");
+				bool hasprevious=(findinventory('PortableStimpack'));
+
+		//spawn the weapon
+		hdweapon actualweapon=hdweapon(spawn('PortableStimpack',pos));
+		if(actualweapon)
+		{
+		actualweapon.changetid(tid);
+		actualweapon.attachtoowner(Self);
+
+			//apply defaults from owner
+		actualweapon.defaultconfigure(player);
+
+		//apply config applicable to this weapongiver
+
+		//if there was a previous weapon, bring this one down to the spares
+		if(hasprevious&&getage()>5)actualweapon.AddSpareWeaponRegular(Self);
+		}		
 				if(A_JumpIfInventory("SecondBlood",0,"null"))A_DropItem("SecondBlood");
 				else A_GiveInventory("SecondBlood");
 				A_TakeInventory("PortableMedikit",1);
