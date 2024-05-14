@@ -320,7 +320,7 @@ class HDGrenadeThrower:HDWeapon{
 		Stop;	
 	deselect0:
 		GRNG A 0{
-			if(invoker.weaponstatus[0]&FRAGF_PINOUT)A_SetTics(8);
+			if(invoker.weaponstatus[0]&FRAGF_PINOUT)setweaponstate("deselectpinback");//A_SetTics(8);
 			else if(NoFrags())setweaponstate("deselectinstant");
 			invoker.ReturnHandToOwner();
 		}
@@ -333,6 +333,14 @@ class HDGrenadeThrower:HDWeapon{
 	deselectinstant:
 		TNT1 A 0 A_Lower(999);
 		wait;
+	deselectpinback:
+		FRGG A 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>0,"juststopthrowing");
+		TNT1 A 0 {A_OverLay(25, "GranPinBack2"); A_OverLay(26, "HandPinBack2");}
+		TNT1 A 7;
+		GRNG A 0 A_OverLay(26, "HandReady");
+		GRNG A 1;
+		//GRNG A 0 A_Refire("nope");
+		goto deselect0;	
 	Non:
 		TNT1 A 1;
 		Stop;
