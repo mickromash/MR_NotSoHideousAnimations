@@ -47,8 +47,23 @@ class PortableMedikit:HDPickup{
 		//if there was a previous weapon, bring this one down to the spares
 		if(hasprevious&&getage()>5)actualweapon.AddSpareWeaponRegular(Self);
 		}		
-				if(A_JumpIfInventory("SecondBlood",0,"null"))A_DropItem("SecondBlood");
-				else A_GiveInventory("SecondBlood");
+		bool hasprevious1=(findinventory('SecondBlood'));
+
+		//spawn the weapon
+		hdweapon actualweapon1=hdweapon(spawn('SecondBlood',pos));
+		if(actualweapon1)
+		{
+		actualweapon1.changetid(tid);
+		actualweapon1.attachtoowner(Self);
+
+			//apply defaults from owner
+		actualweapon1.defaultconfigure(player);
+
+		//apply config applicable to this weapongiver
+
+		//if there was a previous weapon, bring this one down to the spares
+		if(hasprevious1&&getage()>5)actualweapon1.AddSpareWeaponRegular(Self);
+		}		
 				A_TakeInventory("PortableMedikit",1);
 			}else{
 				A_Log(Stringtable.Localize("$MEDIKIT_USEUNWRAPPED"),true);
