@@ -493,11 +493,15 @@ class ThunderBuster:HDCellWeapon{
 
 	reload:
 		#### A 0{
+			if(PressingZoom())SetWeaponState("CheckMag");
+			else
+			{
 			invoker.weaponstatus[0]&=~TBF_JUSTUNLOAD;
 			if(
 				invoker.weaponstatus[TBS_BATTERY]<20
 				&&countinv("HDBattery")
 			)setweaponstate("unmag");
+			}
 		}goto nope;
 
 	HandLoad:
@@ -552,6 +556,56 @@ class ThunderBuster:HDCellWeapon{
 		#### B 2 offset(0,0);
 		#### A 4 offset(0,0);
 		goto nope;
+	
+	CheckMag:
+		PLSR A 1 offset(1,2) A_WeaponBusy();
+		#### B 2 offset(2,2);
+		#### C 1 offset(1,3);// A_StartSound("weapons/plasswitch",8);
+		#### C 1 offset(0,4);
+		#### C 2 offset(-1,5);
+	CheckMagLoop:
+		#### C 3 offset(-1,6)A_JumpIf(!PressingReload(), 2);
+		---- B 0 {if(invoker.weaponstatus[TBS_BATTERY]>0)A_Overlay(102, "Dumb");}
+		Loop;
+		#### B 2 offset(-1,5);
+		#### B 1 offset(0,4);
+		#### A 1;
+		PLSG A 1 offset(0,4);
+		#### A 1 offset(1,3);
+		goto nope;
+	
+	Dumb:
+		STUP A 0 A_OverLayOffset(102,29,24);
+		STUP A 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>1,1);
+		Stop;
+		STUP B 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>3,1);
+		Stop;
+		STUP C 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>4,1);
+		Stop;
+		STUP D 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>6,1);
+		Stop;
+		STUP E 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>7,1);
+		Stop;
+		STUP F 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>9,1);
+		Stop;
+		STUP G 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>10,1);
+		Stop;
+		STUP H 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>12,1);
+		Stop;
+		STUP I 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>14,1);
+		Stop;
+		STUP J 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>15,1);
+		Stop;
+		STUP K 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>16,1);
+		Stop;
+		STUP L 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>17,1);
+		Stop;
+		STUP M 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>18,1);
+		Stop;
+		STUP N 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>19,1);
+		Stop;
+		STUP O 5;
+		Stop;	
 
 	user3:
 		#### A 0 A_MagManager("HDBattery");

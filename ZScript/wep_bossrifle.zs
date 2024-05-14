@@ -544,6 +544,7 @@ class BossRifle:HDWeapon{
 		goto altholdend;
 
 	reload:
+		---- A 0 A_JumpIf(PressingZoom(), "CheckMag");
 		---- A 0{invoker.weaponstatus[0]&=~BOSSF_DONTUSECLIPS;}
 		goto reloadstart;
 	altreload:
@@ -838,6 +839,37 @@ class BossRifle:HDWeapon{
 		BARG A 1 offset(2,36);
 		BARG A 1 offset(0,34);
 		goto ready;
+	CheckMag:
+		CheckMag:
+		BARG B 2 A_Jumpif(!PressingReload(), "Nope");
+		---- B 0 {if(invoker.weaponstatus[BOSSS_MAG]>0)A_Overlay(102, "Dumb");if(invoker.weaponstatus[BOSSS_CHAMBER]==2)A_Overlay(103, "Dumb2");}
+		Loop;
+	Dumb:
+		STUP A 0 A_OverLayOffset(102,29,24);
+		STUP A 5 A_JumpIf(invoker.weaponstatus[BOSSS_MAG]>1,1);
+		Stop;
+		STUP B 5 A_JumpIf(invoker.weaponstatus[BOSSS_MAG]>2,1);
+		Stop;
+		STUP C 5 A_JumpIf(invoker.weaponstatus[BOSSS_MAG]>3,1);
+		Stop;
+		STUP D 5 A_JumpIf(invoker.weaponstatus[BOSSS_MAG]>4,1);
+		Stop;
+		STUP E 5 A_JumpIf(invoker.weaponstatus[BOSSS_MAG]>5,1);
+		Stop;
+		STUP F 5 A_JumpIf(invoker.weaponstatus[BOSSS_MAG]>6,1);
+		Stop;
+		STUP G 5 A_JumpIf(invoker.weaponstatus[BOSSS_MAG]>7,1);
+		Stop;
+		STUP H 5 A_JumpIf(invoker.weaponstatus[BOSSS_MAG]>8,1);
+		Stop;
+		STUP I 5 A_JumpIf(invoker.weaponstatus[BOSSS_MAG]>9,1);
+		Stop;
+		STUP J 5;
+		Stop;
+	Dumb2:
+		STUP A 0 A_OverLayOffset(103, 32, 22);
+		STUP Q 5;
+		Stop;	
 
 	spawn:
 		BORF A -1;

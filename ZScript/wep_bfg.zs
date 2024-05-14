@@ -365,6 +365,9 @@ class BFG9K:HDCellWeapon replaces BFG9000{
 
 	reload:
 		#### A 0{
+			if(PressingZoom())SetWeaponState("CheckMag");
+			else
+			{
 			if(
 				invoker.weaponstatus[BFGS_BATTERY]>=20
 				||!countinv("HDBattery")
@@ -374,6 +377,7 @@ class BFG9K:HDCellWeapon replaces BFG9000{
 				)
 			)setweaponstate("nope");
 			else invoker.weaponstatus[BFGS_LOADTYPE]=BFGC_RELOADMAX;
+			}
 		}goto reload1;
 	altreload:
 	reloadempty:
@@ -685,6 +689,74 @@ class BFG9K:HDCellWeapon replaces BFG9000{
 		#### A 2 offset(0,34);
 		#### A 12;
 		goto ready;
+	CheckMag:
+		#### B 2 A_Jumpif(!PressingReload(), "Nope");
+		#### B 0 {if(invoker.weaponstatus[BFGS_BATTERY]>0)A_Overlay(102, "Dumb");if(invoker.weaponstatus[BFGS_CHARGE]>0)A_Overlay(103, "Dumb2");}
+		Loop;
+	Dumb:
+		STUP A 0 A_OverLayOffset(102,29,22);
+		STUP A 5 A_JumpIf(invoker.weaponstatus[BFGS_BATTERY]>1,1);
+		Stop;
+		STUP B 5 A_JumpIf(invoker.weaponstatus[BFGS_BATTERY]>3,1);
+		Stop;
+		STUP C 5 A_JumpIf(invoker.weaponstatus[BFGS_BATTERY]>4,1);
+		Stop;
+		STUP D 5 A_JumpIf(invoker.weaponstatus[BFGS_BATTERY]>6,1);
+		Stop;
+		STUP E 5 A_JumpIf(invoker.weaponstatus[BFGS_BATTERY]>7,1);
+		Stop;
+		STUP F 5 A_JumpIf(invoker.weaponstatus[BFGS_BATTERY]>9,1);
+		Stop;
+		STUP G 5 A_JumpIf(invoker.weaponstatus[BFGS_BATTERY]>10,1);
+		Stop;
+		STUP H 5 A_JumpIf(invoker.weaponstatus[BFGS_BATTERY]>12,1);
+		Stop;
+		STUP I 5 A_JumpIf(invoker.weaponstatus[BFGS_BATTERY]>14,1);
+		Stop;
+		STUP J 5 A_JumpIf(invoker.weaponstatus[BFGS_BATTERY]>15,1);
+		Stop;
+		STUP K 5 A_JumpIf(invoker.weaponstatus[BFGS_BATTERY]>16,1);
+		Stop;
+		STUP L 5 A_JumpIf(invoker.weaponstatus[BFGS_BATTERY]>17,1);
+		Stop;
+		STUP M 5 A_JumpIf(invoker.weaponstatus[BFGS_BATTERY]>18,1);
+		Stop;
+		STUP N 5 A_JumpIf(invoker.weaponstatus[BFGS_BATTERY]>19,1);
+		Stop;
+		STUP O 5;
+		Stop;	
+	Dumb2:
+		STUP A 0 A_OverLayOffset(103,29,24);
+		STUP A 5 A_JumpIf(invoker.weaponstatus[BFGS_CHARGE]>1,1);
+		Stop;
+		STUP B 5 A_JumpIf(invoker.weaponstatus[BFGS_CHARGE]>3,1);
+		Stop;
+		STUP C 5 A_JumpIf(invoker.weaponstatus[BFGS_CHARGE]>4,1);
+		Stop;
+		STUP D 5 A_JumpIf(invoker.weaponstatus[BFGS_CHARGE]>6,1);
+		Stop;
+		STUP E 5 A_JumpIf(invoker.weaponstatus[BFGS_CHARGE]>7,1);
+		Stop;
+		STUP F 5 A_JumpIf(invoker.weaponstatus[BFGS_CHARGE]>9,1);
+		Stop;
+		STUP G 5 A_JumpIf(invoker.weaponstatus[BFGS_CHARGE]>10,1);
+		Stop;
+		STUP H 5 A_JumpIf(invoker.weaponstatus[BFGS_CHARGE]>12,1);
+		Stop;
+		STUP I 5 A_JumpIf(invoker.weaponstatus[BFGS_CHARGE]>14,1);
+		Stop;
+		STUP J 5 A_JumpIf(invoker.weaponstatus[BFGS_CHARGE]>15,1);
+		Stop;
+		STUP K 5 A_JumpIf(invoker.weaponstatus[BFGS_CHARGE]>16,1);
+		Stop;
+		STUP L 5 A_JumpIf(invoker.weaponstatus[BFGS_CHARGE]>17,1);
+		Stop;
+		STUP M 5 A_JumpIf(invoker.weaponstatus[BFGS_CHARGE]>18,1);
+		Stop;
+		STUP N 5 A_JumpIf(invoker.weaponstatus[BFGS_CHARGE]>19,1);
+		Stop;
+		STUP O 5;
+		Stop;	
 
 	user3:
 		#### A 0 A_MagManager("HDBattery");
