@@ -344,10 +344,12 @@ class HDRevolver:HDHandgun{
 		}
 		if(invoker.cooldown>0)invoker.cooldown--;
 	}
+	
 	action void A_RoundReady(int rndnm){
 		int gunframe=-1;
 		if(invoker.weaponstatus[rndnm]>0)gunframe=player.getpsprite(PSP_WEAPON).frame;
 		let thissprite=player.getpsprite(BUGS_OVRCYL+rndnm);
+		if(invoker.weaponstatus[rndnm]==1||invoker.weaponstatus[rndnm]==3)thissprite.sprite=getspriteindex("RVL"..rndnm.."A0");
 		switch(gunframe){
 		case 4: //E
 			thissprite.frame=0;
@@ -392,6 +394,14 @@ class HDRevolver:HDHandgun{
 	spawn:
 		REVL A -1;
 		stop;
+	IdiNahuiBlyat:
+		RVL1 A 0;
+		RVL2 A 0;
+		RVL3 A 0;
+		RVL4 A 0;
+		RVL5 A 0;
+		RVL6 A 0;
+		Stop;
 	round1:RVR1 A 1 A_RoundReady(BUGS_CYL1);wait;
 	round2:RVR2 A 1 A_RoundReady(BUGS_CYL2);wait;
 	round3:RVR3 A 1 A_RoundReady(BUGS_CYL3);wait;
