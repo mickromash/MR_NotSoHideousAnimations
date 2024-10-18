@@ -123,14 +123,26 @@ class HDRevolver:HDHandgun{
 		);
 		scc=(0.9,0.9);
 
+		int Light = Owner.Cursector.LightLevel * 1.75;
+		if(owner.player.fixedlightlevel==1)Light = 255;
 		sb.drawimage(
 			"revfst",(0,0)+bobb,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
 			alpha:0.9,scale:scc
+		);
+		if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+		sb.drawimage(
+			"revfst",(0,0)+bobb,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
+			alpha:0.9,scale:scc, col:color(255-Light,0,0,0)
 		);
 		sb.SetClipRect(cx,cy,cw,ch);
 		sb.drawimage(
 			"revbkst",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
 			scale:scc
+		);
+		if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+		sb.drawimage(
+			"revbkst",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
+			scale:scc, col:color(255-Light,0,0,0)
 		);
 	}
 	override void DropOneAmmo(int amt){

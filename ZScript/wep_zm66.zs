@@ -38,9 +38,15 @@ class ZM66ScopeHaver:HDWeapon{
 
 		sb.SetClipRect(cx,cy,cw,ch);
 
+		int Light = Owner.Cursector.LightLevel * 1.75;
 		sb.drawimage(
 			"zm66scop",(0,scaledyoffset)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER,
 			scale:(0.82,0.82)
+		);
+		if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+		sb.drawimage(
+			"zm66blk",(0,scaledyoffset)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER,
+			scale:(0.82,0.82), col:color(254-Light, 0,0,0)
 		);
 		sb.drawstring(
 			sb.mAmountFont,string.format("%.1f",degree),
@@ -211,9 +217,15 @@ class ZM66AssaultRifle:ZM66ScopeHaver{
 					col:0xFF000000|sb.crosshaircolor.GetInt()
 				);
 			}
+			int Light = Owner.Cursector.LightLevel * 1.75;
+			if(owner.player.fixedlightlevel==1)Light = 255;
 			sb.drawimage(
 				"z66site",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER
 			);
+			if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+			sb.drawimage(
+				"z66site",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER,
+			col:color(254-Light, 0,0,0));
 			if(scopeview)ShowZMScope(hdw.weaponstatus[ZM66S_ZOOM],hpc,sb,scaledyoffset,bob);
 		}
 	}

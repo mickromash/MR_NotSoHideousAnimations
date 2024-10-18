@@ -140,14 +140,25 @@ class BossRifle:HDWeapon{
 			-16+bob.x,-64+bob.y,32,76,
 			sb.DI_SCREEN_CENTER
 		);
+		int Light = Owner.Cursector.LightLevel * 1.75;
+		if(owner.player.fixedlightlevel==1)Light = 255;
 		sb.drawimage(
 			"bsfrntsit",bob*1.14,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP
+		);
+		if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+		sb.drawimage(
+			"BSBLFTSIT",bob*1.14,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP, col:Color(254-Light, 0,0,0)
 		);
 		sb.SetClipRect(cx,cy,cw,ch);
 
 		sb.drawimage(
 			"bsbaksit",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
 			alpha:0.9
+		);
+		if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+		sb.drawimage(
+			"bsblksit",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
+			alpha:0.9, col:Color(254-Light, 0,0,0)
 		);
 
 		if(scopeview){

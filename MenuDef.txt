@@ -1,0 +1,10 @@
+AddOptionMenu "OptionsMenu" {
+	statictext "Not So Hideous Animations"
+	Option "$OPTMNU_NSHASIGHTS", "mrnsha_sights", "YesNo"
+	statictext ""
+}
+
+AddOptionMenu "HDAddonMenu" {
+	statictext "Not So Hideous Animations"
+	Option "$OPTMNU_NSHASIGHTS", "mrnsha_sights", "YesNo"
+}

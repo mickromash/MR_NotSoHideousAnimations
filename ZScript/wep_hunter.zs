@@ -112,13 +112,36 @@ class Hunter:HDShotgun{
 			sb.DI_SCREEN_CENTER
 		);
 		vector2 bobb=bob*1.1;
+		int Light = Owner.Cursector.LightLevel * 1.75;
+		if(owner.player.fixedlightlevel==1)Light = 255;
 		sb.drawimage(
 			"frntsite",(0,0)+bobb,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP
 		);
-		sb.SetClipRect(cx,cy,cw,ch);
+		if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
 		sb.drawimage(
+			"fblksite",(0,0)+bobb,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
+		col:color(255-Light,0,0,0));
+		sb.SetClipRect(cx,cy,cw,ch);
+
+		if(bplayingid){sb.drawimage(
 			"sgbaksit",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
 			alpha:0.9
+		);
+		if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+		sb.drawimage(
+			"blaksite",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
+			alpha:0.9, col:color(255-Light,0,0,0)
+		);}
+		else if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+			sb.fill(
+			color(250,int(Light*0.08),int(Light*0.08),int(Light*0.08)),
+			bob.x-10,bob.y+6,20,4,
+			sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP
+		);
+		else sb.fill(
+			color(250,26,26,26),
+			bob.x-10,bob.y+6,20,4,
+			sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP
 		);
 	}
 	override double gunmass(){

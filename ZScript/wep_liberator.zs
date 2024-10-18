@@ -371,6 +371,8 @@ class LiberatorRifle:AutoReloadingThingy{
 		HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl,
 		bool sightbob,vector2 bob,double fov,bool scopeview,actor hpc
 	){
+		int Light = Owner.CurSector.LightLevel * 1.75;
+		if(owner.player.fixedlightlevel==1)Light = 255;
 		if(hdw.weaponstatus[0]&LIBF_GRENADEMODE)sb.drawgrenadeladder(hdw.airburst,bob);
 		else{
 			double dotoff=max(abs(bob.x),abs(bob.y));
@@ -384,6 +386,10 @@ class LiberatorRifle:AutoReloadingThingy{
 			}
 			sb.drawimage(
 				"libsite",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER
+			);
+			if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+			sb.drawimage(
+				"libsite",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER, col:Color(254-Light, 0,0,0)
 			);
 			if(scopeview){
 				int scaledyoffset=60;

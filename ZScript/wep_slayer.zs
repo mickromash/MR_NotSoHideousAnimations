@@ -100,13 +100,45 @@ class Slayer:HDShotgun replaces HDShotgun{
 			sb.DI_SCREEN_CENTER
 		);
 		vector2 bobb=bob*1.1;
-		sb.drawimage(
+		int Light = Owner.Cursector.LightLevel * 1.75;
+		if(owner.player.fixedlightlevel==1)Light = 255;
+		vector2 bobb=bob*1.1;
+		if(bplayingid){sb.drawimage(
 			"dbfrntsit",(0,0)+bobb,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP
 		);
+		if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+		sb.drawimage(
+			"dbblftsit",(0,0)+bobb,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
+		col:color(255-Light,0,0,0));}
+		else{
+			if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+			sb.fill(
+				color(250,int(Light*0.08),int(Light*0.08),int(Light*0.08)),
+				bobb.x-9,bobb.y+2,18,3,
+				sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP
+			);
+			else
+			sb.fill(
+				color(250,26,26,26),
+				bobb.x-9,bobb.y+2,18,3,
+				sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP
+			);
+			sb.fill(
+				color(250,66,66,66),
+				bobb.x-2,bobb.y+2,4,1,
+				sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP
+			);
+		}
 		sb.SetClipRect(cx,cy,cw,ch);
+
 		sb.drawimage(
 			"dbbaksit",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
 			alpha:0.9
+		);
+		if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+		sb.drawimage(
+			"dbbaksit",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
+			alpha:0.9, col:Color(255-Light,0,0,0)
 		);
 	}
 	override void PostBeginPlay(){

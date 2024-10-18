@@ -113,6 +113,8 @@ class HDSMG:HDWeapon{
 		HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl,
 		bool sightbob,vector2 bob,double fov,bool scopeview,actor hpc
 	){
+		int Light = Owner.CurSector.LightLevel*1.75;
+		if(owner.player.fixedlightlevel==1)Light = 255;
 		vector2 bobb=bob*1.18;
 		if(weaponstatus[0]&SMGF_REFLEXSIGHT){
 			double dotoff=max(abs(bob.x),abs(bob.y));
@@ -127,6 +129,10 @@ class HDSMG:HDWeapon{
 			sb.drawimage(
 				"smgrearsight",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER
 			);
+			if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+			sb.drawimage(
+				"smgrearsight",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER, Col:Color(254-Light, 0,0,0)
+			);
 		}else{
 			int cx,cy,cw,ch;
 			[cx,cy,cw,ch]=screen.GetClipRect();
@@ -137,10 +143,19 @@ class HDSMG:HDWeapon{
 			sb.drawimage(
 				"smgfrntsit",(0,0)+bobb,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP
 			);
+			if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+			sb.drawimage(
+				"fblksite",(0,0)+bobb,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP, Col:Color(254-Light, 0,0,0)
+			);
 			sb.SetClipRect(cx,cy,cw,ch);
 			sb.drawimage(
 				"smgbaksit",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
 				alpha:0.9
+			);
+			if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+			sb.drawimage(
+				"blaksite",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
+				alpha:0.9,  Col:Color(254-Light, 0,0,0)
 			);
 		}
 	}

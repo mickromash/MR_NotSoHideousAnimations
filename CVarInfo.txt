@@ -1,0 +1,1 @@
+user bool mrnsha_sights = true;

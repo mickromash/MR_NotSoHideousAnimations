@@ -110,6 +110,8 @@ class HDRL:HDWeapon{
 		HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl,
 		bool sightbob,vector2 bob,double fov,bool scopeview,actor hpc
 	){
+		int Light = Owner.CurSector.LightLEvel * 1.75;
+		if(owner.player.fixedlightlevel==1)Light = 255;
 		if(hdw.weaponstatus[0]&RLF_GRENADEMODE)sb.drawgrenadeladder(hdw.airburst,bob);
 		else{
 			double dotoff=max(abs(bob.x),abs(bob.y));
@@ -124,6 +126,9 @@ class HDRL:HDWeapon{
 			}
 			sb.drawimage(
 				"rlrearsight",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER
+			);
+			sb.drawimage(
+				"rlrearsight",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER, col:color(254-Light, 0,0,0)
 			);
 			if(hdw.weaponstatus[RLS_CHAMBER]<=1){
 				int airburst=hdw.airburst;
@@ -162,9 +167,19 @@ class HDRL:HDWeapon{
 					"rlret",(0,scaledyoffset)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER,
 					scale:(0.82,0.82)
 				);
+				if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+				sb.drawimage(
+					"rlretblk",(0,scaledyoffset)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER,
+					scale:(0.82,0.82), col:Color(254-Light, 0,0,0)
+				);
 				sb.drawimage(
 					"rlscop",(0,scaledyoffset)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER,
 					scale:(0.82,0.82)
+				);
+				if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+				sb.drawimage(
+					"rlscop",(0,scaledyoffset)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER,
+					scale:(0.82,0.82), col:Color(254-Light, 0,0,0)
 				);
 
 

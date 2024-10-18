@@ -144,15 +144,28 @@ class HDPistol:HDHandgun replaces Pistol{
 			);
 			scc=(0.6,0.6);
 		}
+		int Light = Owner.Cursector.LightLevel * 1.75;
+		if(owner.player.fixedlightlevel==1)Light = 255;
 		sb.drawimage(
 			"frntsite",(0,0)+bobb,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
 			scale:scc
+		);
+		if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+		sb.drawimage(
+			"fblksite",(0,0)+bobb,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
+			scale:scc, col:color(254-Light,0,0,0)
 		);
 		sb.SetClipRect(cx,cy,cw,ch);
 		sb.drawimage(
 			"backsite",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
 			alpha:0.9,
 			scale:scc
+		);
+		if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+		sb.drawimage(
+			"blaksite",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
+			alpha:0.9,
+			scale:scc, col:color(254-Light,0,0,0)
 		);
 	}
 	override void DropOneAmmo(int amt){

@@ -73,6 +73,8 @@ class ThunderBuster:HDCellWeapon{
 		HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl,
 		bool sightbob,vector2 bob,double fov,bool scopeview,actor hpc
 	){
+		int Light = Owner.CurSector.LightLevel*1.75;
+		if(owner.player.fixedlightlevel==1)Light = 255;
 		int cx,cy,cw,ch;
 		[cx,cy,cw,ch]=screen.GetClipRect();
 		sb.SetClipRect(
@@ -83,12 +85,21 @@ class ThunderBuster:HDCellWeapon{
 		sb.drawimage(
 			"tbfrntsit",(0,0)+bobb,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP
 		);
+		if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+		sb.drawimage(
+			"TBBLFTSIT",(0,0)+bobb,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP, Col:Color(254-Light, 0,0,0)
+		);
 		sb.SetClipRect(cx,cy,cw,ch);
 		sb.drawimage(
 			"tbbaksit",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
 			alpha:0.9
 		);
-
+		if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+		sb.drawimage(
+			"TBBLKSIT",(0,0)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP,
+			alpha:0.9, Col:Color(254-Light, 0,0,0)
+		);
+		
 		if(scopeview){
 			bool alt=hdw.weaponstatus[0]&TBF_ALT;
 			int scaledyoffset=36;
@@ -118,6 +129,11 @@ class ThunderBuster:HDCellWeapon{
 			sb.drawimage(
 				"tbwindow",(0,scaledyoffset)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER,
 				scale:(1,1)
+			);
+			if(CVar.GetCVar("mrnsha_sights", owner.player).GetBool())
+			sb.drawimage(
+				"tbBlk",(0,scaledyoffset)+bob,sb.DI_SCREEN_CENTER|sb.DI_ITEM_CENTER,
+				scale:(1,1), col:Color(254-Light, 0,0,0)
 			);
 			bobb*=3;
 			double dotoff=max(abs(bobb.x),abs(bobb.y));

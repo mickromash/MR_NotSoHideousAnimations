@@ -6,7 +6,6 @@ Finished Hunter
 April 5
 
 added credits and changelog files
-
 Finished Revolver (Left hand only)
 Finished Hunter
 Finished BFG 9000 (Sprites of cells inside BFG incorect)
@@ -20,7 +19,6 @@ Finished BFG 9000 (For real this time)
 April 7
 
 Finished Rocket Launcher
-
 Added Grab And Dragging Animation
 
 April 14
@@ -42,25 +40,23 @@ Added Trembling Animations For Pistol And Revolver
 April 27
 
 Added Trembling Animations For Shotgun
-
 Added Safety To Pistol, Shotgun And Rocket Launcher
 
 August 3
 
 Added Slayer Reload Animation
-
 Sped Up Pistol Reloading
-
 Added Grenade And Stapler Death Animations
-
 Fixes
 
 August 7 
 
 Added Boss Reload Animations
-
 Added Fire Mode And Safety Switch Sound
-
 Added More Frames To Shotgun Reload Animations
-
 Fixes
+
+October 18 (2024)
+
+Did some weight optimisations
+Added iron sights affected by lighting as an option
