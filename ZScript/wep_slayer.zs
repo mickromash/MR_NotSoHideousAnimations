@@ -102,7 +102,6 @@ class Slayer:HDShotgun replaces HDShotgun{
 		vector2 bobb=bob*1.1;
 		int Light = Owner.Cursector.LightLevel * 1.75;
 		if(owner.player.fixedlightlevel==1)Light = 255;
-		vector2 bobb=bob*1.1;
 		if(bplayingid){sb.drawimage(
 			"dbfrntsit",(0,0)+bobb,sb.DI_SCREEN_CENTER|sb.DI_ITEM_TOP
 		);
