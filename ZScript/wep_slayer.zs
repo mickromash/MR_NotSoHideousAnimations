@@ -2,6 +2,7 @@
 // Super Shotgun
 // ------------------------------------------------------------
 class Slayer:HDShotgun replaces HDShotgun{
+	bool Checking;
 	default{
 		//$Category "Weapons/Hideous Destructor"
 		//$Title "Slayer"
@@ -188,10 +189,10 @@ class Slayer:HDShotgun replaces HDShotgun{
 		TNT1 A 1;
 		Stop;
 	select0:
-		SH2G A 0{invoker.swapbarrels=cvar.getcvar("hd_swapbarrels",player);}
+		SH2G A 0{invoker.swapbarrels=cvar.getcvar("hd_swapbarrels",player);invoker.Checking=false;}
 		goto select0small;
 	deselect0:
-		SH2G A 0;
+		SH2G A 0 {invoker.Checking=false;}
 		goto deselect0small;
 	Safety:
 		---- A 0 {A_StartSound("weapons/fmswitch",CHAN_WEAPON,CHANF_OVERLAP,0.4);
@@ -366,7 +367,7 @@ class Slayer:HDShotgun replaces HDShotgun{
 		#### # 1 A_OverLayOffset(102, 35, 25);
 		#### # 1 A_OverLayOffset(102, 30, 20);
 		#### # 1 A_OverLayOffset(102, 20, 10);
-		#### # 1 A_OverLayOffset(102, 11, 0);
+		#### # 1 {A_OverLayOffset(102, 11, 0)invoker.Checking=true;}
 		Stop;
 	SideCheckEnd:
 		STKG J 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>1,1);
@@ -387,7 +388,7 @@ class Slayer:HDShotgun replaces HDShotgun{
 		#### # 1 A_OverLayOffset(102, 16, 10);
 		#### # 1 A_OverLayOffset(102, 38, 35);
 		#### # 1 A_OverLayOffset(102, 50, 40);
-		TNT1 A 2;
+		TNT1 A 2 {invoker.Checking=false;}
 		SH2G A 1 A_OverLayOffset(102, -50, 150);
 		SH2G A 1 A_OverLayOffset(102, -40, 120);
 		SH2G A 1 A_OverLayOffset(102, -30, 90);

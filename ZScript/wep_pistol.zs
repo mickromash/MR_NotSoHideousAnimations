@@ -947,3 +947,42 @@ class HDAutoPistol:HDWeaponGiver{
 	}
 }
 
+Class MR_NoHudHudHandler : EventHandler
+{
+	Override Void RenderOverlay(RenderEvent e)
+	{
+		Let Plr = HDPlayerPawn(Players[ConsolePlayer].mo);
+		Let Wep = HDWeapon(Plr.Player.ReadyWeapon);
+		
+		if(!Plr || (Plr && Wep == Null))Return;
+		
+		vector2 bob=Plr.crossbob;
+		vector2 lastbob=Plr.lastcrossbob;
+		// Interpolate
+		//bob = lastbob + ((bob - lastbob));
+		
+		
+		HudFont NewFont = HUDFont.Create("NEWSMALLFONT");
+		
+		if(Wep is 'Hunter')
+		{
+			if(Hunter(Wep).Checking)StatusBar.DrawString(NewFont, StringTable.Localize("$HD_CHOKE")..
+			StringTable.Localize("$HD_CHOKE"..Wep.weaponstatus[HUNTS_CHOKE]), 
+			(-175, -70)+Bob, StatusBar.DI_SCREEN_CENTER, Font.CR_CYAN, 0.6, Scale:(0.5, 0.5));
+		}
+		
+		else if(Wep is 'Slayer')
+		{
+			if(Slayer(Wep).Checking)
+			{
+			StatusBar.DrawString(NewFont, StringTable.Localize("$HD_CHOKEL")..
+			StringTable.Localize("$HD_CHOKE"..Wep.weaponstatus[SLAYS_CHOKE1]), 
+			(-150, -60)+Bob, StatusBar.DI_SCREEN_CENTER, Font.CR_CYAN, 0.6, Scale:(0.5, 0.5));
+			
+			StatusBar.DrawString(NewFont, StringTable.Localize("$HD_CHOKER")..
+			StringTable.Localize("$HD_CHOKE"..Wep.weaponstatus[SLAYS_CHOKE2]), 
+			(-150, -50)+Bob, StatusBar.DI_SCREEN_CENTER, Font.CR_CYAN, 0.6, Scale:(0.5, 0.5));
+			}
+		}
+	}
+}

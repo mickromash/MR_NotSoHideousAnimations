@@ -60,3 +60,7 @@ October 18 (2024)
 
 Did some weight optimisations
 Added iron sights affected by lighting as an option
+
+October 29
+
+Added choke check for Hunter and Slayer

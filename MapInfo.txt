@@ -1,0 +1,4 @@
+GameInfo
+{
+	AddEventHandlers = "MR_NoHudHudHandler"
+}

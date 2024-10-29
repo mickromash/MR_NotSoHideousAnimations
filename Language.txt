@@ -3,6 +3,33 @@
 LWPHELP_SAFETY = "  Switch safety\n";
 OPTMNU_NSHASIGHTS = "Iron Sights Affected By Lighting";
 
+HD_CHOKE = "Choke: ";
+HD_CHOKEL = "Left choke: ";
+HD_CHOKER = "Rightt choke: ";
+
+HD_CHOKE0 = "skeet 1";
+HD_CHOKE1 = "skeet 2";
+HD_CHOKE2 = "cylinder";
+HD_CHOKE3 = "cylinder";
+HD_CHOKE4 = "modified";
+HD_CHOKE5 = "modified";
+HD_CHOKE6 = "full";
+HD_CHOKE7 = "full";
+
+
 [ rus ]
 
 OPTMNU_NSHASIGHTS = "Освещённость прицела";
+
+HD_CHOKE = "Чок: ";
+HD_CHOKEL = "Левый чок: ";
+HD_CHOKER = "Правый чок: ";
+
+HD_CHOKE0 = "Раструб";
+HD_CHOKE1 = "цилиндр";
+HD_CHOKE2 = "цилиндр с напором";
+HD_CHOKE3 = "слаб. получок";
+HD_CHOKE4 = "получок";
+HD_CHOKE5 = "усил. получок";
+HD_CHOKE6 = "слабый чок";
+HD_CHOKE7 = "чок";
