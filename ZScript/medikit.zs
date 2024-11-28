@@ -894,14 +894,14 @@ class HDMedikitter:HDWoundFixer{
 				if(
 					!bldw.depth+frandom(-thrownoff,thrownoff)
 					&&!bldw.patched
-					&&!bldw.sealed
+					&&!bldw.healing
 				)continue;
 
 				string ams=
 					(rowcount?"  ":"\n")
 					.."\cg"..string.format("%.1f",bldw.depth).."\cc/\ck"..
 					string.format("%.1f",bldw.patched+frandom(-thrownoff,thrownoff)).."\cc/\cu"..
-					string.format("%.1f",bldw.sealed)
+					string.format("%.1f",bldw.healing)
 				;
 				openwounds=openwounds.." "..ams;
 
@@ -987,13 +987,13 @@ class SecondFlesh:HDDrug{
 				if(
 					bldw
 					&&bldw.bleeder==hdp
-					&&bldw.sealed>0
+					&&bldw.healing>0
 				)wounds.push(bldw);
 			}
 			if(wounds.size()>0){
 				healamount/=wounds.size();
 				for(int i=0;i<wounds.size();i++){
-					wounds[i].sealed=max(0,wounds[i].sealed-healamount);
+					wounds[i].healing=max(0,wounds[i].healing-healamount);
 				}
 			}
 

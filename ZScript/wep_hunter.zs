@@ -261,10 +261,10 @@ class Hunter:HDShotgun{
 	}
 	states{
 	select0:
-		SHTG A 0 {Checking=False;}
+		SHTG A 0 {Invoker.Checking=False;}
 		goto select0big;
 	deselect0:
-		SHTG A 0 {Checking=False;}
+		SHTG A 0 {Invoker.Checking=False;}
 		goto deselect0big;
 	firemode:
 		SHTG A 0 a_switchfiremode();
@@ -596,7 +596,7 @@ class Hunter:HDShotgun{
 		SHTG C 1 offset(0,38);
 		SHTG C 4 offset(0,36) A_MuzzleClimb(-frandom(1.2,2.4),frandom(1.2,2.4));
 		SHTG J 0 A_JumpIf(invoker.weaponstatus[HUNTS_CHAMBER]>0,2);
-		SHTG Q 0 {Checking=True;}
+		SHTG Q 0 {Invoker.Checking=True;}
 		SHTG # 1 offset(0,34) A_MuzzleClimb(-frandom(1.2,2.4),frandom(1.2,2.4));
 	CheckLoop:	
 		---- # 0 {if(invoker.weaponstatus[HUNTS_TUBE]>0)A_OverLay(102,"Dumb");
@@ -605,7 +605,7 @@ class Hunter:HDShotgun{
 		SHTG # 5 offset(0,34) A_JumpIf(!pressingreload(),"CheckEnd");
 		Loop;		
 	CheckEnd:
-		SHTG C 4 offset(0,34){ A_StartSound("weapons/huntopen",8);Checking=False;}
+		SHTG C 4 offset(0,34){ A_StartSound("weapons/huntopen",8);Invoker.Checking=False;}
 		SHTG I 1 offset(0,36);
 		SHTG H 1 offset(0,34);
 		SHTG BGA 3;

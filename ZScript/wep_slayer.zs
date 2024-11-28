@@ -367,7 +367,7 @@ class Slayer:HDShotgun replaces HDShotgun{
 		#### # 1 A_OverLayOffset(102, 35, 25);
 		#### # 1 A_OverLayOffset(102, 30, 20);
 		#### # 1 A_OverLayOffset(102, 20, 10);
-		#### # 1 {A_OverLayOffset(102, 11, 0)invoker.Checking=true;}
+		#### # 1 {A_OverLayOffset(102, 11, 0);invoker.Checking=true;}
 		Stop;
 	SideCheckEnd:
 		STKG J 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>1,1);

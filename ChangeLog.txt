@@ -64,3 +64,7 @@ Added iron sights affected by lighting as an option
 October 29
 
 Added choke check for Hunter and Slayer
+
+November 28
+
+Updated mod to 4.13 Hideous Destructor version
