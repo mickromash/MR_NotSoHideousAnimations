@@ -359,11 +359,10 @@ class Hunter:HDShotgun{
 	chamber:
 		SHTG A 0 A_JumpIf(invoker.weaponstatus[0]&HUNTF_ALTHOLDING,"nope");
 		SHTG A 0 A_SetAltHold(true);
-		SHTG A 1 A_Overlay(120,"playsgco");
+		SHTG A 1 A_StartSound("weapons/huntrackbak",8);
 		SHTG AE 1 A_MuzzleClimb(0,frandom(0.6,1.));
 		SHTG E 1 A_JumpIf(pressingaltfire(),"longstroke");
 		SHTG EA 1 A_MuzzleClimb(0,-frandom(0.06,0.1));
-		SHTG E 0 A_StartSound("weapons/huntshort",8);
 		SHTG E 0 A_Refire("ready");
 		goto ready;
 	longstroke:
@@ -474,7 +473,7 @@ class Hunter:HDShotgun{
 		goto rackreloadend;
 
 	unrack:
-		SHTG F 0 A_Overlay(120,"playsgco2");
+		SHTG F 0 A_StartSound("weapons/huntrackfwd", 8);
 		SHTG E 1 A_JumpIf(!pressingfire(),1);
 		SHTG EA 2{
 			if(pressingfire())A_SetTics(1);
@@ -482,14 +481,7 @@ class Hunter:HDShotgun{
 		}
 		SHTG A 0 A_ClearRefire();
 		goto ready;
-	playsgco:
-		TNT1 A 8 A_StartSound("weapons/huntrackup",8);
-		TNT1 A 0 A_StopSound(8);
-		stop;
-	playsgco2:
-		TNT1 A 8 A_StartSound("weapons/huntrackdown",8);
-		TNT1 A 0 A_StopSound(8);
-		stop;
+
 	chamberauto:
 		SHTG A 1 A_Chamber();
 		SHTG A 1 A_JumpIf(invoker.weaponstatus[0]&HUNTF_CANFULLAUTO&&invoker.weaponstatus[HUNTS_FIREMODE]==2,"ready");
@@ -848,7 +840,7 @@ class Hunter:HDShotgun{
 			if(invoker.weaponstatus[HUNTS_CHAMBER]<1){
 				A_OverLay(26, "Non");
 				setweaponstate("unloadtube");
-			}else A_StartSound("weapons/huntrack",8,CHANF_OVERLAP);
+			}else A_StartSound("weapons/huntrackbak",8,CHANF_OVERLAP);
 		}
 		SHTG Q 3 offset(0,36){
 			A_MuzzleClimb(-frandom(1.2,2.4),frandom(1.2,2.4));
@@ -875,6 +867,7 @@ class Hunter:HDShotgun{
 				0,SXF_ABSOLUTEMOMENTUM|SXF_NOCHECKPOSITION|SXF_TRANSFERPITCH
 			); A_OverLay(26, "None");}
 		}
+		#### # 0 A_StartSound("weapons/huntrackfwd", 8);
 		SHTG R 5 offset(0,36);
 		SHTG C 0 A_JumpIf(!pressingunload(),"reloadend");
 		SHTG QC 2 offset(0,40);
