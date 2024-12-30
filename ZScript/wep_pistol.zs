@@ -968,7 +968,7 @@ Class MR_NoHudHudHandler : EventHandler
 		{
 			if(Hunter(Wep).Checking)StatusBar.DrawString(NewFont, StringTable.Localize("$HD_CHOKE")..
 			StringTable.Localize("$HD_CHOKE"..Wep.weaponstatus[HUNTS_CHOKE]), 
-			(-175, -70)+Bob, StatusBar.DI_SCREEN_CENTER, Font.CR_CYAN, 0.6, Scale:(0.5, 0.5));
+			(60, 65)+Bob, StatusBar.DI_SCREEN_CENTER, Font.CR_CYAN, 0.6, Scale:(0.5, 0.5));
 		}
 		
 		else if(Wep is 'Slayer')
@@ -977,11 +977,11 @@ Class MR_NoHudHudHandler : EventHandler
 			{
 			StatusBar.DrawString(NewFont, StringTable.Localize("$HD_CHOKEL")..
 			StringTable.Localize("$HD_CHOKE"..Wep.weaponstatus[SLAYS_CHOKE1]), 
-			(-150, -60)+Bob, StatusBar.DI_SCREEN_CENTER, Font.CR_CYAN, 0.6, Scale:(0.5, 0.5));
+			(200, 45)+Bob, StatusBar.DI_SCREEN_CENTER|StatusBar.DI_TEXT_ALIGN_RIGHT, Font.CR_CYAN, 0.6, Scale:(0.5, 0.5));
 			
 			StatusBar.DrawString(NewFont, StringTable.Localize("$HD_CHOKER")..
 			StringTable.Localize("$HD_CHOKE"..Wep.weaponstatus[SLAYS_CHOKE2]), 
-			(-150, -50)+Bob, StatusBar.DI_SCREEN_CENTER, Font.CR_CYAN, 0.6, Scale:(0.5, 0.5));
+			(200, 55)+Bob, StatusBar.DI_SCREEN_CENTER|StatusBar.DI_TEXT_ALIGN_RIGHT, Font.CR_CYAN, 0.6, Scale:(0.5, 0.5));
 			}
 		}
 	}
