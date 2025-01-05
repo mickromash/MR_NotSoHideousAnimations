@@ -1113,6 +1113,23 @@ enum bloopstatus{
 // ------------------------------------------------------------
 // Pickups
 // ------------------------------------------------------------
+class RocketBoxPickup:HDUPK{
+	default{
+		//$Category "Ammo/Hideous Destructor/"
+		//$Title "Box of Rocket Grenades"
+		//$Sprite "BROKA0"
+
+		scale 0.5;
+		hdupk.pickupmessage "$PICKUP_ROCKETBOX";
+		hdupk.pickuptype "HDRocketAmmo";
+		hdupk.amount 5;
+	}
+	states{
+	spawn:
+		BROK A -1;
+		stop;
+	}
+}
 class RocketBigPickup:HDUPK{
 	default{
 		//$Category "Ammo/Hideous Destructor/"
