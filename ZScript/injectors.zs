@@ -184,17 +184,17 @@ class PortableStimpack:HDWeapon{
 		TNT1 A 1;
 		Stop;
 	Leg:
-		STLG B 0 A_JumpIf(Health < 1, "Non");
-		STLG B 0 A_JumpIf(Height < 40 && IsMoving.Count(self)>0, "LegCrouMov");
-		STLG B 0 A_JumpIf(Height < 40, 2);
-		STLG A 0 A_JumpIf(IsMoving.Count(self)>0,3);
-		STLG # 1 {A_OverlayFlags(-26,PSPF_PLAYERTRANSLATED,1);A_OverlayOffset(-26, 0, (-pitch*2)+200);}
+		PBLG B 0 A_JumpIf(Health < 1, "Non");
+		PBLG B 0 A_JumpIf(Height < 40 && IsMoving.Count(self)>0, "LegCrouMov");
+		PBLG B 0 A_JumpIf(Height < 40, 2);
+		PBLG A 0 A_JumpIf(IsMoving.Count(self)>0,3);
+		PBLG # 1 {A_OverlayFlags(-26,PSPF_PLAYERTRANSLATED,1);A_OverlayOffset(-26, 0, (-pitch*2)+200);}
 		Loop;
 		#### AAA 0;
 		WALK GHHIIJJKLL 2 {A_OverlayFlags(-26,PSPF_PLAYERTRANSLATED,1);A_OverlayOffset(-26, 0, (-pitch*2)+200); if(IsMoving.Count(self)<2)A_SetTics(4);}
-		STLG A 0 A_JumpIf(IsMoving.Count(self)<1,"Leg");
+		PBLG A 0 A_JumpIf(IsMoving.Count(self)<1,"Leg");
 		WALK BCCDDEEF 2 {A_OverlayFlags(-26,PSPF_PLAYERTRANSLATED,1);A_OverlayOffset(-26, 0, (-pitch*2)+200);if(IsMoving.Count(self)<2)A_SetTics(4);}
-		STLG A 0 A_JumpIf(IsMoving.Count(self)<1,"Leg");
+		PBLG A 0 A_JumpIf(IsMoving.Count(self)<1,"Leg");
 		WALK F 2 {A_OverlayFlags(-26,PSPF_PLAYERTRANSLATED,1);A_OverlayOffset(-26, 0, (-pitch*2)+200);if(IsMoving.Count(self)<2)A_SetTics(4);}
 		Goto Leg;
 	Crouch:
