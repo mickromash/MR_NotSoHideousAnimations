@@ -126,7 +126,7 @@ class HDWeaponGrabber:HDWeapon{
 		if(grabbed.bcorpse){grbng=grbng..StringTable.Localize("$FIST_CORPSE"); setweaponstate("Grabcorpse");}
 		else if(inventory(grabbed)||hdupk(grabbed)){grbng=grbng..StringTable.Localize("$FIST_ITEM"); setweaponstate("Grabitem");}
 		else {grbng=grbng..StringTable.Localize("$FIST_OBJECT"); setweaponstate("Grabcorpse");}
-		if(hd_debug>0)grbng=grbng.."\n"..HDMath.GetName(grabbed);
+		if(hd_debug>0)grbng=grbng.."\n"..grabbed.gettag();
 		A_WeaponMessage(grbng.."...",3);
 
 		if(
@@ -257,7 +257,7 @@ class HDWeaponGrabber:HDWeapon{
 		if(grabbed.bcorpse){grbng=grbng..StringTable.Localize("$FIST_CORPSE"); setweaponstate("Draggingcorpse");}
 		else if(inventory(grabbed)||hdupk(grabbed)){grbng=grbng..StringTable.Localize("$FIST_ITEM"); setweaponstate("Draggingitem");}
 		else {grbng=grbng..StringTable.Localize("$FIST_OBJECT"); setweaponstate("Draggingcorpse");}
-		if(hd_debug>0)grbng=grbng.."\n"..HDMath.GetName(grabbed);
+		if(hd_debug>0)grbng=grbng.."\n"..grabbed.gettag();
 		A_WeaponMessage(grbng.."...",3);
 
 		if(

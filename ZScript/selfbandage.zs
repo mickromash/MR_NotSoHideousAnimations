@@ -378,7 +378,7 @@ class SelfBandage:HDWoundFixer{
 	injectbandage:
 		TNT1 A random(7,14){
 			if(invoker.target){
-				A_WeaponMessage(Stringtable.Localize("$BANDAGES_WORKINGON")..HDMath.GetName(invoker.target).."...",20);
+				A_WeaponMessage(Stringtable.Localize("$BANDAGES_WORKINGON")..invoker.target.gettag().."...",20);
 				if(random(0,2)){
 					if(!random(0,2))invoker.target.A_StartSound("bandage/rustle",CHAN_BODY);
 					return;
