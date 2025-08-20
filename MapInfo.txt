@@ -1,4 +1,4 @@
 GameInfo
 {
-	AddEventHandlers = "MR_NoHudHudHandler"
+	AddEventHandlers = "MR_NoHudHudHandler", "MRHD_WeapAnimsHandler"
 }

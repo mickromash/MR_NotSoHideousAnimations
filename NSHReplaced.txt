@@ -1,0 +1,17 @@
+HDMedikitter
+PortableStimpack
+SelfBandage
+HDPistol
+HDRevolver
+HDSMG
+Hunter
+Slayer
+ZM66AssaultRifle
+LiberatorRifle
+Vulcanette
+HDRL
+ThunderBuster
+BFG9K
+BossRifle
+HDFragGrenades
+TripwireFrag

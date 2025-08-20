@@ -1,0 +1,7 @@
+alias hd_pistol "use NSHPistol";
+alias hd_smg "use NSHSMG";
+alias hd_frags "use NSHFragGrenades";
+alias hd_stims "use NSHPortableStimpack";
+alias hd_meds "use NSHPortableMedikit;wait 2;use NSHMedikitter";
+//alias hd_potion "use HDHealingPotion";
+alias hd_band "use NSHSelfBandage";

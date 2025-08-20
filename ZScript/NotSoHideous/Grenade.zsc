@@ -1,0 +1,527 @@
+// ------------------------------------------------------------
+// GRENADE!
+// ------------------------------------------------------------
+class NSHFragGrenades:HDFragGrenades Replaces HDFragGrenades{
+	override void loadoutconfigure(String input)
+	{
+		if(Owner && Owner.FindInventory("HDFragGrenades"))
+		{
+			HDWeapon(Owner.FindInventory("HDFragGrenades")).Destroy();
+			Return;
+		}
+		Super.LoadOutConfigure(input);
+	}
+	
+	Default
+	{
+		hdgrenadethrower.wiretype "NSHTripwireFrag";
+	}
+	
+	override void DrawHUDStuff(HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl){
+		if(sb.hudlevel==1){
+			sb.drawnum(hpl.countinv(grenadeammotype),-45,-8,sb.DI_SCREEN_CENTER_BOTTOM);
+		}
+		sb.drawwepnum(
+			hpl.countinv("HDFragGrenadeAmmo"),
+			(HDCONST_MAXPOCKETSPACE/ENC_FRAG)
+		);
+		sb.drawwepnum(hdw.weaponstatus[FRAGS_FORCE],50,posy:-10,alwaysprecise:true);
+		if(!(hdw.weaponstatus[0]&FRAGF_SPOONOFF)){
+			sb.drawrect(-21,-19,5,4);
+			if(!(hdw.weaponstatus[0]&FRAGF_PINOUT))sb.drawrect(-25,-18,3,2);
+		}else{
+			int timer=hdw.weaponstatus[FRAGS_TIMER];
+			if(timer%3)sb.drawwepnum(140-timer,140,posy:-15,alwaysprecise:true);
+		}
+	}
+	
+	override string gethelptext(){
+		if(!Cvar.GetCVar("mrnsha_binds", Owner.Player).GetBool())LocalizeHelp();
+		else
+		{
+			MRHD_WeapAnimsHandler Handler = MRHD_WeapAnimsHandler(EventHandler.Find("MRHD_WeapAnimsHandler"));
+			
+			if(Handler)Handler.MRHD_GetWeaponKeyBinds(Self);
+		}
+		
+		if(weaponstatus[0]&FRAGF_SPOONOFF)return
+		LWPHELP_FIRE..StringTable.Localize("$GRENWH_FIRE1")..WEPHELP_RGCOL..")";
+		return
+		LWPHELP_FIRE..StringTable.Localize("$GRENWH_FIRE2")
+		..LWPHELP_ALTFIRE..StringTable.Localize("$GRENWH_ALTFIRE")
+		..LWPHELP_RELOAD..StringTable.Localize("$GRENWH_RELOAD")
+		..LWPHELP_ZOOM..StringTable.Localize("$GRENWH_ZOOM")
+		;
+	}
+	
+	override inventory CreateTossable(int amt){
+		ReturnHandToOwner();
+		owner.A_DropInventory(grenadeammotype,owner.countinv(grenadeammotype));
+		owner.A_GiveInventory("HDFist");
+		owner.A_SelectWeapon("HDFist");
+		return null;
+	}
+	override void InitializeWepStats(bool idfa){}
+	/*
+	//pull the pin
+	action void A_PullPin(){
+		invoker.weaponstatus[FRAGS_REALLYPULL]=0;
+		invoker.weaponstatus[0]|=(FRAGF_PINOUT|FRAGF_INHAND);
+		A_TakeInventory(invoker.grenadeammotype,1,TIF_NOTAKEINFINITE);
+		A_StartSound(invoker.pinsound,8);
+	}
+	//drop the spoon
+	action void A_StartCooking(){
+		invoker.StartCooking();
+		A_SetHelpText();
+	}
+	void StartCooking(){
+		if(!owner)return;
+		bool gbg;actor spn;
+		double ptch=owner.pitch;
+		double cpp=cos(ptch);double spp=sin(ptch);
+		[gbg,spn]=owner.A_SpawnItemEx(spoontype,
+			cpp*4,-1,gunheight()+2-spp*4,
+				cpp*4+vel.x,
+				0,
+				-sin(pitch)*4+vel.z,
+			0,SXF_NOCHECKPOSITION|SXF_TRANSFERPITCH
+		);
+		spn.vel+=owner.vel;
+		weaponstatus[0]|=FRAGF_SPOONOFF;
+		if(DoHelpText(owner))A_WeaponMessage(StringTable.Localize("$GREN_FUZE"),100);
+		owner.A_StartSound(spoonsound,8,attenuation:20);
+	}
+	//we need to start from the inventory itself so it can go into DoEffect
+	action void A_TossGrenade(bool oshit=false){
+		invoker.TossGrenade(oshit);
+		A_SetHelpText();
+	}
+	void TossGrenade(bool oshit=false){
+		if(!owner)return;
+		int garbage;actor ggg;
+		double cpp=cos(owner.pitch);
+		double spp=sin(owner.pitch);
+
+		//create the spoon
+		if(!(weaponstatus[0]&FRAGF_SPOONOFF)){
+			[garbage,ggg]=owner.A_SpawnItemEx(
+				spoontype,cpp*-4,-3,owner.height*0.88-spp*-4,
+				cpp*3,0,-sin(owner.pitch+random(10,20))*3,
+				frandom(33,45),SXF_NOCHECKPOSITION|SXF_TRANSFERPITCH
+			);
+			ggg.vel+=owner.vel;
+		}
+
+		//create the grenade
+		[garbage,ggg]=owner.A_SpawnItemEx(throwtype,
+			0,0,owner.height*0.88,
+			cpp*4,
+			0,
+			-spp*4,
+			0,SXF_NOCHECKPOSITION|SXF_TRANSFERPITCH
+		);
+		ggg.vel+=owner.vel;
+
+		//force calculation
+		double gforce=clamp(weaponstatus[FRAGS_FORCE]*0.5,1,40+owner.health*0.1);
+		if(oshit)gforce=min(gforce,frandom(4,20));
+		if(hdplayerpawn(owner))gforce*=hdplayerpawn(owner).strength;
+
+		let grenade=HDFragGrenade(ggg);if(!grenade)return;
+		grenade.fuze=weaponstatus[FRAGS_TIMER];
+
+		if(owner.player){
+			grenade.vel+=SwingThrow()*gforce;
+		}
+		grenade.a_changevelocity(
+			cpp*gforce*0.6,
+			0,
+			-spp*gforce*0.6,
+			CVF_RELATIVE
+		);
+		weaponstatus[FRAGS_TIMER]=0;
+		weaponstatus[FRAGS_FORCE]=0;
+		weaponstatus[0]&=~FRAGF_PINOUT;
+		weaponstatus[0]&=~FRAGF_SPOONOFF;
+		weaponstatus[FRAGS_REALLYPULL]=0;
+
+		weaponstatus[0]&=~FRAGF_INHAND;
+		weaponstatus[0]|=FRAGF_JUSTTHREW;
+	}*/
+	states{
+	Exploding1:
+		TNT1 AAAAAAAAAAAA 1 A_JumpIf(Health < 1, "Exploding");
+		Stop;
+	Explode:
+		GRNG D 3 A_OverLay(27,"Exploding1");
+	Exploding:
+		GRND BCDECBDCEDBCDEBCDECBDCEDBCDE 2 A_OverLayOffset(27,0,30);
+		GRND FG 3;
+		---- # 2 A_JumpIf(Health > 0, "TakeAnother");
+	Dead:
+		GRND G 1;
+		Loop;
+	HandUp:
+		GRNH C 1 A_OverLayOffset(26, -20, 50);
+		#### ### 1 A_OverlayOffset(26, 6, -15, WOF_ADD);
+		Stop;
+	GranUp:
+		GRNG A 1 A_OverLayOffset(25, 20, 50);
+		#### ### 1 A_OverlayOffset(25, -6, -15, WOF_ADD);
+		Stop;
+	TakeAnother:
+		TNT1 A 0 A_JumpIf(NoFrags(),"selectinstant");
+		GRNG D 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>136,"Explode");
+		TNT1 A 0 A_OverLay(26, "HandUp");
+		TNT1 A 0 A_OverLay(25, "GranUp");
+		TNT1 A 1 A_WeaponReady(WRF_NOFIRE);
+		TNT1 A 3 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 0);
+		Goto Ready;
+	select0:
+		TNT1 A 0 A_JumpIf(NoFrags(),"selectinstant");
+		TNT1 A 1{
+			if(!countinv("NulledWeapon"))A_SetTics(tics+4);
+			A_TakeInventory("NulledWeapon");
+			invoker.weaponstatus[FRAGS_REALLYPULL]=0;
+			invoker.weaponstatus[FRAGS_FORCE]=0;
+		}
+		TNT1 A 1 A_Raise(0);
+		TNT1 A 1 {A_Raise(18);A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 1);}
+		Goto TakeAnother;
+	selectinstant:
+		TNT1 A 0 A_WeaponBusy(false);
+	readytodonothing:
+		TNT1 A 1 A_WeaponReady(WRF_NOFIRE);
+		TNT1 A 0 A_JumpIf(NoFrags(),"readytodonothing");
+		Goto TakeAnother;
+		TNT1 A 0 A_SelectWeapon("HDFist");
+		TNT1 A 1 A_WeaponReady(WRF_NOFIRE);
+		wait;
+	HandDown:
+		GRNH C 1 A_OverLayOffset(26, -10, 10);
+		#### ## 1 A_OverlayOffset(26, -5, 10, WOF_ADD);
+		Stop;
+	deselect0:
+		GRNG A 0{
+			if(invoker.weaponstatus[0]&FRAGF_PINOUT)setweaponstate("deselectpinback");//A_SetTics(8);
+			else if(NoFrags())setweaponstate("deselectinstant");
+			invoker.ReturnHandToOwner();
+		}
+		TNT1 A 0 A_OverLay(26, "HandDown");
+		#### # 0 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 0);
+		GRNG A 1 A_Lower(30);
+		#### # 0 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 1);
+		GRNG A 1 A_Lower(50);
+		GRNG A 1 A_Lower(60);
+		GRNG A 1 A_Lower(72);
+		wait;
+	deselectinstant:
+		TNT1 A 0 A_Lower(999);
+		wait;
+	deselectpinback:
+		FRGG A 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>0,"juststopthrowing");
+		TNT1 A 0 {A_OverLay(25, "GranPinBack2"); A_OverLay(26, "HandPinBack2");}
+		TNT1 A 7;
+		GRNG A 0 A_OverLay(26, "HandReady");
+		GRNG A 1;
+		goto deselect0;
+	Non:
+		TNT1 A 1;
+		Stop;
+	HandReady:
+		GRNG D 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>135,"Non");
+		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_SPOONOFF, "Non");
+		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_PINOUT, "HandReadyPin");
+		GRNH C 1 A_OverLayOffset(26, 0,0);
+		#### # 0 A_OverlayFlags(26, PSPF_INTERPOLATE, 1);
+		GRNG D 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>135,"Non");
+		Loop;
+	HandReadyPin:
+		GRNG D 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>135,"Non");
+		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_SPOONOFF, "Non");
+		GRNH D 1 A_OverLayOffset(26, -27,12);
+		#### # 0 A_OverlayFlags(26, PSPF_INTERPOLATE, 1);
+		GRNG D 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>135,"Non");
+		Loop;
+	ready:
+		GRNG D 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>135,"Explode");
+		GRNG A 0{
+			invoker.weaponstatus[FRAGS_FORCE]=0;
+			invoker.weaponstatus[FRAGS_REALLYPULL]=0;
+			If(!(invoker.weaponstatus[0]&FRAGF_SPOONOFF))A_OverLay(26,"HandReady");
+			}
+		GRNG D 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_SPOONOFF,3);
+		GRNG B 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_PINOUT,2);
+		GRNG A 0;
+		GRNG # 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>135,"Explode");
+		GRNG # 1 A_WeaponReady(WRF_ALL);
+		#### # 0 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 1);
+		GRNG # 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>135,"Explode");
+		goto ready3;
+	ready3:
+		---- A 0{
+			invoker.weaponstatus[0]&=~FRAGF_JUSTTHREW;
+			A_WeaponBusy(false);
+		}goto readyend;
+
+	zoom:
+		TNT1 A 0 A_JumpIf(NoFrags(),"selectinstant");
+		TNT1 A 0{
+			let wiretype=invoker.wiretype;
+			A_GiveInventory(wiretype);
+			A_SelectWeapon(wiretype);
+			A_WeaponReady(WRF_NOFIRE);
+		}goto nope;
+
+	pinout:
+		GRNG B 1 A_WeaponReady(WRF_ALLOWRELOAD);
+		loop;
+
+	altfire:
+		GRNG C 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_SPOONOFF,"readyend");
+		GRNG B 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_PINOUT,"startcooking");
+		GRNG A 0 A_JumpIf(NoFrags(),"selectinstant");
+		GRNG A 0 A_Refire();
+		goto ready;
+	althold:
+		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_SPOONOFF,"nope");
+		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_PINOUT,"nope");
+		TNT1 A 0 A_JumpIf(NoFrags(),"selectinstant");
+		TNT1 A 0 A_OverLay(26, "HandPinOut1");
+		GRNG A 1 offset(-3,2);
+		#### A 1 offset(-6,4);
+		#### A 1 offset(-9,6);
+		goto startpull;
+	startpull:
+		TNT1 A 0 A_OverLay(26, "HandPinHolding");
+		GRNG A 1{
+			if(invoker.weaponstatus[FRAGS_REALLYPULL]>=16)setweaponstate("endpull");
+			else invoker.weaponstatus[FRAGS_REALLYPULL]++;
+		}
+		GRNG A 0 A_Refire("startpull");
+		TNT1 A 0 A_OverLay(26, "HandPinOutAbort");
+		GRNG A 1 offset(-9,6);
+		#### A 1 offset(-6,4);
+		#### A 1 offset(-3,2);
+		goto ready;
+	endpull:
+		TNT1 A 0 A_OverLay(26, "HandPinOutAlready");
+		GRNG A 1;
+		#### A 3;
+		#### B 3 A_PullPin();
+		GRNG B 0 A_Refire("Nope");
+		goto ready;
+	HandCook:
+		GRNH D 1 A_OverLayOffset(26, -20, 12);
+		#### #### 1 A_OverlayOffset(26, -5, 8, WOF_ADD);
+		GRNH D 1 A_OverLayOffset(26, -45, 50, WOF_INTERPOLATE);
+		Stop;
+	startcooking:
+		GRNG C 0 A_OverLay(26, "HandCook");
+		GRNG C 6 A_StartCooking();
+		goto ready;
+	HandPinOut1:
+		GRNH C 1 A_OverLayOffset(26, 4, -2);
+		#### #### 1 A_OverlayOffset(26, 4, -2, WOF_ADD);
+		Stop;
+	HandPinOutAbort:
+		GRNH C 1 A_OverLayOffset(26, 18, -10);
+		#### #### 1 A_OverlayOffset(26, -4, 2, WOF_ADD);
+		Stop;
+	HandPinHolding:
+		GRNH D 1 A_OverLayOffset(26, 0, 0);
+		Stop;
+	HandPinOutAlready:
+		GRNH D 3 A_OverLayOffset(26, -1, 1);
+		GRNH D 1 A_OverLayOffset(26, -3, 2, WOF_INTERPOLATE);
+		GRNH D 1 A_OverLayOffset(26, -6, 3, WOF_INTERPOLATE);
+		GRNH D 1 A_OverLayOffset(26, -15, 8, WOF_INTERPOLATE);
+		Goto HandReady;
+	HandPinOut2:
+		GRNH C 1 A_OverLayOffset(26, 14, -8);
+		GRNH C 1 A_OverLayOffset(26, 18, -10, WOF_INTERPOLATE);
+		GRNH D 3 {A_OverLayOffset(26, 0, 0); A_SetTics(hdplayerpawn(self)?int(5./hdplayerpawn(self).strength):6);}
+		GRNH D 3 {A_OverLayOffset(26, -1, 1, WOF_INTERPOLATE); A_SetTics(hdplayerpawn(self)?int(5./hdplayerpawn(self).strength):6);}
+		GRNH ## 1 A_OverLayOffset(26, -3, 1, WOF_ADD);
+		GRNH D 1 A_OverLayOffset(26, -15, 8, WOF_INTERPOLATE);
+	HandPinOut4:
+		GRNH D 1 A_OverLayOffset(26, -31, 10);
+		#### ### 1 A_OverlayOffset(26, -6, 2, WOF_ADD);
+		GRNH D 2 A_OverLayOffset(26, -57, 2, WOF_INTERPOLATE);
+		GRNH D 2 A_OverLayOffset(26, -65, 0, WOF_INTERPOLATE);
+		Stop;
+	HandPinOut3:
+		GRNH C 1 A_OverLayOffset(26, 14, -8);
+		GRNH C 1 A_OverLayOffset(26, 18, -10, WOF_INTERPOLATE);
+		GRNH D 3 A_OverLayOffset(26, 0, 0);
+		GRNH D 3 A_OverLayOffset(26, -1, 1, WOF_INTERPOLATE);
+		GRNH D 1 A_OverLayOffset(26, -3, 2, WOF_INTERPOLATE);
+		GRNH D 1 A_OverLayOffset(26, -6, 3, WOF_INTERPOLATE);
+		GRNH D 1 A_OverLayOffset(26, -15, 8, WOF_INTERPOLATE);
+		Goto HandReady;
+	HandPoint:
+		GRNH A 1 {A_OverLayOffset(OverlayId(), -35+invoker.weaponstatus[FRAGS_FORCE]*.4, 40-invoker.weaponstatus[FRAGS_FORCE]);}
+		Stop;
+	fire:
+		#### # 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_JUSTTHREW,"nope");
+		#### # 0 A_JumpIf(NoFrags(),"selectinstant");
+		#### # 0 A_JumpIf(hdplayerpawn(self)&&hdplayerpawn(self).strength>1.7,3);
+		#### # 0 A_JumpIf(hdplayerpawn(self)&&hdplayerpawn(self).strength>1.3,2);
+		#### # 1;
+		TNT1 A 0 A_Refire("PreHold");
+		goto ready;
+	GranHold:
+		GRNG D 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_SPOONOFF,2);
+		GRNG B 0;
+		#### # 0 A_OverlayPivot(OverlayId(), .5, .5);
+		GRNG ######## 1 {A_OverLayOffset(25, 14, 14, WOF_ADD);A_OverlayRotate(OverlayId(), -5, WOF_ADD);}
+		Stop;
+	hold21:
+		TNT1 A 0 A_OverLay(25,"GranHold");
+		TNT1 A 0 A_OverLay(26,"Non");
+		TNT1 A 8;
+		Goto Hold2;
+	PreHold:
+		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_PINOUT,"hold21");
+	hold:
+		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_JUSTTHREW,"nope");
+		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_PINOUT,"hold2");
+		TNT1 A 0 A_OverLay(26, "HandPinOut1");
+		#### # 0 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 0);
+		GRNG A 1 offset(-3,2);
+		#### # 0 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 1);
+		#### # 1 offset(-6,4);
+		#### # 1 offset(-9,6);
+		#### # 0 A_OverLay(26, "HandPinOut2");
+		GRNG A 4 A_JumpIf(invoker.weaponstatus[FRAGS_FORCE]>=1,"hold2");
+		GRNG A 4 A_SetTics(hdplayerpawn(self)?int(5./hdplayerpawn(self).strength):6);
+		TNT1 A 0 A_JumpIf(NoFrags(),"selectinstant");
+		GRNG B 3 A_PullPin();
+		TNT1 A 0 A_OverLay(25,"GranHold");
+		#### # 8 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 1);
+		Goto Hold2;
+	hold2:
+		TNT1 A 0 A_JumpIf(NoFrags(),"selectinstant");
+		FRGG E 0 A_JumpIf(invoker.weaponstatus[FRAGS_FORCE]>=40,"hold3a");
+		FRGG D 0 A_JumpIf(invoker.weaponstatus[FRAGS_FORCE]>=30,"hold3a");
+		FRGG C 0 A_JumpIf(invoker.weaponstatus[FRAGS_FORCE]>=20,"hold3");
+		FRGG B 0 A_JumpIf(invoker.weaponstatus[FRAGS_FORCE]>=10,"hold3");
+		goto hold3;
+	hold3a:
+		FRGG # 0{
+			if(invoker.weaponstatus[FRAGS_FORCE]<50)invoker.weaponstatus[FRAGS_FORCE]++;
+		}
+	hold3:
+		TNT1 # 0 A_OverLay(26,"HandPoint");
+		TNT1 A 1{
+			A_WeaponReady(
+				invoker.weaponstatus[0]&FRAGF_SPOONOFF?WRF_NOFIRE:WRF_NOFIRE|WRF_ALLOWRELOAD
+			);
+			if(invoker.weaponstatus[FRAGS_FORCE]<50)invoker.weaponstatus[FRAGS_FORCE]++;
+		}
+		TNT1 A 0 A_Refire();
+		goto throw;
+	HandThrow:
+		GRNH A 1 A_OverLayOffset(26, -35, 19);
+		GRNH A 1 A_OverLayOffset(26, -48, 37, WOF_INTERPOLATE);
+		GRNH A 1 A_OverLayOffset(26, -56, 46, WOF_INTERPOLATE);
+		Stop;
+	GranThrow:
+		GRNG E 1 A_OverLayOffset(25, 10, -10);
+		GRNG EE 1 A_OverLayOffset(25, -10, 10, WOF_ADD);
+		GRNG F 1 A_OverLayOffset(25, 7, 0);
+		GRNG F 1 A_OverLayOffset(25, 2, 10, WOF_INTERPOLATE);
+		GRNG F 1 A_OverLayOffset(25, -2, 20, WOF_INTERPOLATE);
+		GRNG F 1 A_OverLayOffset(25, -5, 30, WOF_INTERPOLATE);
+		GRNG F 1 A_OverLayOffset(25, -10, 40, WOF_INTERPOLATE);
+		GRNG F 1 A_OverLayOffset(25, -15, 50, WOF_INTERPOLATE);
+		Stop;
+	throw:
+		TNT1 A 0 A_JumpIf(NoFrags(),"selectinstant");
+		TNT1 A 0 A_OverLay(26,"HandThrow");
+		TNT1 A 0 A_OverLay(25, "GranThrow");
+		#### # 0 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 0);
+		FRGG A 2 offset(0,0);
+		FRGG A 0 A_TossGrenade();
+		FRGG A 6;
+		goto TakeAnother;
+	reload:
+		TNT1 A 0 A_JumpIf(NoFrags(),"selectinstant");
+		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_SPOONOFF,"Ready");
+		TNT1 A 0 A_JumpIf(invoker.weaponstatus[FRAGS_FORCE]>=1,"pinbackin");
+		TNT1 A 0 A_JumpIf(invoker.weaponstatus[0]&FRAGF_PINOUT,"altpinbackin");
+		goto ready;
+	HandPinBack:
+		GRNH D 1 A_OverLayOffset(26, -64, -26);
+		GRNH D 1 A_OverLayOffset(26, -58, -20, WOF_INTERPOLATE);
+		GRNH D 1 A_OverLayOffset(26, -50, -10, WOF_INTERPOLATE);
+		GRNH D 1 A_OverLayOffset(26, -36, -7, WOF_INTERPOLATE);
+		GRNH D 1 A_OverLayOffset(26, -15, 8, WOF_INTERPOLATE);
+		GRNH D 1 A_OverLayOffset(26, -3, 2, WOF_INTERPOLATE);
+		GRNH D 3 A_OverLayOffset(26, -1, 1, WOF_INTERPOLATE);
+		GRNH D 1 A_OverLayOffset(26, 0, 0, WOF_INTERPOLATE);
+		GRNH C 1 A_OverLayOffset(26, 18, -10);
+		GRNH C 1 A_OverLayOffset(26, 12, -2, WOF_INTERPOLATE);
+		GRNH C 1 A_OverLayOffset(26, 11, -6, WOF_INTERPOLATE);
+		GRNH C 1 A_OverLayOffset(26, 7, -4, WOF_INTERPOLATE);
+		GRNH C 1 A_OverLayOffset(26, 4, -2, WOF_INTERPOLATE);
+		GRNH C 2 A_OverlayOffset(OverlayId(), -4, 0, WOF_ADD);
+		Stop;
+	GranPinBack:
+		TNT1 A 2;
+		GRNG B 1 A_OverLayOffset(25, 53, 35);
+		#### ### 1 A_OverlayOffset(25, -7.6, -5, WOF_ADD);
+		GRNG B 0 A_ReturnHandToOwner();
+		GRNG B 3 A_OverLayOffset(25, 7, 5, WOF_INTERPOLATE);
+		GRNG B 1 A_OverLayOffset(25, 9, 10, WOF_INTERPOLATE);
+		Stop;
+	pinbackin:
+		TNT1 A 0 {A_OverLay(25, "GranPinBack"); A_OverLay(26, "HandPinBack");}
+		TNT1 A 1;
+		TNT1 A 9;
+		#### # 0 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 0);
+		GRNG A 2;
+		GRNG A 0 A_OverLay(26, "HandReady");
+		GRNG A 1;
+		GRNG A 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>0,"juststopthrowing");
+		GRNG A 0 A_Refire("nope");
+		goto ready;
+	HandPinBack2:
+		GRNH D 2 A_OverLayOffset(26, -10, 7);
+		GRNH D 2 A_OverLayOffset(26, -7, 7, WOF_INTERPOLATE);
+		GRNH D 1 A_OverLayOffset(26, -6, 6, WOF_INTERPOLATE);
+		GRNH C 1 A_OverLayOffset(26, 18, -10);
+		GRNH C 1 A_OverLayOffset(26, 12, -2, WOF_INTERPOLATE);
+		GRNH C 1 A_OverLayOffset(26, 4, -6, WOF_INTERPOLATE);
+		Goto HandReady;
+	GranPinBack2:
+		GRNG B 2 A_OverLayOffset(25, -2, 2);
+		GRNG B 0 A_ReturnHandToOwner();
+		GRNG B 3 A_OverLayOffset(25, -5, 5, WOF_INTERPOLATE);
+		GRNG A 2 A_OverLayOffset(25, -2, 2, WOF_INTERPOLATE);
+		Stop;
+	altpinbackin:
+		FRGG A 0 A_JumpIf(invoker.weaponstatus[FRAGS_TIMER]>0,"juststopthrowing");
+		TNT1 A 0 {A_OverLay(25, "GranPinBack2"); A_OverLay(26, "HandPinBack2");}
+		TNT1 A 7;
+		#### # 0 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 0);
+		GRNG A 0 A_OverLay(26, "HandReady");
+		GRNG A 1;
+		GRNG A 0 A_Refire("nope");
+		goto ready;
+	juststopthrowing:
+		TNT1 A 10;
+		#### # 0 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 0);
+		FRGG A 0{invoker.weaponstatus[FRAGS_FORCE]=0;}
+		TNT1 A 0 A_Refire();
+		FRGG B 1 offset(0,38);
+		FRGG B 1 offset(0,36);
+		FRGG B 1 offset(0,34);
+		goto ready;
+	spawn:
+		TNT1 A 1;
+		TNT1 A 0 A_SpawnItemEx(invoker.grenadeammotype,SXF_NOCHECKPOSITION);
+		stop;
+	}
+}
