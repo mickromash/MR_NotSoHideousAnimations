@@ -19,7 +19,8 @@ class NSHBFG9K:BFG9K{// replaces BFG9K{
 		..LWPHELP_RELOAD..StringTable.Localize("$BFGWH_RELOAD")
 		..LWPHELP_ALTRELOAD..StringTable.Localize("$BFGWH_ALTRELOAD")
 		..LWPHELP_UNLOADUNLOAD
-		..LWPHELP_USE.."+"..LWPHELP_UNLOAD..StringTable.Localize("$BFGWH_USEPUNL")
+		..LWPHELP_USE.."+"..LWPHELP_UNLOAD..StringTable.Localize("$BFGWH_USEPUNL").."\n"
+		..LWPHELP_ZOOM.."+"..LWPHELP_RELOAD..StringTable.Localize("$LWPHELP_CHECKCHARGE")
 		;
 	}
 	

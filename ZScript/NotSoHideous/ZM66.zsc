@@ -25,6 +25,7 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 			..LWPHELP_ZOOM.."+"..LWPHELP_FIREMODE.."+"..LWPHELP_UPDOWN..StringTable.Localize("$ZMWH_ZPFMOD")))
 		..LWPHELP_MAGMANAGER
 		..LWPHELP_UNLOAD..StringTable.Localize("$ZMWH_UNLOAD")..(glmode?StringTable.Localize("$ZMWH_GL"):StringTable.Localize("$ZMWH_MAG"))
+		..LWPHELP_ZOOM.."+"..LWPHELP_RELOAD..StringTable.Localize("$LWPHELP_CHECKMAG")
 		;
 	}
 	override void DrawSightPicture(

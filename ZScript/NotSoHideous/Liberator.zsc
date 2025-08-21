@@ -131,7 +131,8 @@ class NSHLiberatorRifle:LiberatorRifle{// Replaces LiberatorRifle{
 			..LWPHELP_ZOOM.."+"..LWPHELP_FIREMODE.."+"..LWPHELP_UPDOWN..StringTable.Localize("$LIBWH_ZPFMOD")))
 		..LWPHELP_MAGMANAGER
 		..LWPHELP_UNLOAD..StringTable.Localize("$LIBWH_UNLOAD")..(glmode?StringTable.Localize("$LIBWH_GL"):StringTable.Localize("$LIBWH_MAG"))
-		..LWPHELP_USE.."+"..LWPHELP_UNLOAD..StringTable.Localize("$UPUNLOAD")
+		..LWPHELP_USE.."+"..LWPHELP_UNLOAD..StringTable.Localize("$UPUNLOAD").."\n"
+		..LWPHELP_ZOOM.."+"..LWPHELP_RELOAD..StringTable.Localize("$LWPHELP_CHECKMAG")
 		;
 	}
 	

@@ -40,7 +40,7 @@ class NSHBossRifle:BossRifle{//Replaces BossRifle{
 			sb.mAmountFont,string.format("%i",hdw.weaponstatus[BOSSS_DROPADJUST]),
 			(-16,-18),sb.DI_SCREEN_CENTER_BOTTOM|sb.DI_TEXT_ALIGN_RIGHT,Font.CR_WHITE
 		);
-		if(hdw.weaponstatus[BOSSF_SAFETY]==1)sb.drawimage("SAFETY",(-22,-9),sb.DI_SCREEN_CENTER_BOTTOM,scale:(1,1));
+		if(hdw.weaponstatus[BOSSF_SAFETY])sb.drawimage("SAFETY",(-22,-9),sb.DI_SCREEN_CENTER_BOTTOM,scale:(1,1));
 	}
 	
 	override string gethelptext(){
@@ -63,6 +63,7 @@ class NSHBossRifle:BossRifle{//Replaces BossRifle{
 		..LWPHELP_ALTFIRE.."+"..LWPHELP_UNLOAD..StringTable.Localize("$BOSWH_AFIREPUNL")
 		..LWPHELP_UNLOADUNLOAD
 		..LWPHELP_USE.."+"..LWPHELP_FIREMODE..StringTable.Localize("$LWPHELP_SAFETY")
+		..LWPHELP_ZOOM.."+"..LWPHELP_RELOAD..StringTable.Localize("$LWPHELP_CHECKMAG")
 		;
 	}
 	override void DrawSightPicture(
@@ -168,8 +169,7 @@ class NSHBossRifle:BossRifle{//Replaces BossRifle{
 
 	Safety:
 		---- A 0 {A_StartSound("weapons/fmswitch",CHAN_WEAPON,CHANF_OVERLAP,0.4);
-		if(invoker.weaponstatus[BOSSF_SAFETY]==1)invoker.weaponstatus[BOSSF_SAFETY]=0;
-		else invoker.weaponstatus[BOSSF_SAFETY]=1;}
+			invoker.weaponstatus[BOSSF_SAFETY]=!invoker.weaponstatus[BOSSF_SAFETY];}
 		Goto Nope;
 		
 	ready:
@@ -873,4 +873,4 @@ class NSHBossRifle:BossRifle{//Replaces BossRifle{
 		}
 	}
 }
-enum NSHbossstatus{BOSSF_SAFETY=7,}
+enum NSHbossstatus{BOSSF_SAFETY=8,}

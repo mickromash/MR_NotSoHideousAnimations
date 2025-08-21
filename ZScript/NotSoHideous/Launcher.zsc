@@ -35,7 +35,7 @@ class NSHRL:HDRL{
 			(-32,-15),sb.DI_SCREEN_CENTER_BOTTOM|sb.DI_TEXT_ALIGN_RIGHT,
 			ab?Font.CR_WHITE:Font.CR_DARKGRAY
 		);
-		if(hdw.weaponstatus[RLF_SAFETY]==1)sb.drawimage("SAFETY",(-17,-16),sb.DI_SCREEN_CENTER_BOTTOM,scale:(1,1));	
+		if(hdw.weaponstatus[RLF_SAFETY])sb.drawimage("SAFETY",(-17,-16),sb.DI_SCREEN_CENTER_BOTTOM,scale:(1,1));	
 		if(!(hdw.weaponstatus[0]&RLF_NOMAG))sb.drawwepnum(hdw.weaponstatus[RLS_MAG],6);
 		if(hdw.weaponstatus[RLS_CHAMBER]>0)sb.drawrect(-19,-11,3,1);
 	}
@@ -172,8 +172,7 @@ class NSHRL:HDRL{
 		
 	Safety:
 		---- A 0 {A_StartSound("weapons/fmswitch",CHAN_WEAPON,CHANF_OVERLAP,0.4);
-		if(invoker.weaponstatus[RLF_SAFETY]==1)invoker.weaponstatus[RLF_SAFETY]=0;
-		else invoker.weaponstatus[RLF_SAFETY]=1;}
+			invoker.weaponstatus[RLF_SAFETY]=!invoker.weaponstatus[RLF_SAFETY];}
 		Goto Nope;
 	ready:
 		MISG A 0 A_CheckIdSprite("LAUGA0","MISGA0");
@@ -213,7 +212,7 @@ class NSHRL:HDRL{
 
 
 	fire:
-		#### A 1;
+		#### A 1 A_JumpIf(invoker.weaponstatus[RLF_SAFETY], "Nope");
 		goto shoot;
 	althold:
 	hold:
@@ -853,4 +852,4 @@ class NSHRL:HDRL{
 		}
 	}
 }
-enum NSHrocketstatus{RLF_SAFETY=7,};
+enum NSHrocketstatus{RLF_SAFETY=8,};

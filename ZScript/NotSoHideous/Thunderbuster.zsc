@@ -21,7 +21,7 @@ class NSHThunderBuster:ThunderBuster{// Replaces ThunderBuster{
 			(-16,-9),sb.DI_TEXT_ALIGN_RIGHT|sb.DI_TRANSLATABLE|sb.DI_SCREEN_CENTER_BOTTOM,
 			Font.CR_DARKGRAY
 		);
-		if(hdw.weaponstatus[TBF_SAFETY]==1)sb.drawimage("SAFETY",(-17,-16),sb.DI_SCREEN_CENTER_BOTTOM,scale:(1,1));	
+		if(hdw.weaponstatus[TBF_SAFETY])sb.drawimage("SAFETY",(-17,-16),sb.DI_SCREEN_CENTER_BOTTOM,scale:(1,1));	
 	}
 	
 	override string gethelptext()
@@ -41,6 +41,7 @@ class NSHThunderBuster:ThunderBuster{// Replaces ThunderBuster{
 		..LWPHELP_UNLOADUNLOAD
 		..LWPHELP_ALTRELOAD..StringTable.Localize("$THBWH_ALTRELOAD").."\n"
 		..LWPHELP_USE.."+"..LWPHELP_FIREMODE..StringTable.Localize("$LWPHELP_SAFETY")
+		..LWPHELP_ZOOM.."+"..LWPHELP_RELOAD..StringTable.Localize("$LWPHELP_CHECKCHARGE")
 		;
 	}
 	override void DrawSightPicture(
@@ -269,8 +270,7 @@ class NSHThunderBuster:ThunderBuster{// Replaces ThunderBuster{
 	states{
 	Safety:
 		---- A 0 {A_StartSound("weapons/fmswitch",CHAN_WEAPON,CHANF_OVERLAP,0.4);
-		if(invoker.weaponstatus[TBF_SAFETY]==1)invoker.weaponstatus[TBF_SAFETY]=0;
-		else invoker.weaponstatus[TBF_SAFETY]=1;}
+			invoker.weaponstatus[TBF_SAFETY]=!invoker.weaponstatus[TBF_SAFETY];}
 		Goto Nope;
 	ready:
 		---- A 0 A_JumpIf(pressinguse()&&pressingfiremode(),"Safety");
@@ -659,4 +659,4 @@ class NSHThunderBuster:ThunderBuster{// Replaces ThunderBuster{
 		}
 	}
 }
-enum NSHtbstatus{TBF_SAFETY=6,};
+enum NSHtbstatus{TBF_SAFETY=8,};

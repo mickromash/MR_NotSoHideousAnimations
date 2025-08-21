@@ -22,6 +22,7 @@ class NSHVulcanette:Vulcanette{// Replaces Vulcanette{
 		..LWPHELP_MAGMANAGER
 		..LWPHELP_UNLOADUNLOAD
 		..LWPHELP_USE.."+"..LWPHELP_UNLOAD..StringTable.Localize("$VULWH_OR")..LWPHELP_USE.."+"..LWPHELP_ALTRELOAD..StringTable.Localize("$VULWH_UNLBAT")
+		..LWPHELP_ZOOM.."+"..LWPHELP_RELOAD..StringTable.Localize("$LWPHELP_CHECKMAGSNCHARGE")
 		;
 	}
 	override void DrawSightPicture(

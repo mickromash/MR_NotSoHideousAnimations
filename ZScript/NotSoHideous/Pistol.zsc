@@ -17,7 +17,7 @@ class NSHPistol:HDPistol{// replaces HDPistol{
 			);
 			sb.drawnum(hpl.countinv("HD9mMag15"),-43,-8,sb.DI_SCREEN_CENTER_BOTTOM);
 		}
-		if(hdw.weaponstatus[PISF_SAFETY]==1)sb.drawimage("SAFETY",(-17,-12),sb.DI_SCREEN_CENTER_BOTTOM,scale:(1,1));	
+		if(hdw.weaponstatus[PISF_SAFETY])sb.drawimage("SAFETY",(-17,-12),sb.DI_SCREEN_CENTER_BOTTOM,scale:(1,1));	
 		if(hdw.weaponstatus[0]&PISF_SELECTFIRE)sb.drawwepcounter(hdw.weaponstatus[0]&PISF_FIREMODE,
 			-22,-10,"RBRSA3A7","STFULAUT"
 		);
@@ -42,6 +42,7 @@ class NSHPistol:HDPistol{// replaces HDPistol{
 		..LWPHELP_MAGMANAGER
 		..LWPHELP_UNLOADUNLOAD
 		..LWPHELP_USE.."+"..LWPHELP_FIREMODE..StringTable.Localize("$LWPHELP_SAFETY")
+		..LWPHELP_ZOOM.."+"..LWPHELP_RELOAD..StringTable.Localize("$LWPHELP_CHECKMAG")
 		;
 	}
 	override void DrawSightPicture(
@@ -147,7 +148,7 @@ class NSHPistol:HDPistol{// replaces HDPistol{
 		goto ready;
 	user2:
 	firemode:
-		---- A 0{if(pressinguse()){A_StartSound("weapons/fmswitch",CHAN_WEAPON,CHANF_OVERLAP,0.4);if(invoker.weaponstatus[PISF_SAFETY]==1){invoker.weaponstatus[PISF_SAFETY]=0;setweaponstate("Nope");} else {invoker.weaponstatus[PISF_SAFETY]=1;setweaponstate("Nope");}}}
+		---- A 0{if(pressinguse()){A_StartSound("weapons/fmswitch",CHAN_WEAPON,CHANF_OVERLAP,0.4);invoker.weaponstatus[PISF_SAFETY]=!invoker.weaponstatus[PISF_SAFETY];setweaponstate("Nope");}}
 		---- A 0{
 			if(invoker.weaponstatus[0]&PISF_SELECTFIRE)
 			{invoker.weaponstatus[0]^=PISF_FIREMODE;
@@ -220,7 +221,7 @@ class NSHPistol:HDPistol{// replaces HDPistol{
 		#### B 3 offset(0,30);
 		goto nope;
 	chamber_manual:
-		---- A 0 A_JumpIf(invoker.weaponstatus[PISF_SAFETY]==1,"Nope");
+		---- A 0 A_JumpIf(invoker.weaponstatus[PISF_SAFETY], "Nope");
 		---- A 0 A_JumpIf(!(invoker.weaponstatus[0]&PISF_JUSTUNLOAD)
 			&&(
 				invoker.weaponstatus[PISS_CHAMBER]==2
@@ -255,7 +256,7 @@ class NSHPistol:HDPistol{// replaces HDPistol{
 		#### B 3 offset(0,35);
 		goto nope;
 	chamber_manualReload:
-		---- A 0 A_JumpIf(invoker.weaponstatus[PISF_SAFETY]==1,"Nope");
+		---- A 0 A_JumpIf(invoker.weaponstatus[PISF_SAFETY], "Nope");
 		#### A 0 A_JumpIf((player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR4A0"))||(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR3A0")),2);
 		PSR1 A 0 A_Jump(256,2);
 		PSR3 A 0;
@@ -306,9 +307,9 @@ class NSHPistol:HDPistol{// replaces HDPistol{
 	fire:
 		---- A 0{
 			invoker.weaponstatus[0]&=~PISF_JUSTUNLOAD;
-			if(invoker.weaponstatus[PISF_SAFETY]==1)setweaponstate("nope");
-			if(invoker.weaponstatus[PISS_CHAMBER]==2&&invoker.weaponstatus[PISF_SAFETY]==0)setweaponstate("shoot");
-			else if(invoker.weaponstatus[PISS_MAG]>0&&invoker.weaponstatus[PISF_SAFETY]==0)setweaponstate("chamber_manual");
+			if(invoker.weaponstatus[PISF_SAFETY])setweaponstate("nope");
+			if(invoker.weaponstatus[PISS_CHAMBER]==2&&!invoker.weaponstatus[PISF_SAFETY])setweaponstate("shoot");
+			else if(invoker.weaponstatus[PISS_MAG]>0&&!invoker.weaponstatus[PISF_SAFETY])setweaponstate("chamber_manual");
 		}goto nope;
 	shoot:
 		#### B 1{
@@ -382,7 +383,7 @@ class NSHPistol:HDPistol{// replaces HDPistol{
 		---- A 0{
 			invoker.weaponstatus[0]|=PISF_JUSTUNLOAD;
 			if(invoker.weaponstatus[PISS_MAG]>=0)setweaponstate("unmag");
-			else if(invoker.weaponstatus[PISF_SAFETY]==1)setweaponstate("Nope");
+			else if(invoker.weaponstatus[PISF_SAFETY])setweaponstate("Nope");
 		}goto chamber_manualunload;
 	HandLoadChamber:
 		PSHA A 1 A_OverLayOffset(26, 7, 40);
@@ -679,7 +680,7 @@ class NSHPistol:HDPistol{// replaces HDPistol{
 		#### J 2 offset(0,0);
 		#### L 4 offset(0,0);
 	reloadend:
-		#### A 0 A_JumpIf(invoker.weaponstatus[PISF_SAFETY]==0&&!(invoker.weaponstatus[0]&PISF_JUSTUNLOAD)&&invoker.weaponstatus[PISS_MAG]>0&&invoker.weaponstatus[PISS_CHAMBER]==0,"chamber_manualReload");
+		#### A 0 A_JumpIf(!invoker.weaponstatus[PISF_SAFETY]&&!(invoker.weaponstatus[0]&PISF_JUSTUNLOAD)&&invoker.weaponstatus[PISS_MAG]>0&&invoker.weaponstatus[PISS_CHAMBER]==0,"chamber_manualReload");
 		---- R 0;
 		#### R 0 A_JumpIf(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR4R0"),4);
 		#### R 0 A_JumpIf(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("PSR3R0"),4);
@@ -699,7 +700,7 @@ class NSHPistol:HDPistol{// replaces HDPistol{
 		PI2G A 1 offset(2,-5);
 		#### A 0 A_Jump(256,2);
 		#### A 1 offset(-2,-5);
-		#### A 0 A_JumpIf(invoker.weaponstatus[PISF_SAFETY]==0&&!(invoker.weaponstatus[0]&PISF_JUSTUNLOAD),"chamber_manual");
+		#### A 0 A_JumpIf(!invoker.weaponstatus[PISF_SAFETY]&&!(invoker.weaponstatus[0]&PISF_JUSTUNLOAD),"chamber_manual");
 		goto nope;
 
 	user1:
@@ -845,7 +846,7 @@ class NSHPistol:HDPistol{// replaces HDPistol{
 	}
 }
 
-enum NSHpistolstatus{PISF_SAFETY=3,};
+enum NSHpistolstatus{PISF_SAFETY=8,};
 
 Class MR_NoHudHudHandler : EventHandler
 {

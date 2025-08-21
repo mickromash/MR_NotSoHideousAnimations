@@ -18,6 +18,7 @@ class NSHSMG:HDSMG{// Replaces HDSMG{
 		..LWPHELP_FIREMODE..StringTable.Localize("$SMGWH_FMODE")
 		..LWPHELP_MAGMANAGER
 		..LWPHELP_UNLOADUNLOAD
+		..LWPHELP_ZOOM.."+"..LWPHELP_RELOAD..StringTable.Localize("$LWPHELP_CHECKMAG")
 		;
 	}
 	override void DrawSightPicture(
