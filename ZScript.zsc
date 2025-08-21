@@ -76,7 +76,7 @@ Class MRHD_WeapAnimsHandler : EventHandler
 		}
 		Bind = Bindings.NameKeys(Key1, Key2);
 		
-		if(Bind.IndexOf(", ")>-1)Bind = Bind.Mid(0, Bind.IndexOf(", "));
+		if(Bind.IndexOf("\c")>-1)Bind = Bind.Mid(0, Bind.IndexOf("\c"));
 		if(Bind.IndexOf("Mouse1")>-1)Bind = StringTable.Localize("$MRNSH_HelpBindMouseL");
 		else if(Bind.IndexOf("Mouse2")>-1)Bind = StringTable.Localize("$MRNSH_HelpBindMouseR");
 		else if(Bind.IndexOf("Mouse3")>-1)Bind = StringTable.Localize("$MRNSH_HelpBindMouseMid");
@@ -98,8 +98,8 @@ Class MRHD_WeapAnimsHandler : EventHandler
 				Case 11:Bind = StringTable.Localize("$WPHDROPO");Break;
 			}
 		}
-							
-		Return WEPHELP_BTCOL..Bind..WEPHELP_RGCOL;
+		Console.Printf("\""..WEPHELP_BTCOL.."..[.."..Bind.."..].."..WEPHELP_RGCOL.."\"");
+		Return WEPHELP_BTCOL.."["..Bind.."]"..WEPHELP_RGCOL;
 	}
 	
 	Void MRHD_GetWeaponKeyBinds(HDWeapon weap)

@@ -1,6 +1,11 @@
 [ default enu eng en ]
 
 LWPHELP_SAFETY = "  Switch safety\n";
+LWPHELP_CHECKMAG = "  Check mag\n";
+LWPHELP_CHECKSIDESADDLES = "  Check side saddles\n";
+LWPHELP_CHECKCHARGE = "  Check charge\n";
+LWPHELP_CHECKMAGSNCHARGE = "  Check mags and charge\n";
+
 OPTMNU_NSHASIGHTS = "Iron Sights Affected By Lighting";
 OPTMNU_NSHAMUZZLESMOKE = "Smoke from muzzle";
 //OPTMNU_NSHADELAY = "";
@@ -32,6 +37,11 @@ MRNSH_HelpBindMouseMid = "Mouse wheel";
 [ ru rus ]
 
 LWPHELP_SAFETY = "  Предохранитель\n";
+LWPHELP_CHECKMAG = "  Проверить магазин\n";
+LWPHELP_CHECKSIDESADDLES = "  Проверить патронташ\n";
+LWPHELP_CHECKCHARGE = "  Проверить заряд\n";
+LWPHELP_CHECKMAGSNCHARGE = "  Проверить магазины и заряд\n";
+
 OPTMNU_NSHASIGHTS = "Освещённость прицела";
 OPTMNU_NSHAMUZZLESMOKE = "Дым из стволов";
 OPTMNU_NSHABINDS = "Назначеные клавиши в подсказках";
