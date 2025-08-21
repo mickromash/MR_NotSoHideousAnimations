@@ -98,7 +98,6 @@ Class MRHD_WeapAnimsHandler : EventHandler
 				Case 11:Bind = StringTable.Localize("$WPHDROPO");Break;
 			}
 		}
-		Console.Printf("\""..WEPHELP_BTCOL.."..[.."..Bind.."..].."..WEPHELP_RGCOL.."\"");
 		Return WEPHELP_BTCOL.."["..Bind.."]"..WEPHELP_RGCOL;
 	}
 	
