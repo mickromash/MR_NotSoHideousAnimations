@@ -98,12 +98,12 @@ class NSHPortableStimpack:PortableStimpack{// Replaces PortableStimpack{
 				return;
 			}
 		}
-		STIG A 1 offset(6,46)A_Lower(6);
-		STIG A 1 offset(10,56)A_Lower(18);
-		STIG A 1 offset(14,66)A_Lower(26);
-		STIG A 1 offset(18,76)A_Lower(32);
-		TNT1 A 1 offset(0,0)A_StartSound("weapons/pocket",8,CHANF_OVERLAP,volume:0.5);
-		TNT1 A 3 offset(0,0)A_Lower(999);
+		STIG A 1 offset(6,56);
+		STIG A 1 offset(13,66);
+		STIG A 1 offset(24,106);
+		STIG A 1 offset(30,156);
+		STIG A 1 offset(0,0)A_StartSound("weapons/pocket",8,CHANF_OVERLAP,volume:0.5);
+		STIG A 3 offset(0,0)A_Lower(999);
 		wait;
 	ready:
 		#### A 0 A_JumpIf(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("STISA0"),"Open");
