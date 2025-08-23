@@ -297,11 +297,11 @@ class NSHBossRifle:BossRifle{//Replaces BossRifle{
 	loadchamber:
 		BARG E 1 offset(2,36) A_ClearRefire();
 		BARG E 1 offset(3,38);
-		BARG E 1 offset(5,42);
-		BARG E 1 offset(8,48) A_StartSound("weapons/pocket",9);
-		BARG E 1 offset(9,52) A_MuzzleClimb(frandom(-0.2,0.2),0.2,frandom(-0.2,0.2),0.2,frandom(-0.2,0.2),0.2);
-		BARG E 2 offset(8,60);
-		BARG E 2 offset(7,72);
+		BARG E 1 offset(5,50);
+		BARG E 1 offset(8,60) A_StartSound("weapons/pocket",9);
+		BARG E 1 offset(9,80) A_MuzzleClimb(frandom(-0.2,0.2),0.2,frandom(-0.2,0.2),0.2,frandom(-0.2,0.2),0.2);
+		BARG E 2 offset(8,100);
+		BARG E 2 offset(7,140);
 		TNT1 A 18 A_StartSound("weapons/pocket",9);
 		TNT1 A 4{
 			A_StartSound("weapons/bossload",8,volume:0.7);
@@ -333,19 +333,19 @@ class NSHBossRifle:BossRifle{//Replaces BossRifle{
 			}
 		}
 		#### # 0 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 0);
-		BARG E 2 offset(7,72);
-		BARG E 2 offset(8,60) A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 1);
-		BARG E 1 offset(6,52);
-		BARG E 1 offset(5,42);
-		BARG E 1 offset(4,38);
+		BARG E 2 offset(7,140);
+		BARG E 2 offset(8,100) A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 1);
+		BARG E 1 offset(6,80);
+		BARG E 1 offset(5,60);
+		BARG E 1 offset(4,50);
 		BARG E 1 offset(3,35);
 		goto althold;
 	altholdclean:
 		BARG E 1 offset(2,36) A_ClearRefire();
-		BARG E 1 offset(3,38);
-		BARG E 1 offset(5,41) A_Log(StringTable.Localize("$BOSS_CLEANS"),true);
-		BARG E 1 offset(8,44) A_StartSound("weapons/pocket",9);
-		BARG E 1 offset(7,50) A_MuzzleClimb(frandom(-0.2,0.2),0.2,frandom(-0.2,0.2),0.2,frandom(-0.2,0.2),0.2);
+		BARG E 1 offset(3,50);
+		BARG E 1 offset(5,70) A_Log(StringTable.Localize("$BOSS_CLEANS"),true);
+		BARG E 1 offset(8,90) A_StartSound("weapons/pocket",9);
+		BARG E 1 offset(7,120) A_MuzzleClimb(frandom(-0.2,0.2),0.2,frandom(-0.2,0.2),0.2,frandom(-0.2,0.2),0.2);
 		TNT1 A 3 A_StartSound("weapons/pocket",10);
 		TNT1 AAAA 4 A_MuzzleClimb(frandom(-0.2,0.2),frandom(-0.2,0.2),frandom(-0.2,0.2),frandom(-0.2,0.2),frandom(-0.2,0.2),frandom(-0.2,0.2),frandom(-0.2,0.2),frandom(-0.2,0.2));
 		TNT1 A 3 A_StartSound("weapons/pocket",9);
@@ -382,10 +382,10 @@ class NSHBossRifle:BossRifle{//Replaces BossRifle{
 			A_Log(amts,true);
 		}
 		#### # 0 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 0);
-		BARG E 1 offset(7,52);
-		BARG E 1 offset(8,48) A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 1);
-		BARG E 1 offset(5,42);
-		BARG E 1 offset(3,38);
+		BARG E 1 offset(7,140);
+		BARG E 1 offset(8,100) A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 1);
+		BARG E 1 offset(5,80);
+		BARG E 1 offset(3,60);
 		BARG E 1 offset(2,36);
 		goto althold;
 	jam:
