@@ -850,15 +850,31 @@ enum NSHpistolstatus{PISF_SAFETY=8,};
 
 Class MR_NoHudHudHandler : EventHandler
 {
+	Clearscope Vector2 Vec2Div(Vector2 Vec1, Vector2 Vec2)
+	{
+		Return (Vec1.X/Vec2.X, Vec1.Y/Vec2.Y);
+	}
+	
+	Ui LinearValueInterpolator BobX, BobY;
+	
 	Override Void RenderOverlay(RenderEvent e)
 	{
 		Let Plr = HDPlayerPawn(Players[ConsolePlayer].mo);
 		Let Wep = HDWeapon(Plr.Player.ReadyWeapon);
+		Let Sb = StatusBar;
 		
 		if(!Plr || (Plr && Wep == Null))Return;
 		
-		vector2 bob=Plr.crossbob;
+		if(!BobX)BobX = LinearValueInterpolator.Create(Plr.CrossBob.X*10, 30);
+		BobX.Update(Plr.CrossBob.X*10);
+		if(!BobY)BobY = LinearValueInterpolator.Create(Plr.CrossBob.Y*10, 30);
+		BobY.Update(Plr.CrossBob.Y*10);
+		
+		vector2 bob=(BobX.GetValue(), BobY.GetValue());
+		bob *= .1;
 		vector2 lastbob=Plr.lastcrossbob;
+		
+		Vector2 HUDScale = Vec2Div(Vec2Div((4, 4), Sb.GetHUDScale()), Vec2Div((4, 4), Sb.defaultScale));
 		// Interpolate
 		//bob = lastbob + ((bob - lastbob));
 		
@@ -867,22 +883,22 @@ Class MR_NoHudHudHandler : EventHandler
 				
 		if(Wep is 'NSHHunter')
 		{
-			if(NSHHunter(Wep).Checking)StatusBar.DrawString(NewFont, StringTable.Localize("$HD_CHOKE")..
-			StringTable.Localize("$HD_CHOKE"..Wep.weaponstatus[HUNTS_CHOKE]), 
-			(60, 65)+Bob, StatusBar.DI_SCREEN_CENTER, Font.CR_CYAN, 0.6, Scale:(0.5, 0.5));
+			if(NSHHunter(Wep).Checking)Sb.DrawString(NewFont, StringTable.Localize("$HD_CHOKE")..
+				StringTable.Localize("$HD_CHOKE"..Wep.weaponstatus[HUNTS_CHOKE]),
+				HUDScale.X*(-120, -50)+Bob, Sb.DI_SCREEN_CENTER, Font.CR_CYAN, 0.6, Scale:HUDScale*.5);
 		}
 		
 		else if(Wep is 'NSHSlayer')
 		{
 			if(NSHSlayer(Wep).Checking)
 			{
-			StatusBar.DrawString(NewFont, StringTable.Localize("$HD_CHOKEL")..
-			StringTable.Localize("$HD_CHOKE"..Wep.weaponstatus[SLAYS_CHOKE1]), 
-			(200, 45)+Bob, StatusBar.DI_SCREEN_CENTER|StatusBar.DI_TEXT_ALIGN_RIGHT, Font.CR_CYAN, 0.6, Scale:(0.5, 0.5));
+			Sb.DrawString(NewFont, StringTable.Localize("$HD_CHOKEL")..
+				StringTable.Localize("$HD_CHOKE"..Wep.weaponstatus[SLAYS_CHOKE1]), 
+				HUDScale.X*((100, -40)+Bob), Sb.DI_SCREEN_CENTER|Sb.DI_TEXT_ALIGN_RIGHT, Font.CR_CYAN, 0.6, Scale:HUDScale*.5);
 			
-			StatusBar.DrawString(NewFont, StringTable.Localize("$HD_CHOKER")..
-			StringTable.Localize("$HD_CHOKE"..Wep.weaponstatus[SLAYS_CHOKE2]), 
-			(200, 55)+Bob, StatusBar.DI_SCREEN_CENTER|StatusBar.DI_TEXT_ALIGN_RIGHT, Font.CR_CYAN, 0.6, Scale:(0.5, 0.5));
+			Sb.DrawString(NewFont, StringTable.Localize("$HD_CHOKER")..
+				StringTable.Localize("$HD_CHOKE"..Wep.weaponstatus[SLAYS_CHOKE2]), 
+				HUDScale.X*((100, -32)+Bob), Sb.DI_SCREEN_CENTER|Sb.DI_TEXT_ALIGN_RIGHT, Font.CR_CYAN, 0.6, Scale:HUDScale*.5);
 			}
 		}
 	}
