@@ -9,7 +9,8 @@ class NSHMedikitter:HDMedikitter Replaces HDMedikitter{
 	default{
 	Weapon.SlotPriority 1000;
 	weapon.selectionorder 1005;}
-	
+
+
 	override void loadoutconfigure(string input){
 		UAS_CartridgeS = "UaS_2FCartridge";
 		Class<Actor> Cartridge = UAS_CartridgeS;
@@ -236,7 +237,7 @@ class NSHMedikitter:HDMedikitter Replaces HDMedikitter{
 	
 	Action void A_Dumb(){invoker.ActuallyDumb();}
 	void ActuallyDumb(){if(owner.health<1)A_Jump(256,"none");}
-	
+		
 	states{
 	reload:
 		#### # 4{
@@ -245,7 +246,7 @@ class NSHMedikitter:HDMedikitter Replaces HDMedikitter{
 		}
 		goto readyend;
 	select0:
-		TNT1 A 1{
+		TNT1 A 0{
 			if(!DoHelpText()) return;
 			A_WeaponMessage(Stringtable.Localize("$MEDIKIT_FIRETOHEAL"),175);
 		}
@@ -253,11 +254,11 @@ class NSHMedikitter:HDMedikitter Replaces HDMedikitter{
 		HELS C 0;
 		#### A 0;
 		goto select0small;
-	deselect0:
+	/*deselect0:
 		1HLS C 0 A_Jumpif(invoker.weaponstatus[MEDS_BLOOD]>0,2);
 		HELS C 0;
 		#### # 1;
-		goto deselect0small;
+		goto deselect0small;*/
 		
 	ready:
 		1HLS C 0 A_Jumpif(invoker.weaponstatus[MEDS_BLOOD]>0,2);
