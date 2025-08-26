@@ -1,0 +1,22 @@
+AddOptionMenu "OptionsMenu" {
+	statictext ""
+	SubMenu "Not So Hideous Animations", "NSHAMenu"
+}
+
+AddOptionMenu "HDAddonMenu" {
+	SubMenu "Not So Hideous Animations", "NSHAMenu"
+}
+
+OptionMenu "NSHAMenu"
+{
+	Title "Not So Hideous Animations"
+	Option "$OPTMNU_NSHASIGHTS", "mrnsha_sights", "YesNo"
+	//Option "$OPTMNU_NSHAMUZZLESMOKE", "mrnsha_muzzlesmoke", "YesNo"
+	//Slider "$OPTMNU_NSHADELAY", "mrnsha_delay", 1, 35, 1
+	Option "$OPTMNU_NSHABINDS", "mrnsha_binds", "YesNo"
+	/*Option "$OPTMNU_NSHAHUNTSHELLS", "mrnsha_huntershells", "YesNo"
+	Option "$OPTMNU_NSHASLAYSHELLS", "mrnsha_slayershells", "YesNo"
+	StaticText "$OPTMNU_NSHASHTGSHELLSTXT", "White"
+	StaticText "$OPTMNU_NSHASHTGSHELLSTXT2", "White"
+	StaticText "$OPTMNU_NSHASHTGSHELLSTXT3", "White"*/
+}

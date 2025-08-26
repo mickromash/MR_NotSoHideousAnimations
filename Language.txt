@@ -6,10 +6,27 @@ LWPHELP_CHECKSIDESADDLES = "  Check side saddles\n";
 LWPHELP_CHECKCHARGE = "  Check charge\n";
 LWPHELP_CHECKMAGSNCHARGE = "  Check mags and charge\n";
 
+SHTG_CHANGESHELLS = "  Change shell type \c-";
+SHTG_CHANGESHELLSBACK = "  Change shell type \c-";
+
+LWPHELP_SHTGSHELL00 = " \ccbu\cgckshot\c- ";
+LWPHELP_SHTGSHELL4G = " \cc4 \cugauge\c- ";
+LWPHELP_SHTGSHELLBIRD = " \cfbi\cgrdshot\c- ";
+LWPHELP_SHTGSHELLEXPL = " \cfex\cdplosive\c- ";
+LWPHELP_SHTGSHELLLL = " \cfle\cvss-lethal\c- ";
+LWPHELP_SHTGSHELLSLUG = " \ccs\chlug\c- ";
+
+
 OPTMNU_NSHASIGHTS = "Iron Sights Affected By Lighting";
 OPTMNU_NSHAMUZZLESMOKE = "Smoke from muzzle";
 //OPTMNU_NSHADELAY = "";
 OPTMNU_NSHABINDS = "Help text shows actual key bindings";
+
+OPTMNU_NSHAHUNTSHELLS = "Hunter may spawn with BulletLib shells";
+OPTMNU_NSHASLAYSHELLS = "Slayer may spawn with BulletLib shells";
+OPTMNU_NSHASHTGSHELLSTXT = "Enable shells you want them to spawn with";
+OPTMNU_NSHASHTGSHELLSTXT2 = "to spawn in Ammo Boxes and Backpacks in BulletLib menu";
+OPTMNU_NSHASHTGSHELLSTXT3 = "Followed shells supported: Slug, Explosive, Less lethal";
 
 HD_CHOKE = "Choke: ";
 HD_CHOKEL = "Left choke: ";
@@ -42,9 +59,26 @@ LWPHELP_CHECKSIDESADDLES = "  Проверить патронташ\n";
 LWPHELP_CHECKCHARGE = "  Проверить заряд\n";
 LWPHELP_CHECKMAGSNCHARGE = "  Проверить магазины и заряд\n";
 
+SHTG_CHANGESHELLS = "  Сменить тип патронов \c-";
+SHTG_CHANGESHELLSBACK = "  Сменить тип патронов \c-";
+
+LWPHELP_SHTGSHELL00 = " \ccд\cgробь\c- ";
+LWPHELP_SHTGSHELL4G = " \cc4 \cuкалибр\c- ";
+LWPHELP_SHTGSHELLBIRD = " \cfна \cgптицу\c- ";
+LWPHELP_SHTGSHELLEXPL = " \cfвз\cdрывной\c- ";
+LWPHELP_SHTGSHELLLL = " \cfне\cvлетальный\c- ";
+LWPHELP_SHTGSHELLSLUG = " \ccс\chлаг\c- ";
+
+
 OPTMNU_NSHASIGHTS = "Освещённость прицела";
 OPTMNU_NSHAMUZZLESMOKE = "Дым из стволов";
 OPTMNU_NSHABINDS = "Назначеные клавиши в подсказках";
+
+OPTMNU_NSHAHUNTSHELLS = "Охотник может появится с патронами из BulletLib";
+OPTMNU_NSHASLAYSHELLS = "Палач может появится с патронами из  BulletLib";
+OPTMNU_NSHASHTGSHELLSTXT = "Включите появления патронов внутри Коробок с Амуницией";
+OPTMNU_NSHASHTGSHELLSTXT2 = "и Рюкзаков в настройках BulletLib если хотите чтобы дробовики появлялись с ними";
+OPTMNU_NSHASHTGSHELLSTXT3 = "Поддерживаются следующие патроны: Слаг, Взрывные, Нелетальные";
 
 HD_CHOKE = "Чок: ";
 HD_CHOKEL = "Левый чок: ";

@@ -1,12 +1,145 @@
 // ------------------------------------------------------------
 // Super Shotgun
 // ------------------------------------------------------------
+
+Class MRF3Actor_SlayerShells_Tic: Actor{}
+Class MRF3Class_SlayerShells_Tic: object Ui
+{
+	Override Void OnDestroy()
+	{
+		Let Plr = Players[ConsolePlayer];
+		Let Slay = NSHSlayer(Plr.ReadyWeapon);
+		if(!Slay)Return;
+			
+		if(StatusBar.artiflashTick==-1)
+		{
+			StatusBar.artiflashTick = 3;
+		}
+		else
+		{
+			String Com = "MRF3_String";
+			String Side = "MRF3SideL";
+			
+			
+			if(StatusBar.artiflashTick<2)EventHandler.SendInterfaceEvent(ConsolePlayer, Com..Side.."Cham "..StatusBar.artiflashTick..": "..Slay.GetShellType(Slay.weaponstatus[SLAYS_SHELL1+StatusBar.artiflashTick]));
+			else EventHandler.SendInterfaceEvent(ConsolePlayer, Com..Side.."\cd======");
+		}
+	}
+}
+
+Class MRF3Actor_SlayerSide_Tic: Actor{}
+Class MRF3Class_SlayerSide_Tic: object Ui
+{
+	Override Void OnDestroy()
+	{
+		Let Plr = Players[ConsolePlayer];
+		Let Slay = NSHSlayer(Plr.ReadyWeapon);
+		if(!Slay)Return;
+			
+		if(StatusBar.artiflashTick==-1)StatusBar.artiflashTick = Slay.Weaponstatus[SHOTS_SIDESADDLE]+1;
+		else
+		{
+			String Com = "MRF3_String";
+			String Side = "MRF3SideL";
+			
+			
+			if(StatusBar.artiflashTick<Slay.Weaponstatus[SHOTS_SIDESADDLE])EventHandler.SendInterfaceEvent(ConsolePlayer, Com..Side.."Side "..(StatusBar.artiflashTick+1)..": "..Slay.GetShellType(Slay.weaponstatus[SLAYS_SSHELL1+StatusBar.artiflashTick]));
+			else EventHandler.SendInterfaceEvent(ConsolePlayer, Com..Side.."\cv=======");
+		}
+	}
+}
+
+Class MRF3Actor_SlayerHand_Tic: Actor{}
+Class MRF3Class_SlayerHand_Tic: object Ui
+{
+	Override Void OnDestroy()
+	{
+		Let Plr = Players[ConsolePlayer];
+		Let Slay = NSHHunter(Plr.ReadyWeapon);
+		if(!Slay)Return;
+		
+		if(StatusBar.artiflashTick==-1)StatusBar.artiflashTick = Slay.HandShell.Size();
+		else
+		{
+			String Com = "MRF3_String";
+			String Side = "MRF3SideL";
+			
+			EventHandler.SendInterfaceEvent(ConsolePlayer, Com..Side.."InHand "..(StatusBar.artiflashTick)..": "..Slay.GetShellType(Slay.HandShell[StatusBar.artiflashTick]));
+		}
+	}
+}
+
 class NSHSlayer:Slayer{// replaces Slayer{
 	bool Checking;
+	int ShellType;
+	Array<Int> HandShell;
+	
+	Bool CheckBulLib(String ShellType = 'HDSlugAmmo')
+	{
+		Return (Class<Actor>)(ShellType);
+	}
+	
+	Clearscope String GetShellType(int ShellType)
+	{
+		Switch(ShellType)
+		{
+			Case 0:Return "Shell";
+			Case 1:Return "Slug";
+			Case 2:Return "ExplosiveShell";
+			Case 3:Return "LLShell";
+		}
+		Return "Shell";
+	}
+	ClearScope String GetSpentType(int ShellType, bool UnSpent = false)
+	{
+		String Shel;
+		Switch(ShellType)
+		{
+			Case 0:Shel = "HDSpentShell";Break;
+			Case 1:Shel = "HDSpentSlug";Break;
+			Case 2:Shel = "HDSpentExplosiveShell";Break;
+			Case 3:Shel = "HDLLSpentShell";Break;
+		}
+		if(UnSpent)Shel.Replace("Spent", "UnSpent");
+		Return Shel;
+	}
+	ClearScope String GetFumblingType(int ShellType)
+	{
+		Switch(ShellType)
+		{
+			Case 0:Return "HDFumblingShell";
+			Case 1:Return "HDFumblingSlug";
+			Case 2:Return "HDFumblingExplosiveShell";
+			Case 3:Return "HDLLFumblingShell";
+		}
+		Return "HDFumblingShell";
+	}
+	Clearscope String GetShellName(int ShellType)
+	{
+		Switch(ShellType)
+		{
+			Case 0:Return StringTable.Localize("$LWPHELP_SHTGSHELL00");
+			Case 1:Return StringTable.Localize("$LWPHELP_SHTGSHELLSLUG");
+			Case 2:Return StringTable.Localize("$LWPHELP_SHTGSHELLEXPL");
+			Case 3:Return StringTable.Localize("$LWPHELP_SHTGSHELLLL");
+		}
+		Return StringTable.Localize("$LWPHELP_SHTGSHELL00");
+	}
+	
+	
 	override void DrawHUDStuff(HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl){
 		if(sb.hudlevel==1){
-			sb.drawimage("SHL1A0",(-47,-10),sb.DI_SCREEN_CENTER_BOTTOM);
-			sb.drawnum(hpl.countinv("HDShellAmmo"),-46,-8,sb.DI_SCREEN_CENTER_BOTTOM);
+			String Sprt, AmmoType;
+			Switch(ShellType)
+			{
+				Case 0:Sprt = "SHL1A0";AmmoType = "HDShellAmmo";Break;
+				Case 1:Sprt = "SLG1A0";AmmoType = "HDSlugAmmo";Break;
+				Case 2:Sprt = "XLS1A0";AmmoType = "HDExplosiveShellAmmo";Break;
+				Case 3:Sprt = "LLS1A0";AmmoType = "HDLLShellAmmo";Break;
+			}
+			
+			sb.drawimage(Sprt,(-47,-10),sb.DI_SCREEN_CENTER_BOTTOM);
+			sb.drawnum(hpl.countinv(AmmoType),-46,-8,sb.DI_SCREEN_CENTER_BOTTOM);
 		}
 		int loffs=-31;int rofs=-18;
 		if(hdw.weaponstatus[0]&SLAYF_DOUBLE){
@@ -39,6 +172,19 @@ class NSHSlayer:Slayer{// replaces Slayer{
 			
 			if(Handler)Handler.MRHD_GetWeaponKeyBinds(Self);
 		}
+		
+		String CurShell, NextShell, PrevShell;
+		if(CheckBulLib())
+		{
+			CurShell = GetShellName(ShellType);
+			
+			if(ShellType<4) NextShell = GetShellName(shellType+1);
+			else NextShell = GetShellName(0);
+			
+			if(ShellType>0) PrevShell = GetShellName(shellType-1);
+			else PrevShell = GetShellName(3);
+		}
+		
 		return
 		LWPHELP_FIRE..StringTable.Localize("$SLAWH_FIRE")..weaponstatus[SLAYS_CHOKE1]..")\n"
 		..LWPHELP_ALTFIRE..StringTable.Localize("$SLAWH_ALTFIRE")..weaponstatus[SLAYS_CHOKE2]..")\n"
@@ -46,6 +192,8 @@ class NSHSlayer:Slayer{// replaces Slayer{
 		..LWPHELP_ALTRELOAD..StringTable.Localize("$SLAWH_ALTRELOAD")
 		..LWPHELP_FIREMODE..StringTable.Localize("$SLAWH_FMODE")
 		..LWPHELP_FIREMODE.."+"..LWPHELP_RELOAD..StringTable.Localize("$SLAWH_FMODPRELOAD")
+		..(CheckBulLib()?LWPHELP_FIREMODE.."+"..LWPHELP_ALTRELOAD..StringTable.Localize("$SHTG_CHANGESHELLS")..CurShell.."-->"..NextShell.."\n":"")
+		..(CheckBulLib()?LWPHELP_FIREMODE.."+"..LWPHELP_ZOOM.."+"..LWPHELP_ALTRELOAD..StringTable.Localize("$SHTG_CHANGESHELLSBACK")..PrevShell.."<--"..CurShell.."\n":"")
 		..LWPHELP_USE.."+"..LWPHELP_UNLOAD..StringTable.Localize("$SLAWH_UPUNL")//"  Steal ammo from Hunter\n"
 		..LWPHELP_UNLOADUNLOAD
 		..LWPHELP_USE.."+"..LWPHELP_FIREMODE..StringTable.Localize("$LWPHELP_SAFETY")
@@ -138,28 +286,134 @@ class NSHSlayer:Slayer{// replaces Slayer{
 		super.postbeginplay();
 	}
 	
-	/*override double gunmass(){
-		return 6+weaponstatus[SHOTS_SIDESADDLE]*0.06;
-	}
-	override double weaponbulk(){
-		return 100+weaponstatus[SHOTS_SIDESADDLE]*ENC_SHELLLOADED;
-	}*/
-	
-	action void A_CannibalizeOtherShotgun(){
-		let hhh=hdweapon(findinventory("NSHHunter"));
-		if(hhh){
-			int totake=min(
-				hhh.weaponstatus[SHOTS_SIDESADDLE],
-				HDPickup.MaxGive(self,"HDShellAmmo",ENC_SHELL),
-				4
-			);
-			if(totake>0){
-				hhh.weaponstatus[SHOTS_SIDESADDLE]-=totake;
-				A_GiveInventory("HDShellAmmo",totake);
+	Action Void EmptyHand(int amt=-1,bool careful=false){
+		if(!amt)return;
+		while(invoker.handshell.Size()>0){
+			
+			if(careful&&!A_JumpIfInventory("HD"..invoker.GetShellType(invoker.HandShell[invoker.HandShell.Size()-1]).."Ammo",0,"null")){
+				HDF.Give(self,"HD"..invoker.GetShellType(invoker.HandShell[invoker.HandShell.Size()-1]).."Ammo",1);
+				invoker.handshell.Pop();
+ 			}else if(invoker.handshell.Size()>=4){
+				Bool Same = true;
+				String Prev = "";
+				For(int i=0;i<4;i++){if(Prev!= "" && Prev!=invoker.GetShellType(invoker.HandShell[i])){Same=false;Break;}Prev = invoker.GetShellType(invoker.HandShell[i]);}
+				if(Same)
+				{
+					For(int i=4;i>=0;i--)invoker.handshell.Pop();
+					A_SpawnItemEx(Prev.."Pickup",
+						cos(pitch)*1,1,height-7-sin(pitch)*1,
+						cos(pitch)*cos(angle)*frandom(1,2)+vel.x,
+						cos(pitch)*sin(angle)*frandom(1,2)+vel.y,
+						-sin(pitch)+vel.z,
+						0,SXF_ABSOLUTEMOMENTUM|SXF_NOCHECKPOSITION|SXF_TRANSFERPITCH
+					);
+				}
+				else
+				{
+					A_SpawnItemEx("HDFumbling"..Prev,
+						cos(pitch)*5,1,height-7-sin(pitch)*5,
+						cos(pitch)*cos(angle)*frandom(1,4)+vel.x,
+						cos(pitch)*sin(angle)*frandom(1,4)+vel.y,
+						-sin(pitch)*random(1,4)+vel.z,
+						0,SXF_ABSOLUTEMOMENTUM|SXF_NOCHECKPOSITION|SXF_TRANSFERPITCH
+					);
+					invoker.handshell.Pop();
+				}
+			}else{
+				A_SpawnItemEx("HDFumbling"..invoker.GetShellType(invoker.HandShell[invoker.HandShell.Size()-1]),
+					cos(pitch)*5,1,height-7-sin(pitch)*5,
+					cos(pitch)*cos(angle)*frandom(1,4)+vel.x,
+					cos(pitch)*sin(angle)*frandom(1,4)+vel.y,
+					-sin(pitch)*random(1,4)+vel.z,
+					0,SXF_ABSOLUTEMOMENTUM|SXF_NOCHECKPOSITION|SXF_TRANSFERPITCH
+				);
+				invoker.handshell.Pop();
 			}
 		}
 	}
-	//so you don't switch to the hunter every IDFA in D1
+	
+	action void A_UnloadSideSaddle(){
+		int uamt=clamp(invoker.weaponstatus[SHOTS_SIDESADDLE],0,4);
+		if(!uamt)return;
+		Array<int> Grabbed;
+		int Give;
+		For(int i=0;i<uamt;i++)
+		{
+			Grabbed.Push(invoker.weaponstatus[SLAYS_SSHELL1+invoker.weaponstatus[SHOTS_SIDESADDLE]-1]);
+			invoker.weaponstatus[SHOTS_SIDESADDLE]--;
+			Class<HDPickUp> Amo = "HD"..invoker.GetShellType(Grabbed[i]).."Ammo";
+			Give += HDPickup.MaxGive(self, Amo, GetDefaultByType(Amo).Bulk);
+		}
+
+		if(Give>0&&pressingunload()){
+			A_SetTics(16);
+			uamt-=Min(Uamt, Give);
+			For(int i=0;i<Grabbed.Size();i++)A_GiveInventory("HD"..invoker.GetShellType(Grabbed[i]).."Ammo", 1);
+		}
+		else {For(int i=0;i<Grabbed.Size();i++)invoker.HandShell.Push(Grabbed[i]);Grabbed.Clear();}
+
+		A_StartSound("weapons/pocket",9);
+		EmptyHand(uamt);
+	}
+		
+	action void A_CannibalizeOtherShotgun(){
+		let hhh=hdweapon(findinventory("NSHHunter"));
+		if(hhh){
+			For(int i=0;i<Min(hhh.weaponstatus[SHOTS_SIDESADDLE], 4);i++)
+			{
+				A_GiveInventory("HD"..invoker.GetShellType(hhh.weaponstatus[HUNTS_SSHELL1+hhh.weaponstatus[SHOTS_SIDESADDLE]-1]).."Ammo", 1);
+				hhh.weaponstatus[SHOTS_SIDESADDLE]--;
+			}
+		}
+	}
+	
+	static double getcustomshotpower(int ShellType)
+	{
+		Switch(ShellType)
+		{
+			Case 0:return frandom(.9, 1.05);//00
+			Case 1:Return frandom(.91, 1.06);//Slug
+			Case 2:Return frandom(1.4, 1.6);//Explosive
+			Case 3:Return frandom(.1, .2);//Less lethal
+		}
+		Return frandom(.9, 1.05);
+	}
+	
+	static void FireCustom(actor caller,bool right,int choke=7){
+		let sss=Slayer(caller.findinventory("NSHSlayer"));
+		if(!sss)Return;
+		
+		choke=sss.weaponstatus[right?SLAYS_CHOKE2:SLAYS_CHOKE1];
+		double shotpower=getcustomshotpower(sss.weaponstatus[SLAYS_SHELL1+Right]);
+		sss.shotpower=shotpower;
+		
+		double spread=3.;
+		double speedfactor=1.2;
+		
+		choke=clamp(choke,0,7);
+		spread=6.5-0.5*choke;
+		speedfactor=1.+0.02857*choke;
+
+		spread*=shotpower;
+		speedfactor*=shotpower;
+		vector2 barreladjust=(0.8,-0.05);
+		if(right)barreladjust=-barreladjust;
+		HDBulletActor.FireBullet(caller,"HDB_wad",xyofs:barreladjust.x,aimoffx:barreladjust.y);
+		String Shot = "HDB_00";
+		int Pellets = 10;
+		Switch(sss.weaponstatus[SLAYS_SHELL1+Right])
+		{
+			Case 0:Shot = "HDB_00";Pellets = 10;Break;
+			Case 1:Shot = "HDB_Slug";Pellets = 1;Break;
+			Case 2:Shot = "HDB_12GuageSlugMissile";Pellets = 1;Break;
+			Case 3:Shot = "HDB_00Rubber";Pellets = 1;Break;
+		}
+		let p=HDBulletActor.FireBullet(caller,Shot,xyofs:barreladjust.x,
+			spread:spread,aimoffx:barreladjust.y,speedfactor:speedfactor,amount:Pellets
+		);
+		distantnoise.make(p,"world/shotgunfar");
+	}
+	
 	states{
 	Non:
 		TNT1 A 1;
@@ -190,6 +444,20 @@ class NSHSlayer:Slayer{// replaces Slayer{
 					invoker.weaponstatus[0]&=~SLAYF_DOUBLE;
 					setweaponstate("reloadss");
 					return;
+				}
+				if(JustPressed(BT_USER1) && invoker.CheckBulLib()){
+					if(PressingZoom())
+					{
+						if(invoker.shelltype>0)invoker.shelltype--;
+						else invoker.shelltype=3;
+					}
+					else
+					{
+						if(invoker.shelltype<3)invoker.shelltype++;
+						else invoker.shelltype=0;
+					}
+					A_SetHelpText();
+					Return;
 				}
 			}else invoker.weaponstatus[0]&=~SLAYF_DOUBLE;
 
@@ -243,7 +511,7 @@ class NSHSlayer:Slayer{// replaces Slayer{
 			A_ZoomRecoil(0.9);
 			invoker.weaponstatus[SLAYS_CHAMBER1]=1;
 
-			invoker.Fire(Self,0);
+			invoker.FireCustom(Self,0);
 		}
 		TNT1 A 1{
 			A_Light0();
@@ -259,7 +527,7 @@ class NSHSlayer:Slayer{// replaces Slayer{
 			A_ZoomRecoil(0.9);
 			invoker.weaponstatus[SLAYS_CHAMBER2]=1;
 
-			invoker.Fire(Self,1);
+			invoker.FireCustom(Self,1);
 		}
 		TNT1 A 1{
 			A_Light0();
@@ -281,8 +549,8 @@ class NSHSlayer:Slayer{// replaces Slayer{
 			invoker.weaponstatus[SLAYS_CHAMBER1]=1;
 			invoker.weaponstatus[SLAYS_CHAMBER2]=1;
 
-			invoker.Fire(Self,0);
-			invoker.Fire(Self,1);
+			invoker.FireCustom(Self,0);
+			invoker.FireCustom(Self,1);
 		}
 		TNT1 A 1{
 			A_Light0();
@@ -353,27 +621,33 @@ class NSHSlayer:Slayer{// replaces Slayer{
 			}
 		Stop;
 		
+	SideShell1:
+		STKG K 1 A_OverlayTranslation(OverlayId(), "HDHunt"..invoker.GetShellType(invoker.weaponstatus[SLAYS_SSHELL1]));
+		Wait;
+	SideShell2:
+		STKG L 1 A_OverlayTranslation(OverlayId(), "HDHunt"..invoker.GetShellType(invoker.weaponstatus[SLAYS_SSHELL3]));
+		Wait;
+	SideShell3:
+		STKG M 1 A_OverlayTranslation(OverlayId(), "HDHunt"..invoker.GetShellType(invoker.weaponstatus[SLAYS_SSHELL5]));
+		Wait;
+	SideShell4:
+		STKG N 1 A_OverlayTranslation(OverlayId(), "HDHunt"..invoker.GetShellType(invoker.weaponstatus[SLAYS_SSHELL7]));
+		Wait;
+	SideShell5:
+		STKG O 1 A_OverlayTranslation(OverlayId(), "HDHunt"..invoker.GetShellType(invoker.weaponstatus[SLAYS_SSHELL9]));
+		Wait;
+	SideShell6:
+		STKG P 1 A_OverlayTranslation(OverlayId(), "HDHunt"..invoker.GetShellType(invoker.weaponstatus[SLAYS_SSHELL11]));
+		Wait;
+		
 	CheckSide:
 		TNT1 A 0 A_OverLay(102, "SideCheck");
-		TNT1 A 13 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 0);
-		STKG J 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>1,1);
-		Goto CheckingSide;
-		STKG K 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>3,1);
-		Goto CheckingSide;
-		STKG L 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>5,1);
-		Goto CheckingSide;
-		STKG M 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>7,1);
-		Goto CheckingSide;
-		STKG N 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>9,1);
-		Goto CheckingSide;
-		STKG O 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>11,1);
-		Goto CheckingSide;
-		STKG P 0;
+		TNT1 A 12 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 0);
 	CheckingSide:
 		#### # 1;
-		#### # 0 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 1);
+		#### # 0 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 0);
 	CheckSideLoop:
-		#### # 5 A_JumpIf(!pressingaltreload(),"CheckSideEnd");
+		STKG J 5 A_JumpIf(!pressingaltreload(),"CheckSideEnd");
 		Loop;
 	CheckSideEnd:
 		#### # 0 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 0);
@@ -381,54 +655,43 @@ class NSHSlayer:Slayer{// replaces Slayer{
 		TNT1 # 12;
 		Goto Ready;
 	SideCheck:
-		SH2G A 1 A_OverLayOffset(102, -10, 30);
+		SH2G A 1 A_OverLayOffset(102, -2, 0);
 		#### #### 1 A_OverlayOffset(OverlayId(), -10, 30, WOF_ADD);
 		TNT1 A 2;
-		STKG J 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>1,1);
-		Goto RaiseSide;
-		STKG K 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>3,1);
-		Goto RaiseSide;
-		STKG L 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>5,1);
-		Goto RaiseSide;
-		STKG M 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>7,1);
-		Goto RaiseSide;
-		STKG N 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>9,1);
-		Goto RaiseSide;
-		STKG O 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>11,1);
-		Goto RaiseSide;
-		STKG P 0;
 	RaiseSide:
-		#### # 1 {A_OverlayPivot(OverlayId(), 0, 1);A_OverLayOffset(102, 50, 40);A_OverlayRotate(OverlayId(), -80);}
-		#### #### 1 {A_OverlayOffset(OverlayId(), -8, -7, WOF_ADD);A_OverlayRotate(OverlayId(), 20, WOF_ADD);}
-		#### # 1 {A_OverLayOffset(102, 11, 0);invoker.Checking=true;}
+		#### A 0 {
+			if(invoker.weaponstatus[SHOTS_SIDESADDLE]>0)A_Overlay(103, "SideShell1");
+			if(invoker.weaponstatus[SHOTS_SIDESADDLE]>2)A_Overlay(104, "SideShell2");
+			if(invoker.weaponstatus[SHOTS_SIDESADDLE]>4)A_Overlay(105, "SideShell3");
+			if(invoker.weaponstatus[SHOTS_SIDESADDLE]>6)A_Overlay(106, "SideShell4");
+			if(invoker.weaponstatus[SHOTS_SIDESADDLE]>8)A_Overlay(107, "SideShell5");
+			if(invoker.weaponstatus[SHOTS_SIDESADDLE]>10)A_Overlay(108, "SideShell6");
+			}
+		STKG J 1 {
+			For(int i=0;i<7;i++){A_OverlayPivot(OverlayId()+i, 0, 1);A_OverLayOffset(OverlayId()+i, 50, 40);A_OverlayRotate(OverlayId()+i, -80);}
+			}
+		#### #### 1 {
+			For(int i=0;i<7;i++){A_OverlayOffset(OverlayId()+i, -8, -7, WOF_ADD);A_OverlayRotate(OverlayId()+i, 20, WOF_ADD);}
+			}
+		#### # 1 {For(int i=0;i<7;i++)A_OverLayOffset(OverlayId()+i, 0, 0);
+			invoker.Checking=true;
+			}
 		Stop;
 	SideCheckEnd:
-		STKG J 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>1,1);
-		Goto LowSide;
-		STKG K 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>3,1);
-		Goto LowSide;
-		STKG L 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>5,1);
-		Goto LowSide;
-		STKG M 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>7,1);
-		Goto LowSide;
-		STKG N 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>9,1);
-		Goto LowSide;
-		STKG O 0 A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]>11,1);
-		Goto LowSide;
-		STKG P 0;
-	LowSide:
-		#### # 0 {A_OverLayOffset(102, 6, 0);A_OverlayPivot(OverlayId(), 0, 1);}
-		#### #### 1 {A_OverlayOffset(OverlayId(), 11, 10, WOF_ADD);A_OverlayRotate(OverlayId(), -20, WOF_ADD);}
+		STKG J 0 {For(int i=0;i<7;i++){A_OverLayOffset(OverlayId()+i, 6, 0);A_OverlayPivot(OverlayId()+i, 0, 1);}}
+		#### #### 1 {For(int i=0;i<7;i++){A_OverlayOffset(OverlayId()+i, 11, 10, WOF_ADD);A_OverlayRotate(OverlayId()+i, -20, WOF_ADD);}}
+		#### # 0 A_ClearOverlays(103, 109);
 		TNT1 A 2 {invoker.Checking=false;A_OverlayRotate(OverlayId(), 0);}
 		SH2G A 1 A_OverLayOffset(102, -50, 150);
-		SH2G AAAAA 1 A_OverlayOffset(OverlayId(), 10, -30, WOF_ADD);
+		#### AAAAA 1 A_OverlayOffset(OverlayId(), 10, -30, WOF_ADD);
 		Stop;
 		
 	altreload:
+		---- A 0 A_JumpIf(pressingfiremode(), "Nope");
 		---- A 0 A_JumpIf(pressingzoom(),"CheckSide");
 		#### A 0{
 			if(
-				countinv("HDShellAmmo")
+				countinv("HD"..invoker.GetShellType(invoker.ShellType).."Ammo")
 				&&(
 					invoker.weaponstatus[SLAYS_CHAMBER1]<2
 					||invoker.weaponstatus[SLAYS_CHAMBER2]<2
@@ -449,7 +712,7 @@ class NSHSlayer:Slayer{// replaces Slayer{
 			invoker.weaponstatus[0]&=~SLAYF_UNLOADONLY;
 			if(invoker.weaponstatus[SHOTS_SIDESADDLE]>0)
 				invoker.weaponstatus[0]&=~SLAYF_FROMPOCKETS;
-			else if(countinv("HDShellAmmo"))
+			else if(countinv("HD"..invoker.GetShellType(invoker.ShellType).."Ammo"))
 				invoker.weaponstatus[0]|=SLAYF_FROMPOCKETS;
 			else setweaponstate("nope");
 		}goto reloadstart;
@@ -470,8 +733,14 @@ class NSHSlayer:Slayer{// replaces Slayer{
 				int chm=invoker.weaponstatus[SLAYS_CHAMBER1+i];
 				invoker.weaponstatus[SLAYS_CHAMBER1+i]=0;
 				actor sss=null;
-				if(chm>1)sss=spawn("HDUnspentShell",pos+HDMath.GetGunPos(self),ALLOW_REPLACE);
-				else if(chm==1)sss=spawn("HDSpentShell",pos+HDMath.GetGunPos(self),ALLOW_REPLACE);
+				Class<Actor> UnSpent = invoker.GetSpentType(invoker.weaponstatus[SLAYS_SHELL1+i], true);
+				Class<Actor> Spent = invoker.GetSpentType(invoker.weaponstatus[SLAYS_SHELL1+i]);
+				if(chm>1)
+				{
+					if(UnSpent)sss=spawn(UnSpent,pos+HDMath.GetGunPos(self),ALLOW_REPLACE);
+					else {A_GiveInventory("HD"..invoker.GetShellType(invoker.weaponstatus[SLAYS_SHELL1+i]).."Ammo", 1);Continue;}
+				}
+				else if(chm==1)sss=spawn(Spent,pos+HDMath.GetGunPos(self),ALLOW_REPLACE);
 				if(!!sss){
 					double aaa=angle+frandom(-20,20);
 					sss.pitch=pitch;sss.angle=angle;
@@ -512,13 +781,22 @@ class NSHSlayer:Slayer{// replaces Slayer{
 
 		#### I 2{
 			//take up to 2 shells in hand
+			Array<int> Grabbed;
 			int ssh=0;
 			if(invoker.weaponstatus[0]&SLAYF_FROMPOCKETS){
-				ssh=min(2,countinv("HDShellAmmo"));
-				if(ssh>0)A_TakeInventory("HDShellAmmo",ssh);
+				ssh=min(2,countinv("HD"..invoker.GetShellType(invoker.ShellType).."Ammo"));
+				For(int i=0;i<ssh;i++)
+				{
+					A_TakeInventory("HD"..invoker.GetShellType(invoker.ShellType).."Ammo", 1);
+					Grabbed.Push(invoker.ShellType);
+				}
 			}else{
 				ssh=min(2,invoker.weaponstatus[SHOTS_SIDESADDLE]);
-				invoker.weaponstatus[SHOTS_SIDESADDLE]-=ssh;
+				For(int i=0;i<ssh;i++)
+				{
+					invoker.weaponstatus[SHOTS_SIDESADDLE]--;
+					Grabbed.Push(invoker.weaponstatus[SLAYS_SSHELL1+invoker.weaponstatus[SHOTS_SIDESADDLE]]);
+				}
 			}
 
 			//if the above leaves you with nothing, abort
@@ -529,9 +807,10 @@ class NSHSlayer:Slayer{// replaces Slayer{
 
 			//transfer from hand to chambers
 			ssh--;
-			while(ssh>=0){
-				invoker.weaponstatus[SLAYS_CHAMBER2-ssh]=2;
-				ssh--;
+			while(Grabbed.Size()>0){
+				invoker.weaponstatus[SLAYS_SHELL1+Grabbed.Size()-1]=Grabbed[Grabbed.Size()-1];
+				invoker.weaponstatus[SLAYS_CHAMBER1+Grabbed.Size()-1]=2;
+				Grabbed.Pop();
 			}
 		}
 		#### I 2 offset(3, 37)A_StartSound("weapons/sshotl",8);
@@ -566,14 +845,18 @@ class NSHSlayer:Slayer{// replaces Slayer{
 			int ssh=min(
 				3,
 				12-invoker.weaponstatus[SHOTS_SIDESADDLE],
-				countinv("HDShellAmmo")
+				countinv("HD"..invoker.GetShellType(invoker.ShellType).."Ammo")
 			);
 			if(ssh<1){
 				setweaponstate("reloadssend");
 				return;
 			}
-			invoker.weaponstatus[SHOTS_SIDESADDLE]+=ssh;
-			A_TakeInventory("HDShellAmmo",ssh,TIF_NOTAKEINFINITE);
+			For(int i=0;i<ssh;i++)
+			{
+				invoker.weaponstatus[SLAYS_SSHELL1+invoker.weaponstatus[SHOTS_SIDESADDLE]]=invoker.ShellType;
+				invoker.weaponstatus[SHOTS_SIDESADDLE]++;
+			}
+			A_TakeInventory("HD"..invoker.GetShellType(invoker.ShellType).."Ammo",ssh,TIF_NOTAKEINFINITE);
 		}
 	reloadssend:
 		#### A 4 offset(3,34);
@@ -581,7 +864,7 @@ class NSHSlayer:Slayer{// replaces Slayer{
 			if(
 				invoker.weaponstatus[SHOTS_SIDESADDLE]<12
 				&&(pressingreload()||pressingaltreload())
-				&&countinv("HDShellAmmo")
+				&&countinv("HD"..invoker.GetShellType(invoker.ShellType).."Ammo")
 			)setweaponstate("reloadssrestart");
 		}
 		#### A 3 offset(2,34);
@@ -613,25 +896,6 @@ class NSHSlayer:Slayer{// replaces Slayer{
 		#### # 1 offset(1,34) A_OverlayRotate(PSP_WEAPON, 0, WOF_INTERPOLATE);
 		goto nope;
 		
-	/*unloadss:
-		#### A 0 EmptyHand();
-		#### A 2 offset(2,34) A_JumpIf(invoker.weaponstatus[SHOTS_SIDESADDLE]<1,"nope");
-		#### A 1 offset(3,36);
-	unloadssloop1:
-		#### A 4 offset(4,36);
-		#### A 2 offset(5,37) A_UnloadSideSaddle();
-		#### A 3 offset(4,36){	//decide whether to loop
-			if(
-				invoker.weaponstatus[SHOTS_SIDESADDLE]>0
-				&&!pressingfire()
-				&&!pressingaltfire()
-				&&!pressingreload()
-			)setweaponstate("unloadssloop1");
-		}
-		#### A 3 offset(4,35);
-		#### A 2 offset(3,35);
-		#### A 1 offset(2,34);
-		goto nope;*/
 	unload:
 		#### K 2 offset(0,34){
 			if(invoker.weaponstatus[SHOTS_SIDESADDLE]>0)setweaponstate("unloadss");
@@ -661,6 +925,9 @@ class NSHSlayer:Slayer{// replaces Slayer{
 		}
 	}
 	override void InitializeWepStats(bool idfa){
+		if(weaponstatus[SLAYS_CHAMBER1]<2)weaponstatus[SLAYS_SHELL1]=shelltype;
+		if(weaponstatus[SLAYS_CHAMBER2]<2)weaponstatus[SLAYS_SHELL2]=shelltype;
+		For(int i=weaponstatus[SHOTS_SIDESADDLE];i<12;i++)weaponstatus[SLAYS_SSHELL1+i]=shelltype;
 		weaponstatus[SLAYS_CHAMBER1]=2;
 		weaponstatus[SLAYS_CHAMBER2]=2;
 		weaponstatus[SHOTS_SIDESADDLE]=12;
@@ -688,7 +955,8 @@ class NSHSlayer:Slayer{// replaces Slayer{
 		choke=min(getloadoutvar(input,"rchoke",1),7);
 		if(choke>=0)weaponstatus[SLAYS_CHOKE2]=choke;
 	}
-	Override Void Tick()
+	
+	/*Override Void Tick()
 	{
 		Super.Tick();
 		if(Owner)Return;
@@ -701,6 +969,24 @@ class NSHSlayer:Slayer{// replaces Slayer{
 			For(int i=0;i<HDWEP_STATUSSLOTS;i++)a.weaponstatus[i]=weaponstatus[i];
 			Destroy();
 		}
-	}
+	}*/
 }
-enum NSHslayerstatus{SLAYF_SAFETY=8,};
+enum NSHslayerstatus{
+	SLAYF_SAFETY=8,
+	
+	SLAYS_SHELL1=9,//LCham
+	SLAYS_SHELL2=10,//RCham
+	//Side saddles
+	SLAYS_SSHELL1=11,
+	SLAYS_SSHELL2=12,
+	SLAYS_SSHELL3=13,
+	SLAYS_SSHELL4=14,
+	SLAYS_SSHELL5=15,
+	SLAYS_SSHELL6=16,
+	SLAYS_SSHELL7=17,
+	SLAYS_SSHELL8=18,
+	SLAYS_SSHELL9=19,
+	SLAYS_SSHELL10=20,
+	SLAYS_SSHELL11=21,
+	SLAYS_SSHELL12=22,
+	};
