@@ -641,24 +641,26 @@ class NSHRevolver:HDRevolver{// Replaces HDRevolver{
 		RVHA C 1 A_OverLayOffset(500,-30,-8);
 		#### C 1 A_OverLayOffset(500,-24,-8, WOF_INTERPOLATE);
 		Stop;
-	HandUnload2R:
+	HandUnload2R://Hit Extractor
 		RVHB A 0;
 		#### C 1 A_OverLayOffset(-20,41,-18);
 		#### C 1 A_OverLayOffset(-20,37,-14, WOF_INTERPOLATE);
-		#### F 1 A_OverLayOffset(-20,0,50, WOF_INTERPOLATE);
-		#### G 3 A_OverLayOffset(-20,0,50, WOF_INTERPOLATE);
-		#### F 1 A_OverLayOffset(-20,0,50, WOF_INTERPOLATE);
-		#### C 1 A_OverLayOffset(-20,41,-14, WOF_INTERPOLATE);
+		#### F 1 {A_OverLayOffset(-20,0,0);A_OverlayPivot(OverlayId(), .5, .5); A_OverlayScale(OverlayId(), 1.15, 1.15);}
+		#### F 1 A_OverlayScale(OverlayId(), 1.2, 1.2);
+		#### F 1;
+		#### F 2 A_OverlayScale(OverlayId(), 1.16, 1.16, WOF_INTERPOLATE);
+		#### C 1 {A_OverLayOffset(-20,41,-14);A_OverlayScale(OverlayId(), .9, .9);}
 		#### C 1 A_OverLayOffset(-20,48,-18, WOF_INTERPOLATE);
 		Stop;
-	HandUnload2:
+	HandUnload2://Hit Extractor
 		RVHA C 0;
 		#### C 1 A_OverLayOffset(-20,-21,-8);
 		#### C 1 A_OverLayOffset(-20,-28,-9, WOF_INTERPOLATE);
-		#### F 1 A_OverLayOffset(-20,0,50);
-		#### G 3 A_OverLayOffset(-20,0,50);
-		#### F 1 A_OverLayOffset(-20,0,50);
-		#### C 1 A_OverLayOffset(-20,-28,-9);
+		#### F 1 {A_OverLayOffset(-20,0,0);A_OverlayPivot(OverlayId(), .5, .5); A_OverlayScale(OverlayId(), 1.1, 1.1);}
+		#### F 1 A_OverlayScale(OverlayId(), 1.15, 1.15);
+		#### F 1;
+		#### F 2 {A_OverLayOffset(-20,0,0, WOF_INTERPOLATE);A_OverlayScale(OverlayId(), 1.11, 1.11, WOF_INTERPOLATE);}
+		#### C 1 {A_OverLayOffset(-20,-28,-9);A_OverlayScale(OverlayId(), .9, .9);}
 		#### C 1 A_OverLayOffset(-20,-21,-8, WOF_INTERPOLATE);
 		Stop;
 		
@@ -832,39 +834,38 @@ class NSHRevolver:HDRevolver{// Replaces HDRevolver{
 		RRVG I 3 A_HitExtractor();
 		RRVG I 3 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 0);
 		goto readyopenRight;
-	HandUnload3R:
+	HandUnload3R://Take all Rounds
 		RVHB A 0;
 		#### C 1 A_OverLayOffset(500, 50, 0);
-		#### C 1 A_OverLayOffset(500, 45, 0);
+		#### C 1 A_OverLayOffset(500, 45, 0, WOF_INTERPOLATE);
 		#### D 1 A_OverLayOffset(500, 0, 0);
-		#### D 1 A_OverLayOffset(500, 0, 0);
-		#### E 1 A_OverLayOffset(500, 0, 0);
-		#### E 1 A_OverLayOffset(500, 0, 0);
-		#### D 1 A_OverLayOffset(500, 0, 0);
-		#### D 1 A_OverLayOffset(500, 0, 10);
-		#### D 1 A_OverLayOffset(500, 0, 20);
-		#### D 1 A_OverLayOffset(500, 0, 40);
+		#### D 1 A_OverLayOffset(500, 0, 10, WOF_INTERPOLATE);
+		#### E 1 A_OverLayOffset(500, 0, 16);
+		#### E 1 A_OverLayOffset(500, 0, 20, WOF_INTERPOLATE);
+		#### D 1 A_OverLayOffset(500, 0, 15);
+		#### D 1 A_OverLayOffset(500, 0, 10, WOF_INTERPOLATE);
+		#### D 1 A_OverLayOffset(500, 0, 20, WOF_INTERPOLATE);
+		#### D 1 A_OverLayOffset(500, 0, 40, WOF_INTERPOLATE);
 		---- A 1 A_OverLayOffset(500, 0, 10);
 		#### C 1 A_OverLayOffset(500, 30, 30);
-		#### C 1 A_OverLayOffset(500, 40, 20);
-		#### C 1 A_OverLayOffset(500, 50, 10);
+		#### C 1 A_OverLayOffset(500, 40, 20, WOF_INTERPOLATE);
+		#### C 1 A_OverLayOffset(500, 50, 10, WOF_INTERPOLATE);
 		Stop;
-	HandUnload3:
-		RVHA A 0;
-		#### C 1 A_OverLayOffset(500, -30, 0);
-		#### C 1 A_OverLayOffset(500, -35, 0);
+	HandUnload3://Take all Rounds
+		RVHA C 1 A_OverLayOffset(500, -30, 0);
+		#### C 1 A_OverLayOffset(500, -35, 0, WOF_INTERPOLATE);
 		#### D 1 A_OverLayOffset(500, 0, 0);
-		#### D 1 A_OverLayOffset(500, 0, 0);
-		#### E 1 A_OverLayOffset(500, 0, 0);
-		#### E 1 A_OverLayOffset(500, 0, 0);
-		#### D 1 A_OverLayOffset(500, 0, 0);
-		#### D 1 A_OverLayOffset(500, 0, 10);
+		#### D 1 A_OverLayOffset(500, 0, 0, WOF_INTERPOLATE);
+		#### E 1 A_OverLayOffset(500, 0, 20);
+		#### E 1 A_OverLayOffset(500, 0, 20, WOF_INTERPOLATE);
 		#### D 1 A_OverLayOffset(500, 0, 20);
-		#### D 1 A_OverLayOffset(500, 0, 40);
-		---- A 1 A_OverLayOffset(500, 0, 10);
+		#### D 1 A_OverLayOffset(500, 0, 20, WOF_INTERPOLATE);
+		#### D 1 A_OverLayOffset(500, 0, 30, WOF_INTERPOLATE);
+		#### D 1 A_OverLayOffset(500, 0, 50, WOF_INTERPOLATE);
+		---- A 1 A_OverLayOffset(500, 0, 20);
 		#### C 1 A_OverLayOffset(500, -30, 30);
-		#### C 1 A_OverLayOffset(500, -30, 20);
-		#### C 1 A_OverLayOffset(500, -30, 10);
+		#### C 1 A_OverLayOffset(500, -30, 20, WOF_INTERPOLATE);
+		#### C 1 A_OverLayOffset(500, -30, 10, WOF_INTERPOLATE);
 		Stop;
 	open_dumpcylinder_all:
 		---- A 0 A_JumpIf(player.getpsprite(PSP_WEAPON).sprite==getspriteindex("RRVGA0"),"open_dumpcylinder_allRight");
