@@ -567,14 +567,17 @@ class NSHSlayer:Slayer{// replaces Slayer{
 		TNT1 A 0{Vector2 Pivot = (FRandom(0, .5), FRandom(0, 1));
 				if(GunBraced())Pivot = (FRandom(.2, .5), FRandom(.3, .7));
 			A_OverlayScale(PSP_WEAPON, 1);A_OverlayScale(PSP_FLASH, 1);
-			A_OverlayPivot(PSP_WEAPON, Pivot.X, Pivot.Y);A_OverlayPivot(PSP_FLASH, Pivot.X, Pivot.Y);}
+			A_OverlayPivot(PSP_WEAPON, Pivot.X, Pivot.Y);A_OverlayPivot(PSP_FLASH, Pivot.X, Pivot.Y);
+			Player.GetPSprite(PSP_FLASH).Rotation = Player.GetPSprite(PSP_WEAPON).Rotation;}
 		TNT1 AAAA 1
 			{
 				Vector2 Pivot = Player.GetPSprite(PSP_WEAPON).Pivot;
 				Float Recoil = (Pivot.X-.5)*5*abs(Pivot.Y-.5);
 				if(GunBraced())Recoil *= .25;
-				A_OverlayScale(PSP_WEAPON, .01, .02, WOF_ADD);A_OverlayScale(PSP_FLASH, .01, .02, WOF_ADD);
-				A_OverlayRotate(PSP_WEAPON, -Recoil, WOF_ADD);A_OverlayRotate(PSP_FLASH, -Recoil, WOF_ADD);
+				A_OverlayScale(PSP_WEAPON, .01, .02, WOF_ADD);
+				A_OverlayRotate(PSP_WEAPON, -Recoil, WOF_ADD);
+				Player.GetPSprite(PSP_FLASH).Rotation = Player.GetPSprite(PSP_WEAPON).Rotation;
+				Player.GetPSprite(PSP_FLASH).Scale = Player.GetPSprite(PSP_WEAPON).Scale;
 			}
 		TNT1 A 2
 			{
@@ -586,14 +589,17 @@ class NSHSlayer:Slayer{// replaces Slayer{
 		TNT1 A 0{Vector2 Pivot = (FRandom(.5, 1), FRandom(0, 1));
 				if(GunBraced())Pivot = (FRandom(.5, .7), FRandom(.3, .7));
 			A_OverlayScale(PSP_WEAPON, 1);A_OverlayScale(PSP_FLASH, 1);
-			A_OverlayPivot(PSP_WEAPON, Pivot.X, Pivot.Y);A_OverlayPivot(PSP_FLASH, Pivot.X, Pivot.Y);}
+			A_OverlayPivot(PSP_WEAPON, Pivot.X, Pivot.Y);A_OverlayPivot(PSP_FLASH, Pivot.X, Pivot.Y);
+			Player.GetPSprite(PSP_FLASH).Rotation = Player.GetPSprite(PSP_WEAPON).Rotation;}
 		TNT1 AAAA 1
 			{
 				Vector2 Pivot = Player.GetPSprite(PSP_WEAPON).Pivot;
 				Float Recoil = (Pivot.X-.5)*5*abs(Pivot.Y-.5);
 				if(GunBraced())Recoil *= .25;
-				A_OverlayScale(PSP_WEAPON, .01, .02, WOF_ADD);A_OverlayScale(PSP_FLASH, .01, .02, WOF_ADD);
-				A_OverlayRotate(PSP_WEAPON, -Recoil, WOF_ADD);A_OverlayRotate(PSP_FLASH, -Recoil, WOF_ADD);
+				A_OverlayScale(PSP_WEAPON, .01, .02, WOF_ADD);
+				A_OverlayRotate(PSP_WEAPON, -Recoil, WOF_ADD);
+				Player.GetPSprite(PSP_FLASH).Rotation = Player.GetPSprite(PSP_WEAPON).Rotation;
+				Player.GetPSprite(PSP_FLASH).Scale = Player.GetPSprite(PSP_WEAPON).Scale;
 			}
 		TNT1 A 2
 			{
@@ -605,14 +611,16 @@ class NSHSlayer:Slayer{// replaces Slayer{
 		TNT1 A 0{Vector2 Pivot = (FRandomPick(FRandom(0, .2), FRandom(.7, 1)), 0);
 			A_OverlayScale(PSP_WEAPON, 1);A_OverlayScale(PSP_FLASH, 1);
 			A_OverlayPivot(PSP_WEAPON, Pivot.X, Pivot.Y);A_OverlayPivot(PSP_FLASH, Pivot.X, Pivot.Y);
-			A_OverlayRotate(PSP_FLASH, Player.GetPSprite(PSP_WEAPON).Rotation);}
+			Player.GetPSprite(PSP_FLASH).Rotation = Player.GetPSprite(PSP_WEAPON).Rotation;}
 		TNT1 AAAAAA 1
 			{
 				Vector2 Pivot = Player.GetPSprite(PSP_WEAPON).Pivot;
 				Float Recoil = (Pivot.X-.5)*5*abs(Pivot.Y-.5);
 				if(GunBraced())Recoil *= .25;
-				A_OverlayScale(PSP_WEAPON, .025, .05, WOF_ADD);A_OverlayScale(PSP_FLASH, .025, .05, WOF_ADD);
-				A_OverlayRotate(PSP_WEAPON, Recoil, WOF_ADD);A_OverlayRotate(PSP_FLASH, Player.GetPSprite(PSP_WEAPON).Rotation);
+				A_OverlayScale(PSP_WEAPON, .025, .05, WOF_ADD);
+				A_OverlayRotate(PSP_WEAPON, Recoil, WOF_ADD);
+				Player.GetPSprite(PSP_FLASH).Rotation = Player.GetPSprite(PSP_WEAPON).Rotation;
+				Player.GetPSprite(PSP_FLASH).Scale = Player.GetPSprite(PSP_WEAPON).Scale;
 			}
 		TNT1 A 4
 			{

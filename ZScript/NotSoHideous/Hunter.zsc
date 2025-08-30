@@ -632,8 +632,8 @@ class NSHHunter:Hunter{// Replaces Hunter{
 				Vector2 Pivot = Player.GetPSprite(PSP_WEAPON).Pivot;
 				Float Recoil = (Pivot.X-.5)*5*abs(Pivot.Y-.5);
 				if(GunBraced())Recoil *= .1;
-				A_OverlayScale(PSP_WEAPON, .01, .02, WOF_ADD);A_OverlayScale(PSP_FLASH, .01, .02, WOF_ADD);
-				A_OverlayRotate(PSP_WEAPON, Recoil, WOF_ADD);A_OverlayRotate(PSP_FLASH, Recoil, WOF_ADD);
+				A_OverlayScale(PSP_WEAPON, .01, .02, WOF_ADD);Player.GetPSprite(PSP_FLASH).Scale = Player.GetPSprite(PSP_WEAPON).Scale;
+				A_OverlayRotate(PSP_WEAPON, Recoil, WOF_ADD);Player.GetPSprite(PSP_FLASH).Rotation = Player.GetPSprite(PSP_WEAPON).Rotation;
 			}
 		TNT1 A 2
 			{

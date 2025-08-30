@@ -370,10 +370,13 @@ class NSHPistol:HDPistol{// replaces HDPistol{
 	RecoilLay:
 		TNT1 A 0 {
 			A_OverlayPivot(PSP_WEAPON, invoker.wronghand?1:0, 1);A_OverlayPivot(PSP_FLASH, invoker.wronghand?1:0, 1);
-			Player.GetPSprite(PSP_WEAPON).Rotation*=.5;Player.GetPSprite(PSP_WEAPON).Scale=(1, 1);}
+			Player.GetPSprite(PSP_WEAPON).Rotation*=.5;Player.GetPSprite(PSP_WEAPON).Scale=(1, 1);
+			Player.GetPSprite(PSP_FLASH).Rotation = Player.GetPSprite(PSP_WEAPON).Rotation;}
 		TNT1 AAA 1 {
-			Player.GetPSprite(PSP_WEAPON).rotation+=invoker.wronghand?.5:-.5;Player.GetPSprite(PSP_FLASH).rotation+=invoker.wronghand?.5:-.5;
-			Player.GetPSprite(PSP_WEAPON).Scale+=(.015, .03); Player.GetPSprite(PSP_FLASH).Scale+=(.015, .03);}
+			Player.GetPSprite(PSP_WEAPON).rotation+=invoker.wronghand?.5:-.5;
+			Player.GetPSprite(PSP_WEAPON).Scale+=(.015, .03);
+			Player.GetPSprite(PSP_FLASH).Rotation = Player.GetPSprite(PSP_WEAPON).Rotation;
+			Player.GetPSprite(PSP_FLASH).Scale = Player.GetPSprite(PSP_WEAPON).Scale;}
 		TNT1 AAAA 1 {Player.GetPSprite(PSP_WEAPON).rotation-=invoker.wronghand?.3:-.3;Player.GetPSprite(PSP_FLASH).rotation-=invoker.wronghand?.3:-.3;
 			Player.GetPSprite(PSP_WEAPON).Scale-=(.015*.75, .03*.75); Player.GetPSprite(PSP_FLASH).Scale+=(.015*.75, .03*.75);}
 		TNT1 A 0 {A_OverlayPivot(PSP_WEAPON, 1, 1);A_OverlayPivot(PSP_FLASH, 1, 1);

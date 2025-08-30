@@ -167,14 +167,18 @@ class NSHVulcanette:Vulcanette{// Replaces Vulcanette{
 		---- A 1 bright A_Light2();
 		goto lightdone;
 	RecoilLay:
-		TNT1 A 0 {A_OverlayScale(PSP_WEAPON, 1, 1);A_OverlayRotate(PSP_WEAPON, 0);}
+		TNT1 A 0 {A_OverlayScale(PSP_WEAPON, 1, 1);A_OverlayRotate(PSP_WEAPON, 0);
+				Player.GetPSprite(PSP_FLASH).Rotation = Player.GetPSprite(PSP_WEAPON).Rotation;
+				Player.GetPSprite(PSP_FLASH).Scale = Player.GetPSprite(PSP_WEAPON).Scale;}
 		TNT1 A 1
 			{
 				Vector2 Pivot = (FRandom(0, 1), FRandom(0, 1));
 				A_OverlayPivot(PSP_WEAPON, Pivot.X, Pivot.Y);A_OverlayPivot(PSP_FLASH, Pivot.X, Pivot.Y);
 				Float Ang = FRandomPick(FRandom(-2.5, -1), FRandom(1, 2.5));
-				A_OverlayScale(PSP_WEAPON, 1.05, 1.1);A_OverlayScale(PSP_FLASH, 1.05, 1.1);
-				A_OverlayRotate(PSP_WEAPON, Ang);A_OverlayRotate(PSP_FLASH, Ang);
+				A_OverlayScale(PSP_WEAPON, 1.05, 1.1);
+				A_OverlayRotate(PSP_WEAPON, Ang);
+				Player.GetPSprite(PSP_FLASH).Rotation = Player.GetPSprite(PSP_WEAPON).Rotation;
+				Player.GetPSprite(PSP_FLASH).Scale = Player.GetPSprite(PSP_WEAPON).Scale;
 			}
 		TNT1 A 2
 			{

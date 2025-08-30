@@ -469,13 +469,17 @@ class NSHRevolver:HDRevolver{// Replaces HDRevolver{
 		TNT1 A 1{
 			Float Rand = FRandom(0, 1);
 			A_OverlayPivot(PSP_WEAPON, invoker.WrongHand?1:0, Rand);A_OverlayPivot(PSP_WEAPON, invoker.WrongHand?1:0, Rand);
-			A_OverlayScale(PSP_WEAPON, 1, 1);A_OverlayRotate(PSP_FLASH, Player.GetPSprite(PSP_WEAPON).Rotation);}
+			A_OverlayScale(PSP_WEAPON, 1, 1);
+			Player.GetPSprite(PSP_FLASH).Scale = Player.GetPSprite(PSP_WEAPON).Scale;
+			Player.GetPSprite(PSP_FLASH).Rotation = Player.GetPSprite(PSP_WEAPON).Rotation;}
 		TNT1 AAA 1{
 				Float Dir = 1;
 				if(invoker.WrongHand)Dir = -1;
 				
 				A_OverlayRotate(PSP_WEAPON, -.5*Dir, WOF_ADD);
 				A_OverlayScale(PSP_WEAPON, .025, .05, WOF_ADD);
+				Player.GetPSprite(PSP_FLASH).Rotation = Player.GetPSprite(PSP_WEAPON).Rotation;
+				Player.GetPSprite(PSP_FLASH).Scale = Player.GetPSprite(PSP_WEAPON).Scale;
 			}
 		TNT1 A 3{A_OverlayRotate(PSP_WEAPON, 0, WOF_INTERPOLATE);
 				A_OverlayScale(PSP_WEAPON, 1, 1, WOF_INTERPOLATE);}

@@ -171,7 +171,11 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 	RecoilLay:
 		TNT1 A 1 {A_OverlayScale(PSP_WEAPON, 1, 1);A_OverlayRotate(PSP_WEAPON, 0);
 			
-			A_OverlayOffset(PSP_FLASH, Player.GetPSprite(PSP_WEAPON).X, Player.GetPSprite(PSP_WEAPON).Y-32);
+			Player.GetPSprite(PSP_FLASH).X = Player.GetPSprite(PSP_WEAPON).X;
+			Player.GetPSprite(PSP_FLASH).Y = Player.GetPSprite(PSP_WEAPON).Y-32;
+			Player.GetPSprite(PSP_FLASH).Rotation = Player.GetPSprite(PSP_WEAPON).Rotation;
+			Player.GetPSprite(PSP_FLASH).Scale = Player.GetPSprite(PSP_WEAPON).Scale;
+			
 			if(invoker.weaponstatus[ZM66S_HEAT]>HDCONST_ZM66COOKOFF)A_SetTics(0);}
 		TNT1 A 1
 			{
@@ -188,6 +192,7 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 				Player.GetPSprite(PSP_FLASH).Scale = Player.GetPSprite(PSP_WEAPON).Scale;
 				Player.GetPSprite(PSP_FLASH).X = Player.GetPSprite(PSP_WEAPON).X;
 				Player.GetPSprite(PSP_FLASH).Y = Player.GetPSprite(PSP_WEAPON).Y-32;
+				Player.GetPSprite(PSP_FLASH).Rotation = Player.GetPSprite(PSP_WEAPON).Rotation;
 			}
 		TNT1 A 2
 			{
