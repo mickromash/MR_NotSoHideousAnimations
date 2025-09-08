@@ -20,7 +20,7 @@ class NSHMedikitter:HDMedikitter Replaces HDMedikitter{
 		{
 			Let inv = HDWeapon(Owner.FindInventory("HDMedikitter"));
 			weaponstatus[MEDIKIT_FLESHGIVE]=inv.weaponstatus[MEDIKIT_FLESHGIVE];
-			weaponstatus[MEDIKIT_NOTAPLAYER]=inv.weaponstatus[MEDIKIT_NOTAPLAYER];
+			//weaponstatus[MEDIKIT_NOTAPLAYER]=inv.weaponstatus[MEDIKIT_NOTAPLAYER];
 			weaponstatus[MEDS_SECONDFLESH]=inv.weaponstatus[MEDS_SECONDFLESH];
 			weaponstatus[MEDS_USEDON]=inv.weaponstatus[MEDS_USEDON];
 			weaponstatus[MEDS_ACCURACY]=inv.weaponstatus[MEDS_ACCURACY];
