@@ -21,8 +21,8 @@ Class MRF3Class_HunterShells_Tic: object Ui
 			String Side = "MRF3SideL";
 			
 			
-			if(StatusBar.artiflashTick<1)EventHandler.SendInterfaceEvent(ConsolePlayer, Com..Side.."Cham: "..Hunt.GetShellType(Hunt.weaponstatus[HUNTS_SHELL1]));
-			else if(StatusBar.artiflashTick<Hunt.Weaponstatus[HUNTS_TUBE]+1)EventHandler.SendInterfaceEvent(ConsolePlayer, Com..Side.."Mag "..StatusBar.artiflashTick..": "..Hunt.GetShellType(Hunt.weaponstatus[HUNTS_SHELL1+StatusBar.artiflashTick]));
+			if(StatusBar.artiflashTick<1)EventHandler.SendInterfaceEvent(ConsolePlayer, Com..Side.."Cham: "..Hunt.Shells[Hunt.weaponstatus[HUNTS_SHELL1]]);
+			else if(StatusBar.artiflashTick<Hunt.Weaponstatus[HUNTS_TUBE]+1)EventHandler.SendInterfaceEvent(ConsolePlayer, Com..Side.."Mag "..StatusBar.artiflashTick..": "..Hunt.Shells[Hunt.weaponstatus[HUNTS_SHELL1+StatusBar.artiflashTick]]);
 			else EventHandler.SendInterfaceEvent(ConsolePlayer, Com..Side.."\cd======");
 		}
 	}
@@ -44,7 +44,7 @@ Class MRF3Class_HunterSide_Tic: object Ui
 			String Side = "MRF3SideL";
 			
 			
-			if(StatusBar.artiflashTick<Hunt.Weaponstatus[SHOTS_SIDESADDLE])EventHandler.SendInterfaceEvent(ConsolePlayer, Com..Side.."Side "..(StatusBar.artiflashTick+1)..": "..Hunt.GetShellType(Hunt.weaponstatus[HUNTS_SSHELL1+StatusBar.artiflashTick]));
+			if(StatusBar.artiflashTick<Hunt.Weaponstatus[SHOTS_SIDESADDLE])EventHandler.SendInterfaceEvent(ConsolePlayer, Com..Side.."Side "..(StatusBar.artiflashTick+1)..": "..Hunt.Shells[Hunt.weaponstatus[HUNTS_SSHELL1+StatusBar.artiflashTick]]);
 			else EventHandler.SendInterfaceEvent(ConsolePlayer, Com..Side.."\cv=======");
 		}
 	}
@@ -65,7 +65,7 @@ Class MRF3Class_HunterHand_Tic: object Ui
 			String Com = "MRF3_String";
 			String Side = "MRF3SideL";
 			
-			EventHandler.SendInterfaceEvent(ConsolePlayer, Com..Side.."InHand "..(StatusBar.artiflashTick)..": "..Hunt.GetShellType(Hunt.HandShell[StatusBar.artiflashTick]));
+			EventHandler.SendInterfaceEvent(ConsolePlayer, Com..Side.."InHand "..(StatusBar.artiflashTick)..": "..Hunt.Shells[Hunt.HandShell[StatusBar.artiflashTick]]);
 		}
 	}
 }
@@ -74,67 +74,71 @@ class NSHHunter:Hunter{// Replaces Hunter{
 	Bool Checking;
 	Int ShellType;//Check the bottom of this file
 	Array<Int> HandShell;
+	
+	Array<String> Shells, Spents, Fumbls, Names, Sprites, Bullets, Pickups;
+	Array<Double> PowersMin, PowersMax;//For god's sake, add vector2 dynamic arrays PLEASE
 		
-	Bool CheckBulLib(String ShellType = 'HDSlugAmmo')
+	Override Void PostBeginPlay()
 	{
-		Return (Class<Actor>)(ShellType);
-	}
-	
-	Clearscope String GetShellType(int ShellType)
-	{
-		Switch(ShellType)
-		{
-			Case 0:Return "Shell";
-			Case 1:Return "Slug";
-			Case 2:Return "ExplosiveShell";
-			Case 3:Return "LLShell";
+		Super.PostBeginPlay();
+		
+		String Shel = "HDShellAmmo";
+		if((Class<Actor>)(Shel)){
+			Shells.Push(Shel);
+			Bullets.Push("HDB_00");
+			Spents.Push("HDSpentShell");
+			Fumbls.Push("HDFumblingShell");
+			Names.Push(StringTable.Localize("$LWPHELP_SHTGSHELL00"));
+			Sprites.Push("SHL1A0");
+			PowersMin.Push(.9);
+			PowersMax.Push(1.05);
+			Pickups.Push("ShellPickup");
 		}
-		Return "Shell";
-	}
-	ClearScope String GetSpentType(int ShellType)
-	{
-		Switch(ShellType)
-		{
-			Case 0:Return "HDSpentShell";
-			Case 1:Return "HDSpentSlug";
-			Case 2:Return "HDSpentExplosiveShell";
-			Case 3:Return "HDLLSpentShell";
+		
+		Shel = "HDSlugAmmo";
+		if((Class<Actor>)(Shel)){
+			Shells.Push(Shel);
+			Bullets.Push("HDB_Slug");
+			Spents.Push("HDSpentSlug");
+			Fumbls.Push("HDFumblingSlug");
+			Names.Push(StringTable.Localize("$LWPHELP_SHTGSHELLSLUG"));
+			Sprites.Push("SLG1A0");
+			PowersMin.Push(.91);
+			PowersMax.Push(1.06);
+			Pickups.Push("SlugPickup");
 		}
-		Return "HDSpentShell";
-	}
-	ClearScope String GetFumblingType(int ShellType)
-	{
-		Switch(ShellType)
-		{
-			Case 0:Return "HDFumblingShell";
-			Case 1:Return "HDFumblingSlug";
-			Case 2:Return "HDFumblingExplosiveShell";
-			Case 3:Return "HDLLFumblingShell";
+		
+		Shel = "HDExplosiveShellAmmo";
+		if((Class<Actor>)(Shel)){
+			Shells.Push(Shel);
+			Bullets.Push("HDB_12GuageSlugMissile");
+			Spents.Push("HDSpentExplosiveShell");
+			Fumbls.Push("HDFumblingExplosiveShell");
+			Names.Push(StringTable.Localize("$LWPHELP_SHTGSHELLEXPL"));
+			Sprites.Push("XLS1A0");
+			PowersMin.Push(1.4);
+			PowersMax.Push(1.6);
+			Pickups.Push("ExplosiveShellPickup");
 		}
-		Return "HDFumblingShell";
-	}
-	Clearscope String GetShellName(int ShellType)
-	{
-		Switch(ShellType)
-		{
-			Case 0:Return StringTable.Localize("$LWPHELP_SHTGSHELL00");
-			Case 1:Return StringTable.Localize("$LWPHELP_SHTGSHELLSLUG");
-			Case 2:Return StringTable.Localize("$LWPHELP_SHTGSHELLEXPL");
-			Case 3:Return StringTable.Localize("$LWPHELP_SHTGSHELLLL");
+		
+		Shel = "HDLLShellAmmo";
+		if((Class<Actor>)(Shel)){
+			Shells.Push(Shel);
+			Bullets.Push("HDB_00Rubber");
+			Spents.Push("HDLLSpentShell");
+			Fumbls.Push("HDLLFumblingShell");
+			Names.Push(StringTable.Localize("$LWPHELP_SHTGSHELLLL"));
+			Sprites.Push("LLS1A0");
+			PowersMin.Push(.1);
+			PowersMax.Push(.2);
+			Pickups.Push("LLShellPickup");
 		}
-		Return StringTable.Localize("$LWPHELP_SHTGSHELL00");
 	}
-	
+		
 	override void DrawHUDStuff(HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl){
 		if(sb.hudlevel==1){
 			String Sprt, AmmoType;
-			Switch(ShellType)
-			{
-				Case 0:Sprt = "SHL1A0";AmmoType = "HDShellAmmo";Break;
-				Case 1:Sprt = "SLG1A0";AmmoType = "HDSlugAmmo";Break;
-				Case 2:Sprt = "XLS1A0";AmmoType = "HDExplosiveShellAmmo";Break;
-				Case 3:Sprt = "LLS1A0";AmmoType = "HDLLShellAmmo";Break;
-			}
+			Sprt = Sprites[ShellType];AmmoType = Shells[ShellType];
 			
 			sb.drawimage(Sprt,(-47,-10), basestatusbar.DI_SCREEN_CENTER_BOTTOM);
 			sb.drawnum(hpl.CountInv(AmmoType),-46,-8,
@@ -158,41 +162,28 @@ class NSHHunter:Hunter{// Replaces Hunter{
 		}
 	}
 	
-	static double getcustomshotpower(int ShellType)
-	{
-		Switch(ShellType)
-		{
-			Case 0:return frandom(.9, 1.05);//00
-			Case 1:Return frandom(.91, 1.06);//Slug
-			Case 2:Return frandom(1.4, 1.6);//Explosive
-			Case 3:Return frandom(.1, .2);//Less lethal
-		}
-		Return frandom(.9, 1.05);
-	}
-	
 	static double FireCustom(actor caller,int choke=1){
 		double spread=6.;
 		double speedfactor=1.;
-		let hhh=Hunter(caller.findinventory("NSHHunter"));
-		if(hhh)choke=hhh.weaponstatus[HUNTS_CHOKE];
+		let hhh=NSHHunter(caller.findinventory("NSHHunter"));
+		if(!hhh)Return 0;
+		choke=hhh.weaponstatus[HUNTS_CHOKE];
 
 		choke=clamp(choke,0,7);
 		spread=6.5-0.5*choke;
 		speedfactor=1.+0.02857*choke;
-
-		double shotpower=getcustomshotpower(hhh.weaponstatus[HUNTS_SHELL1]);
+		
+		int ShellType = hhh.weaponstatus[HUNTS_SHELL1];
+		
+		double shotpower=FRandom(hhh.PowersMin[ShellType], hhh.PowersMax[ShellType]);
 		spread*=shotpower;
 		speedfactor*=shotpower;
 		HDBulletActor.FireBullet(caller,"HDB_wad");
 		String Shot = "HDB_00";
 		int Pellets = 10;
-		if(hhh)Switch(hhh.weaponstatus[HUNTS_SHELL1])
-		{
-			Case 0:Shot = "HDB_00";Pellets = 10;Break;
-			Case 1:Shot = "HDB_Slug";Pellets = 1;Break;
-			Case 2:Shot = "HDB_12GuageSlugMissile";Pellets = 1;Break;
-			Case 3:Shot = "HDB_00Rubber";Pellets = 1;Break;
-		}
+		if(ShellType>0)Pellets = 1;
+		Shot = hhh.Bullets[ShellType];
+		
 		let p=HDBulletActor.FireBullet(caller,Shot,
 			spread:spread,speedfactor:speedfactor,amount:Pellets
 		);
@@ -223,15 +214,15 @@ class NSHHunter:Hunter{// Replaces Hunter{
 		}
 		
 		String CurShell, NextShell, PrevShell;
-		if(CheckBulLib())
+		if(Names.Size()>1)
 		{
-			CurShell = GetShellName(ShellType);
+			CurShell = Names[ShellType];
 			
-			if(ShellType<4) NextShell = GetShellName(shellType+1);
-			else NextShell = GetShellName(0);
+			if(ShellType<Names.Size()-1) NextShell = Names[shellType+1];
+			else NextShell = Names[0];
 			
-			if(ShellType>0) PrevShell = GetShellName(shellType-1);
-			else PrevShell = GetShellName(3);
+			if(ShellType>0) PrevShell = Names[shellType-1];
+			else PrevShell = Names[Names.Size()-1];
 		}
 		
 		return
@@ -241,8 +232,8 @@ class NSHHunter:Hunter{// Replaces Hunter{
 		..LWPHELP_ALTRELOAD..StringTable.Localize("$SHTG_REL2")
 		..(weaponstatus[0]&HUNTF_EXPORT?"":(LWPHELP_FIREMODE..StringTable.Localize("$SHTG_FMODE")..(weaponstatus[0]&HUNTF_CANFULLAUTO?"/Auto":"").."\n"))
 		..LWPHELP_FIREMODE.."+"..LWPHELP_RELOAD..StringTable.Localize("$SHTG_SIDE")
-		..(CheckBulLib()?LWPHELP_FIREMODE.."+"..LWPHELP_ALTRELOAD..StringTable.Localize("$SHTG_CHANGESHELLS")..CurShell.."-->"..NextShell.."\n":"")
-		..(CheckBulLib()?LWPHELP_FIREMODE.."+"..LWPHELP_ZOOM.."+"..LWPHELP_ALTRELOAD..StringTable.Localize("$SHTG_CHANGESHELLSBACK")..PrevShell.."<--"..CurShell.."\n":"")
+		..(Shells.Size()>1?LWPHELP_FIREMODE.."+"..LWPHELP_ALTRELOAD..StringTable.Localize("$SHTG_CHANGESHELLS")..CurShell.."-->"..NextShell.."\n":"")
+		..(Shells.Size()>1?LWPHELP_FIREMODE.."+"..LWPHELP_ZOOM.."+"..LWPHELP_ALTRELOAD..StringTable.Localize("$SHTG_CHANGESHELLSBACK")..PrevShell.."<--"..CurShell.."\n":"")
 		..LWPHELP_USE.."+"..LWPHELP_UNLOAD..StringTable.Localize("$SHTG_STEAL")
 		..LWPHELP_UNLOADUNLOAD
 		..LWPHELP_USE.."+"..LWPHELP_FIREMODE..StringTable.Localize("$LWPHELP_SAFETY")
@@ -304,7 +295,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 		cockdir.xy=rotatevector(cockdir.xy,angle);
 		bool pocketed=false;
 		if(chm>1){
-			String AmmoType = "HD"..invoker.GetShellType(invoker.weaponstatus[HUNTS_SHELL1]).."Ammo";
+			String AmmoType = invoker.Shells[invoker.weaponstatus[HUNTS_SHELL1]];
 			
 			if(careful&&!A_JumpIfInventory(AmmoType,0,"null")){
 				HDF.Give(self, AmmoType, 1);
@@ -321,8 +312,8 @@ class NSHHunter:Hunter{// Replaces Hunter{
 			vector3 gunofs=HDMath.RotateVec3D((9,-1,-2),angle,pitch);
 			actor rrr=null;
 			
-			String Fumbling = invoker.GetFumblingType(invoker.weaponstatus[HUNTS_SHELL1]);
-			String Spent = invoker.GetSpentType(invoker.weaponstatus[HUNTS_SHELL1]);
+			String Fumbling = invoker.Fumbls[invoker.weaponstatus[HUNTS_SHELL1]];
+			String Spent = invoker.Spents[invoker.weaponstatus[HUNTS_SHELL1]];
 			
 			if(chm>1)rrr=spawn(Fumbling,(pos.xy,pos.z+height*0.85)+gunofs+viewpos.offset);
 			else rrr=spawn(Spent,(pos.xy,pos.z+height*0.85)+gunofs+viewpos.offset);
@@ -342,7 +333,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 	
 	action void A_CheckPocketSaddles(){
 		if(invoker.weaponstatus[SHOTS_SIDESADDLE]<1)invoker.weaponstatus[0]|=HUNTF_FROMPOCKETS;
-		if(!countinv("HD"..invoker.GetShellType(invoker.ShellType).."Ammo"))invoker.weaponstatus[0]&=~HUNTF_FROMPOCKETS;
+		if(!countinv(invoker.Shells[invoker.ShellType]))invoker.weaponstatus[0]&=~HUNTF_FROMPOCKETS;
 	}
 	
 	action bool A_LoadTubeFromHand(){
@@ -369,17 +360,17 @@ class NSHHunter:Hunter{// Replaces Hunter{
 		//if(amt>0)invoker.handshells=amt;
 		while(invoker.handshell.Size()>0){
 			
-			if(careful&&!A_JumpIfInventory("HD"..invoker.GetShellType(invoker.HandShell[invoker.HandShell.Size()-1]).."Ammo",0,"null")){
-				HDF.Give(self,"HD"..invoker.GetShellType(invoker.HandShell[invoker.HandShell.Size()-1]).."Ammo",1);
+			if(careful&&!A_JumpIfInventory(invoker.Shells[invoker.HandShell[invoker.HandShell.Size()-1]],0,"null")){
+				HDF.Give(self,invoker.Shells[invoker.HandShell[invoker.HandShell.Size()-1]],1);
 				invoker.handshell.Pop();
  			}else if(invoker.handshell.Size()>=4){
 				Bool Same = true;
-				String Prev = "";
-				For(int i=0;i<4;i++){if(Prev!= "" && Prev!=invoker.GetShellType(invoker.HandShell[i])){Same=false;Break;}Prev = invoker.GetShellType(invoker.HandShell[i]);}
+				int Prev = -1;
+				For(int i=0;i<4;i++){if(Prev!= -1 && Prev!=invoker.HandShell[i]){Same=false;Break;}Prev = invoker.HandShell[i];}
 				if(Same)
 				{
 					For(int i=4;i>=0;i--)invoker.handshell.Pop();
-					A_SpawnItemEx(Prev.."Pickup",
+					A_SpawnItemEx(invoker.Pickups[Prev],
 						cos(pitch)*1,1,height-7-sin(pitch)*1,
 						cos(pitch)*cos(angle)*frandom(1,2)+vel.x,
 						cos(pitch)*sin(angle)*frandom(1,2)+vel.y,
@@ -389,7 +380,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 				}
 				else
 				{
-					A_SpawnItemEx("HDFumbling"..Prev,
+					A_SpawnItemEx(invoker.Fumbls[Prev],
 						cos(pitch)*5,1,height-7-sin(pitch)*5,
 						cos(pitch)*cos(angle)*frandom(1,4)+vel.x,
 						cos(pitch)*sin(angle)*frandom(1,4)+vel.y,
@@ -399,7 +390,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 					invoker.handshell.Pop();
 				}
 			}else{
-				A_SpawnItemEx("HDFumbling"..invoker.GetShellType(invoker.HandShell[invoker.HandShell.Size()-1]),
+				A_SpawnItemEx(invoker.Fumbls[invoker.HandShell[invoker.HandShell.Size()-1]],
 					cos(pitch)*5,1,height-7-sin(pitch)*5,
 					cos(pitch)*cos(angle)*frandom(1,4)+vel.x,
 					cos(pitch)*sin(angle)*frandom(1,4)+vel.y,
@@ -415,7 +406,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 		if(maxhand>0)EmptyHand();else maxhand=abs(maxhand);
 		bool fromsidesaddles=!(invoker.weaponstatus[0]&HUNTF_FROMPOCKETS);
 		int toload=min(
-			fromsidesaddles?invoker.weaponstatus[SHOTS_SIDESADDLE]:countinv("HD"..invoker.GetShellType(invoker.ShellType).."Ammo"),
+			fromsidesaddles?invoker.weaponstatus[SHOTS_SIDESADDLE]:countinv(invoker.Shells[invoker.ShellType]),
 			alwaysone?1:(invoker.weaponstatus[HUNTS_TUBESIZE]-invoker.weaponstatus[HUNTS_TUBE]),
 			maxhand
 		);
@@ -434,7 +425,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 				frandom(0.1,0.15),frandom(0.05,0.08)
 			);
 		}else{
-			A_TakeInventory("HD"..invoker.GetShellType(invoker.ShellType).."Ammo",toload,TIF_NOTAKEINFINITE);
+			A_TakeInventory(invoker.Shells[invoker.ShellType],toload,TIF_NOTAKEINFINITE);
 			if(settics)A_SetTics(7);
 			A_StartSound("weapons/pocket",9);
 			A_MuzzleClimb(
@@ -457,14 +448,14 @@ class NSHHunter:Hunter{// Replaces Hunter{
 		{
 			Grabbed.Push(invoker.weaponstatus[HUNTS_SSHELL1+invoker.weaponstatus[SHOTS_SIDESADDLE]-1]);
 			invoker.weaponstatus[SHOTS_SIDESADDLE]--;
-			Class<HDPickUp> Amo = "HD"..invoker.GetShellType(Grabbed[i]).."Ammo";
+			Class<HDPickUp> Amo = invoker.Shells[Grabbed[i]];
 			Give += HDPickup.MaxGive(self, Amo, GetDefaultByType(Amo).Bulk);
 		}
 
 		if(Give>0&&pressingunload()){
 			A_SetTics(16);
 			uamt-=Min(Uamt, Give);
-			For(int i=0;i<Grabbed.Size();i++)A_GiveInventory("HD"..invoker.GetShellType(Grabbed[i]).."Ammo", 1);
+			For(int i=0;i<Grabbed.Size();i++)A_GiveInventory(invoker.Shells[Grabbed[i]], 1);
 		}
 		else {For(int i=0;i<Grabbed.Size();i++)invoker.HandShell.Push(Grabbed[i]);Grabbed.Clear();}
 
@@ -475,14 +466,10 @@ class NSHHunter:Hunter{// Replaces Hunter{
 	action void A_CannibalizeOtherShotgun(){
 		let hhh=hdweapon(findinventory("NSHSlayer"));
 		if(hhh){
-			int totake=min(
-				hhh.weaponstatus[SHOTS_SIDESADDLE],
-				HDPickup.MaxGive(self,"HDShellAmmo",ENC_SHELL),
-				4
-			);
-			if(totake>0){
-				hhh.weaponstatus[SHOTS_SIDESADDLE]-=totake;
-				A_GiveInventory("HDShellAmmo",totake);
+			For(int i=0;i<Min(hhh.weaponstatus[SHOTS_SIDESADDLE], 4);i++)
+			{
+				A_GiveInventory(invoker.Shells[hhh.weaponstatus[HUNTS_SSHELL1+hhh.weaponstatus[SHOTS_SIDESADDLE]-1]], 1);
+				hhh.weaponstatus[SHOTS_SIDESADDLE]--;
 			}
 		}
 	}
@@ -502,16 +489,16 @@ class NSHHunter:Hunter{// Replaces Hunter{
 				a_switchfiremode(false); //untoggle
 				if(invoker.weaponstatus[SHOTS_SIDESADDLE]<12)setweaponstate("reloadss");
 			}
-			else if(JustPressed(BT_USER1) && invoker.CheckBulLib()){
+			else if(JustPressed(BT_USER1) && invoker.Shells.Size()>1){
 				a_switchfiremode(false);
 				if(PressingZoom())
 				{
 					if(invoker.shelltype>0)invoker.shelltype--;
-					else invoker.shelltype=3;
+					else invoker.shelltype=invoker.Shells.Size()-1;
 				}
 				else
 				{
-					if(invoker.shelltype<3)invoker.shelltype++;
+					if(invoker.shelltype<invoker.Shells.Size()-1)invoker.shelltype++;
 					else invoker.shelltype=0;
 				}
 				A_SetHelpText();
@@ -547,13 +534,13 @@ class NSHHunter:Hunter{// Replaces Hunter{
 		SHTG A 9 offset(4,34);
 		SHTG A 4 offset(3,34){
 			int hnd=min(
-				countinv("HD"..invoker.GetShellType(invoker.ShellType).."Ammo"),
+				countinv(invoker.Shells[invoker.ShellType]),
 				12-invoker.weaponstatus[SHOTS_SIDESADDLE],
 				3
 			);
 			if(hnd<1)setweaponstate("reloadSSend");
 			else{
-				A_TakeInventory("HD"..invoker.GetShellType(invoker.ShellType).."Ammo",hnd);
+				A_TakeInventory(invoker.Shells[invoker.ShellType],hnd);
 				For(int i=invoker.weaponstatus[SHOTS_SIDESADDLE];i<=invoker.weaponstatus[SHOTS_SIDESADDLE]+hnd;i++)
 				{
 					invoker.weaponstatus[HUNTS_SSHELL1+i]=invoker.ShellType;
@@ -569,7 +556,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 			)setweaponstate("reloadSSend");
 			else if(
 				invoker.weaponstatus[SHOTS_SIDESADDLE]<12
-				&&countinv("HD"..invoker.GetShellType(invoker.ShellType).."Ammo")
+				&&countinv(invoker.Shells[invoker.ShellType])
 			)setweaponstate("ReloadSSrestart");
 		}
 	reloadSSend:
@@ -680,7 +667,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 				invoker.weaponstatus[0]|=HUNTF_FROMPOCKETS;
 			}
 			if(
-				(rld==2&&countinv("HD"..invoker.GetShellType(invoker.ShellType).."Ammo"))
+				(rld==2&&countinv(invoker.Shells[invoker.ShellType]))
 				||(rld==1&&invoker.weaponstatus[SHOTS_SIDESADDLE]>0)
 			)setweaponstate("rackreload");
 		}
@@ -750,7 +737,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 			if(chm==2){
 				invoker.handshell.Push(invoker.weaponstatus[HUNTS_SHELL1]);
 				EmptyHand(careful:true);
-			}else if(chm==1)A_SpawnItemEx("HD"..invoker.GetShellType(invoker.weaponstatus[HUNTS_SHELL1]).."Spent",
+			}else if(chm==1)A_SpawnItemEx(invoker.Spents[invoker.weaponstatus[HUNTS_SHELL1]],
 				cos(pitch)*8,0,height-7-sin(pitch)*8,
 				vel.x+cos(pitch)*cos(angle-random(86,90))*5,
 				vel.y+cos(pitch)*sin(angle-random(86,90))*5,
@@ -778,22 +765,22 @@ class NSHHunter:Hunter{// Replaces Hunter{
 		
 		
 	SideShell1:
-		STKG K 1 A_OverlayTranslation(OverlayId(), "HDHunt"..invoker.GetShellType(invoker.weaponstatus[HUNTS_SSHELL1]));
+		STKG K 1 A_OverlayTranslation(OverlayId(), "NSH"..invoker.Shells[invoker.weaponstatus[HUNTS_SSHELL1]]);
 		Wait;
 	SideShell2:
-		STKG L 1 A_OverlayTranslation(OverlayId(), "HDHunt"..invoker.GetShellType(invoker.weaponstatus[HUNTS_SSHELL3]));
+		STKG L 1 A_OverlayTranslation(OverlayId(), "NSH"..invoker.Shells[invoker.weaponstatus[HUNTS_SSHELL3]]);
 		Wait;
 	SideShell3:
-		STKG M 1 A_OverlayTranslation(OverlayId(), "HDHunt"..invoker.GetShellType(invoker.weaponstatus[HUNTS_SSHELL5]));
+		STKG M 1 A_OverlayTranslation(OverlayId(), "NSH"..invoker.Shells[invoker.weaponstatus[HUNTS_SSHELL5]]);
 		Wait;
 	SideShell4:
-		STKG N 1 A_OverlayTranslation(OverlayId(), "HDHunt"..invoker.GetShellType(invoker.weaponstatus[HUNTS_SSHELL7]));
+		STKG N 1 A_OverlayTranslation(OverlayId(), "NSH"..invoker.Shells[invoker.weaponstatus[HUNTS_SSHELL7]]);
 		Wait;
 	SideShell5:
-		STKG O 1 A_OverlayTranslation(OverlayId(), "HDHunt"..invoker.GetShellType(invoker.weaponstatus[HUNTS_SSHELL9]));
+		STKG O 1 A_OverlayTranslation(OverlayId(), "NSH"..invoker.Shells[invoker.weaponstatus[HUNTS_SSHELL9]]);
 		Wait;
 	SideShell6:
-		STKG P 1 A_OverlayTranslation(OverlayId(), "HDHunt"..invoker.GetShellType(invoker.weaponstatus[HUNTS_SSHELL11]));
+		STKG P 1 A_OverlayTranslation(OverlayId(), "NSH"..invoker.Shells[invoker.weaponstatus[HUNTS_SSHELL11]]);
 		Wait;
 		
 	CheckSide:
@@ -846,7 +833,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 	reloadfrompockets:
 		---- A 0 A_JumpIf(pressingzoom(),"CheckSide");
 		SHTG A 0{
-			if(!countinv("HD"..invoker.GetShellType(invoker.ShellType).."Ammo"))setweaponstate("nope");
+			if(!countinv(invoker.Shells[invoker.ShellType]))setweaponstate("nope");
 			else invoker.weaponstatus[0]|=HUNTF_FROMPOCKETS;
 		}goto startreload;
 	CheckTube:
@@ -918,7 +905,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 			A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 1);
 			If(pressingzoom())Setweaponstate("CheckTube");
 			int sss=invoker.weaponstatus[SHOTS_SIDESADDLE];
-			int ppp=countinv("HD"..invoker.GetShellType(invoker.ShellType).."Ammo");
+			int ppp=countinv(invoker.Shells[invoker.ShellType]);
 			if(ppp<1&&sss<1&&!pressingzoom())setweaponstate("nope");
 				else if(sss<1)
 					invoker.weaponstatus[0]|=HUNTF_FROMPOCKETS;
@@ -931,7 +918,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 			){
 				if(
 					invoker.weaponstatus[SHOTS_SIDESADDLE]<12
-					&&countinv("HD"..invoker.GetShellType(invoker.ShellType).."Ammo")
+					&&countinv(invoker.Shells[invoker.ShellType])
 				)setweaponstate("ReloadSS");
 				else setweaponstate("nope");
 			}
@@ -999,7 +986,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 						invoker.weaponstatus[0]&HUNTF_FROMPOCKETS
 						||invoker.weaponstatus[SHOTS_SIDESADDLE]<1
 					)&&
-					!countinv("HD"..invoker.GetShellType(invoker.ShellType).."Ammo")
+					!countinv(invoker.Shells[invoker.ShellType])
 				)
 			)setweaponstate("reloadend");
 			else if(
@@ -1124,18 +1111,18 @@ class NSHHunter:Hunter{// Replaces Hunter{
 			invoker.weaponstatus[HUNTS_CHAMBER]=0;
 			if(chm>1){
 				A_StartSound("weapons/huntreload",8);
-				if(A_JumpIfInventory("HD"..invoker.GetShellType(invoker.WeaponStatus[HUNTS_SHELL1]).."Ammo",0,"null"))A_SpawnItemEx(invoker.GetFumblingType(invoker.WeaponStatus[HUNTS_SHELL1]),
+				if(A_JumpIfInventory(invoker.Shells[invoker.WeaponStatus[HUNTS_SHELL1]],0,"null"))A_SpawnItemEx(invoker.Fumbls[invoker.WeaponStatus[HUNTS_SHELL1]],
 					cos(pitch)*8,0,height-7-sin(pitch)*8,
 					vel.x+cos(pitch)*cos(angle-random(86,90))*5,
 					vel.y+cos(pitch)*sin(angle-random(86,90))*5,
 					vel.z+sin(pitch)*random(4,6),
 					0,SXF_ABSOLUTEMOMENTUM|SXF_NOCHECKPOSITION|SXF_TRANSFERPITCH
 				);else{
-					HDF.Give(self, "HD"..invoker.GetShellType(invoker.WeaponStatus[HUNTS_SHELL1]).."Ammo", 1);
+					HDF.Give(self, invoker.Shells[invoker.WeaponStatus[HUNTS_SHELL1]], 1);
 					A_StartSound("weapons/pocket",9);
 					A_SetTics(5);
 				}
-			}else if(chm>0){A_SpawnItemEx(invoker.GetSpentType(invoker.WeaponStatus[HUNTS_SHELL1]),
+			}else if(chm>0){A_SpawnItemEx(invoker.Spents[invoker.WeaponStatus[HUNTS_SHELL1]],
 				cos(pitch)*8,0,height-7-sin(pitch)*8,
 				vel.x+cos(pitch)*cos(angle-random(86,90))*5,
 				vel.y+cos(pitch)*sin(angle-random(86,90))*5,
@@ -1165,7 +1152,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 	unloadloopend:
 		SHTG C 6 offset(1,41);
 		SHTG C 3 offset(1,42){
-			For(int i=0;i<invoker.handshell.Size();i++)A_GiveInventory("HD"..invoker.GetShellType(invoker.handshell[i]).."Ammo", 1);
+			For(int i=0;i<invoker.handshell.Size();i++)A_GiveInventory(invoker.Shells[invoker.handshell[i]], 1);
 			A_SetTics(8);
 			invoker.HandShell.Clear();
 			A_StartSound("weapons/pocket",9);
@@ -1260,8 +1247,8 @@ class NSHHunter:Hunter{// Replaces Hunter{
 		if(handshell.Size()>0){
 			For(int i=0;i<HandShell.Size();i++)
 			{
-				if(owner)owner.A_DropItem("HD"..GetShellType(HandShell[i]).."Ammo", 1);
-				else A_DropItem("HD"..GetShellType(HandShell[i]).."Ammo", 1);
+				if(owner)owner.A_DropItem(Shells[HandShell[i]], 1);
+				else A_DropItem(Shells[HandShell[i]], 1);
 			}
 			HandShell.Clear();
 		}
