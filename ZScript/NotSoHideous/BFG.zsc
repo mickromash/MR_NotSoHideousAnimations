@@ -529,19 +529,16 @@ class NSHBFG9K:BFG9K{// replaces BFG9K{
 		#### A 2 offset(0,34);
 		#### A 12;
 		goto ready;
+
 	CheckMag:
 		#### B 2 A_Jumpif(!PressingReload(), "Nope");
 		#### B 0 {if(invoker.weaponstatus[BFGS_BATTERY]>0)A_Overlay(102, "Dumb");if(invoker.weaponstatus[BFGS_CHARGE]>0)A_Overlay(103, "Dumb2");}
 		Loop;
 	Dumb:
-		STUP A 0 A_OverLayOffset(102,29,22);
-		#### # 0 {Player.GetPSprite(OverlayId()).Frame = (invoker.weaponstatus[BFGS_BATTERY]-1)*.75;}
-		#### # 5;
+		STUP O 5 {A_OverLayOffset(102,29,22);A_OverlayPivot(OverlayId(), 1, .5);Float Mag = invoker.weaponstatus[BFGS_BATTERY];A_OverlayScale(OverlayId(), Mag/20, 1);}
 		Stop;
 	Dumb2:
-		STUP A 0 A_OverLayOffset(103,29,24);
-		#### # 0 {Player.GetPSprite(OverlayId()).Frame = (invoker.weaponstatus[BFGS_CHARGE]-1)*.75;}
-		#### # 5;
+		STUP O 5 {A_OverLayOffset(103,29,24);A_OverlayPivot(OverlayId(), 1, .5);Float Mag = invoker.weaponstatus[BFGS_CHARGE];A_OverlayScale(OverlayId(), Mag/20, 1);}
 		Stop;
 
 	user3:

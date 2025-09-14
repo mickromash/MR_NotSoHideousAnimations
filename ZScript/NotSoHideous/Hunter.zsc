@@ -861,21 +861,8 @@ class NSHHunter:Hunter{// Replaces Hunter{
 		SHTG A 0 A_JumpIf(invoker.weaponstatus[0]&HUNTF_HOLDING,"nope");
 		goto ready;
 	Dumb:
-		STUP A 0 A_OverLayOffset(102,29,20);
-		---- A 0 A_JumpIf(Invoker.WeaponStatus[HUNTS_TUBESIZE]==5,"Dumb2");
-		STUP A 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>1,1);
-		Stop;
-		STUP D 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>2,1);
-		Stop;
-		STUP F 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>3,1);
-		Stop;
-		STUP I 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>4,1);
-		Stop;
-		STUP K 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>5,1);
-		Stop;
-		STUP M 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>6,1);
-		Stop;
-		STUP O 5;
+		STUP O 5 {A_OverLayOffset(102,29,20);
+			A_OverlayPivot(OverlayId(), 1, .5);Float Mag = invoker.weaponstatus[HUNTS_TUBE];A_OverlayScale(OverlayId(), Mag/invoker.weaponstatus[HUNTS_TUBESIZE], 1);}
 		Stop;
 	Dumb3:
 		STUP A 0 A_OverLayOffset(103,29,17);
@@ -885,18 +872,9 @@ class NSHHunter:Hunter{// Replaces Hunter{
 		Stop;
 	Dumb4:
 		STUP A 0 A_OverLayOffset(104,25,18);
-		STUP Q 5;
-		Stop;
-	Dumb2:
-		STUP B 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>1,1);
-		Stop;
-		STUP E 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>2,1);
-		Stop;
-		STUP H 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>3,1);
-		Stop;
-		STUP L 5 A_JumpIf(invoker.weaponstatus[HUNTS_TUBE]>4,1);
-		Stop;
-		STUP O 5;
+		#### W 0 A_JumpIf(invoker.weaponstatus[HUNTS_FIREMODE]>1, 2);
+		STUP Q 0;
+		#### # 5;
 		Stop;
 		
 	reload:

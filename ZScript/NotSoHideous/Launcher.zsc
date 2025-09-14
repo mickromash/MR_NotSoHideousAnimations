@@ -403,6 +403,7 @@ class NSHRL:HDRL{
 		#### A 1 offset(0,34);
 		goto nope;
 	reload:
+		#### A 0 A_JumpIf(PressingZoom(), "CheckMag");
 		#### A 0 A_JumpIf(invoker.weaponstatus[RLS_CHAMBER]>1,"altreload");
 		#### A 0 A_JumpIf(invoker.weaponstatus[0]&RLF_NOMAG,"nomagreload");
 		#### A 0 A_JumpIf(
@@ -775,6 +776,20 @@ class NSHRL:HDRL{
 			A_SetHelpText();
 			A_TakeInventory("HDRocketAmmo",1,TIF_NOTAKEINFINITE);
 		}goto altreloadend;
+		
+	CheckMag:
+		#### B 2 A_Jumpif(!PressingReload(), "Nope");
+		---- B 0 {if(invoker.weaponstatus[RLS_MAG]>0)A_Overlay(102, "Dumb");
+			if(invoker.weaponstatus[RLS_CHAMBER]>0)A_Overlay(103, "Dumb2");}
+		Loop;
+	Dumb:
+		STUP O 5 {A_OverLayOffset(102,29,24);A_OverlayPivot(OverlayId(), 1, .5);Float Mag = invoker.weaponstatus[SMGS_MAG];A_OverlayScale(OverlayId(), Mag/5, 1);}
+		Stop;
+	Dumb2:
+		STUP C 0 A_JumpIf(invoker.weaponstatus[RLS_CHAMBER]>1, 2);
+		STUP Q 0;
+		STUP # 5 A_OverLayOffset(OverlayId(), 30, 23);
+		Stop;
 
 	spawn:
 		TNT1 A 0 nodelay A_JumpIf(invoker.weaponstatus[0]&RLF_NOMAG,2);

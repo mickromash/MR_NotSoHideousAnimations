@@ -453,28 +453,28 @@ class NSHThunderBuster:ThunderBuster{// Replaces ThunderBuster{
 			if(bat>=0){
 				HDMagAmmo.SpawnMag(self,"HDBattery",bat);
 			}}
-		PLSR D 2 Offset(10,27) A_StartSound("weapons/plasload",8,CHANF_OVERLAP);	
+		PLSR D 2 Offset(10,27) A_StartSound("weapons/plasload",8,CHANF_OVERLAP);
 		PLSR D 2 Offset(5,23);
 		PLSR D 1 Offset(1,16);
 		PLSR D 1 Offset(0,0);
 		goto magout;
 
 	HandTakingBat:
-		RVHA F 1 A_OverLayOffset(-26, -30, 50);
-		RVHA F 1 A_OverLayOffset(-26, -36, 45);
-		RVHA F 1 A_OverLayOffset(-26, -44, 40);
-		RVHA F 1 A_OverLayOffset(-26, -56, 50);
-		RVHA F 1 A_OverLayOffset(-26, -64, 45);
-		RVHA F 1 A_OverLayOffset(-26, -70, 40);
-		RVHA G 2 A_OverLayOffset(-26, -70, 35);
+		RVHA F 1 A_OverLayOffset(-26, -30, 55);
+		RVHA F 1 A_OverLayOffset(-26, -36, 50, WOF_INTERPOLATE);
+		RVHA F 1 A_OverLayOffset(-26, -44, 45, WOF_INTERPOLATE);
+		RVHA F 1 A_OverLayOffset(-26, -56, 55, WOF_INTERPOLATE);
+		RVHA F 1 A_OverLayOffset(-26, -64, 50, WOF_INTERPOLATE);
+		RVHA F 1 A_OverLayOffset(-26, -75, 45, WOF_INTERPOLATE);
+		RVHA G 2 A_OverLayOffset(-26, -80, 50);
 		PLSR E 2 A_OverLayOffset(-26, -38, 30);
-		PLSR E 2 A_OverLayOffset(-26, -30, 32);
-		PLSR E 1 A_OverLayOffset(-26, -23, 29);
-		PLSR E 2 A_OverLayOffset(-26, -15, 32);
-		PLSR E 2 A_OverLayOffset(-26, -4, 38);
-		PLSR E 2 A_OverLayOffset(-26, 4, 46);
-		PLSR E 2 A_OverLayOffset(-26, 11, 54);
-		PLSR E 2 A_OverLayOffset(-26, 18, 62);
+		PLSR E 2 A_OverLayOffset(-26, -30, 32, WOF_INTERPOLATE);
+		PLSR E 1 A_OverLayOffset(-26, -23, 29, WOF_INTERPOLATE);
+		PLSR E 2 A_OverLayOffset(-26, -15, 32, WOF_INTERPOLATE);
+		PLSR E 2 A_OverLayOffset(-26, -4, 38, WOF_INTERPOLATE);
+		PLSR E 2 A_OverLayOffset(-26, 4, 46, WOF_INTERPOLATE);
+		PLSR E 2 A_OverLayOffset(-26, 11, 54, WOF_INTERPOLATE);
+		PLSR E 2 A_OverLayOffset(-26, 18, 62, WOF_INTERPOLATE);
 		Stop;
 	pocketmag:
 		---- A 0 A_OverLay(-26,"HandTakingBat");
@@ -513,19 +513,19 @@ class NSHThunderBuster:ThunderBuster{// Replaces ThunderBuster{
 
 	HandLoad:
 		PLSR E 2 A_OverLayOffset(-26, 20, 62);
-		PLSR E 2 A_OverLayOffset(-26, 14, 54);
-		PLSR E 2 A_OverLayOffset(-26, 9, 46);
-		PLSR E 2 A_OverLayOffset(-26, 1, 38);
-		PLSR E 2 A_OverLayOffset(-26, -10, 32);
-		PLSR E 2 A_OverLayOffset(-26, -20, 30);
-		PLSR E 2 A_OverLayOffset(-26, -31, 29);
-		PLSR E 2 A_OverLayOffset(-26, -34, 30);
-		PLSR E 2 A_OverLayOffset(-26, -38, 29);
-		RVHA G 2 A_OverLayOffset(-26, -70, 35);
-		RVHA G 2 A_OverLayOffset(-26, -65, 40);
-		RVHA G 2 A_OverLayOffset(-26, -57, 47);
-		RVHA G 2 A_OverLayOffset(-26, -47, 54);
-		RVHA G 2 A_OverLayOffset(-26, -39, 60);
+		PLSR E 2 A_OverLayOffset(-26, 14, 54, WOF_INTERPOLATE);
+		PLSR E 2 A_OverLayOffset(-26, 9, 46, WOF_INTERPOLATE);
+		PLSR E 2 A_OverLayOffset(-26, 1, 38, WOF_INTERPOLATE);
+		PLSR E 2 A_OverLayOffset(-26, -10, 32, WOF_INTERPOLATE);
+		PLSR E 2 A_OverLayOffset(-26, -20, 30, WOF_INTERPOLATE);
+		PLSR E 2 A_OverLayOffset(-26, -31, 29, WOF_INTERPOLATE);
+		PLSR E 2 A_OverLayOffset(-26, -34, 30, WOF_INTERPOLATE);
+		PLSR E 2 A_OverLayOffset(-26, -42, 29, WOF_INTERPOLATE);
+		RVHA G 2 A_OverLayOffset(-26, -70, 45);
+		RVHA G 2 A_OverLayOffset(-26, -65, 50, WOF_INTERPOLATE);
+		RVHA G 2 A_OverLayOffset(-26, -57, 57, WOF_INTERPOLATE);
+		RVHA G 2 A_OverLayOffset(-26, -47, 64, WOF_INTERPOLATE);
+		RVHA G 2 A_OverLayOffset(-26, -39, 70, WOF_INTERPOLATE);
 		Stop;
 	loadmag:
 		PLSR D 2 offset(0,3){
@@ -572,7 +572,10 @@ class NSHThunderBuster:ThunderBuster{// Replaces ThunderBuster{
 		#### C 2 offset(-1,5);
 	CheckMagLoop:
 		#### C 3 offset(-1,6)A_JumpIf(!PressingReload(), 2);
-		---- B 0 {if(invoker.weaponstatus[TBS_BATTERY]>0)A_Overlay(102, "Dumb");}
+		---- B 0 {
+			if(invoker.weaponstatus[TBS_BATTERY]>0)A_Overlay(102, "Dumb");
+			if(invoker.weaponstatus[0]&TBF_ALT)A_Overlay(103, "Dumb2");
+		}
 		Loop;
 		#### B 2 offset(-1,5);
 		#### B 1 offset(0,4);
@@ -582,36 +585,10 @@ class NSHThunderBuster:ThunderBuster{// Replaces ThunderBuster{
 		goto nope;
 	
 	Dumb:
-		STUP A 0 A_OverLayOffset(102,29,24);
-		STUP A 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>1,1);
+		STUP O 5 {A_OverLayOffset(102,29,24);A_OverlayPivot(OverlayId(), 1, .5);Float Mag = invoker.weaponstatus[TBS_BATTERY];A_OverlayScale(OverlayId(), Mag/20, 1);}
 		Stop;
-		STUP B 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>3,1);
-		Stop;
-		STUP C 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>4,1);
-		Stop;
-		STUP D 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>6,1);
-		Stop;
-		STUP E 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>7,1);
-		Stop;
-		STUP F 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>9,1);
-		Stop;
-		STUP G 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>10,1);
-		Stop;
-		STUP H 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>12,1);
-		Stop;
-		STUP I 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>14,1);
-		Stop;
-		STUP J 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>15,1);
-		Stop;
-		STUP K 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>16,1);
-		Stop;
-		STUP L 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>17,1);
-		Stop;
-		STUP M 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>18,1);
-		Stop;
-		STUP N 5 A_JumpIf(invoker.weaponstatus[TBS_BATTERY]>19,1);
-		Stop;
-		STUP O 5;
+	Dumb2:
+		STUP X 5 A_OverLayOffset(OverlayId(),24,23);
 		Stop;
 
 	user3:

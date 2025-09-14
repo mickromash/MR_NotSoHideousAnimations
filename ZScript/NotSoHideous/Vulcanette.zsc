@@ -494,73 +494,25 @@ class NSHVulcanette:Vulcanette{// Replaces Vulcanette{
 		
 	CheckMag:
 		#### B 2 A_Jumpif(!PressingReload(), "Nope");
-		#### # 0 {if(invoker.weaponstatus[VULCS_MAG1]>0)A_Overlay(102, "Dumb");if(Invoker.weaponstatus[VULCS_BATTERY]>0)A_Overlay(103, "Dumb2");
-		if(invoker.weaponstatus[VULCS_MAG2]>=0)A_Overlay(104, "Dumb3");}
+		#### # 0 {
+			if(invoker.weaponstatus[VULCS_MAG1]>0)A_Overlay(102, "Dumb");
+			if(invoker.weaponstatus[VULCS_BATTERY]>0)A_Overlay(103, "Dumb2");
+			if(invoker.weaponstatus[VULCS_MAG2]>=0)A_Overlay(104, "Dumb3");
+			if(invoker.weaponstatus[0]&VULCF_FAST)A_Overlay(105, "Dumb4");
+			
+			if(invoker.weaponstatus[VULCS_CHAMBER5]>0){A_Overlay(106, "Dumb5");A_OverlayOffset(106, 29, 24);}
+			if(invoker.weaponstatus[VULCS_CHAMBER4]>0){A_Overlay(107, "Dumb5");A_OverlayOffset(107, 29, 22.5);}
+			if(invoker.weaponstatus[VULCS_CHAMBER3]>0){A_Overlay(108, "Dumb5");A_OverlayOffset(108, 29, 21);}
+			if(invoker.weaponstatus[VULCS_CHAMBER2]>0){A_Overlay(109, "Dumb5");A_OverlayOffset(109, 29, 19.5);}
+			if(invoker.weaponstatus[VULCS_CHAMBER1]>0){A_Overlay(110, "Dumb5");A_OverlayOffset(110, 29, 18);}
+		}
 		Loop;
 	Dumb:
-		STUP A 0 A_OverLayOffset(102,29,22);
-		STUP A 5 A_JumpIf(invoker.weaponstatus[VULCS_MAG1]>4,1);
+		STUP O 5 {A_OverLayOffset(102,29,22);A_OverlayPivot(OverlayId(), 1, .5);Float Mag = invoker.weaponstatus[VULCS_MAG1];A_OverlayScale(OverlayId(), Mag/50, 1);}
 		Stop;
-		STUP B 5 A_JumpIf(invoker.weaponstatus[VULCS_MAG1]>10,1);
+	Dumb2:
+		STUP O 5 {A_OverLayOffset(103,29,24);A_OverlayPivot(OverlayId(), 1, .5);Float Mag = invoker.weaponstatus[VULCS_BATTERY];A_OverlayScale(OverlayId(), Mag/20, 1);}
 		Stop;
-		STUP C 5 A_JumpIf(invoker.weaponstatus[VULCS_MAG1]>13,1);
-		Stop;
-		STUP D 5 A_JumpIf(invoker.weaponstatus[VULCS_MAG1]>16,1);
-		Stop;
-		STUP E 5 A_JumpIf(invoker.weaponstatus[VULCS_MAG1]>19,1);
-		Stop;
-		STUP F 5 A_JumpIf(invoker.weaponstatus[VULCS_MAG1]>22,1);
-		Stop;
-		STUP G 5 A_JumpIf(invoker.weaponstatus[VULCS_MAG1]>25,1);
-		Stop;
-		STUP H 5 A_JumpIf(invoker.weaponstatus[VULCS_MAG1]>28,1);
-		Stop;
-		STUP I 5 A_JumpIf(invoker.weaponstatus[VULCS_MAG1]>31,1);
-		Stop;
-		STUP J 5 A_JumpIf(invoker.weaponstatus[VULCS_MAG1]>34,1);
-		Stop;
-		STUP K 5 A_JumpIf(invoker.weaponstatus[VULCS_MAG1]>37,1);
-		Stop;
-		STUP L 5 A_JumpIf(invoker.weaponstatus[VULCS_MAG1]>40,1);
-		Stop;
-		STUP M 5 A_JumpIf(invoker.weaponstatus[VULCS_MAG1]>43,1);
-		Stop;
-		STUP N 5 A_JumpIf(invoker.weaponstatus[VULCS_MAG1]>46,1);
-		Stop;
-		STUP O 5;
-		Stop;	
-	Dumb2:	
-		STUP A 0 A_OverLayOffset(103,29,24);
-		STUP A 5 A_JumpIf(invoker.weaponstatus[VULCS_BATTERY]>1,1);
-		Stop;
-		STUP B 5 A_JumpIf(invoker.weaponstatus[VULCS_BATTERY]>3,1);
-		Stop;
-		STUP C 5 A_JumpIf(invoker.weaponstatus[VULCS_BATTERY]>4,1);
-		Stop;
-		STUP D 5 A_JumpIf(invoker.weaponstatus[VULCS_BATTERY]>6,1);
-		Stop;
-		STUP E 5 A_JumpIf(invoker.weaponstatus[VULCS_BATTERY]>7,1);
-		Stop;
-		STUP F 5 A_JumpIf(invoker.weaponstatus[VULCS_BATTERY]>9,1);
-		Stop;
-		STUP G 5 A_JumpIf(invoker.weaponstatus[VULCS_BATTERY]>10,1);
-		Stop;
-		STUP H 5 A_JumpIf(invoker.weaponstatus[VULCS_BATTERY]>12,1);
-		Stop;
-		STUP I 5 A_JumpIf(invoker.weaponstatus[VULCS_BATTERY]>14,1);
-		Stop;
-		STUP J 5 A_JumpIf(invoker.weaponstatus[VULCS_BATTERY]>15,1);
-		Stop;
-		STUP K 5 A_JumpIf(invoker.weaponstatus[VULCS_BATTERY]>16,1);
-		Stop;
-		STUP L 5 A_JumpIf(invoker.weaponstatus[VULCS_BATTERY]>17,1);
-		Stop;
-		STUP M 5 A_JumpIf(invoker.weaponstatus[VULCS_BATTERY]>18,1);
-		Stop;
-		STUP N 5 A_JumpIf(invoker.weaponstatus[VULCS_BATTERY]>19,1);
-		Stop;
-		STUP O 5;
-		Stop;	
 	Dumb3:
 		STUP A 0 A_OverLayOffset(104,29,20);
 		STUP S 5 A_JumpIf(invoker.weaponstatus[VULCS_MAG3]>=0,1);
@@ -570,6 +522,13 @@ class NSHVulcanette:Vulcanette{// Replaces Vulcanette{
 		STUP U 5 A_JumpIf(invoker.weaponstatus[VULCS_MAG5]>=0,1);
 		Stop;
 		STUP V 5;
+		Stop;
+	Dumb4:
+		#### # 0 A_OverLayOffset(OverlayId(),29,19);
+		STUP W 5;
+		Stop;
+	Dumb5:
+		STUP Z 5;
 		Stop;
 
 	user3:
