@@ -75,7 +75,7 @@ Class MRHD_CrawlAnimation: CustomInventory
 	States
 	{
 	  Use:
-		TNT1 A 0{A_Overlay(2289, "Crawl", true);A_Overlay(2290, "CrawlR", true);A_Overlay(2288, "Grab", true);}
+		TNT1 A 0{A_Overlay(2280, "Crawl", true);A_Overlay(2281, "CrawlR", true);A_Overlay(2288, "Grab", true);}
 		Fail;
 	  Pickup:
 		TNT1 A 0{return true;}
