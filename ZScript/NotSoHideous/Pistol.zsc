@@ -854,6 +854,16 @@ Class MR_NoHudHudHandler : EventHandler
 		
 		if(!Plr || !Wep)Return;
 		
+		if(!(Wep is 'NSHHunter') && !(Wep is 'NSHSlayer'))Return;
+		
+		Bool OriginalOffsets = Sb.FullscreenOffsets;
+		Sb.FullscreenOffsets = true;
+		
+		Vector2 HUDScale = Vec2Div(Vec2Div((4, 4), Sb.GetHUDScale()), Vec2Div((4, 4), Sb.defaultScale));
+		
+		HudFont NewFont = HUDFont.Create("NEWSMALLFONT");
+		
+		
 		if(!BobX)BobX = LinearValueInterpolator.Create(Plr.CrossBob.X*10, 30);
 		BobX.Update(Plr.CrossBob.X*10);
 		if(!BobY)BobY = LinearValueInterpolator.Create(Plr.CrossBob.Y*10, 30);
@@ -863,13 +873,6 @@ Class MR_NoHudHudHandler : EventHandler
 		bob *= .1;
 		vector2 lastbob=Plr.lastcrossbob;
 		
-		Vector2 HUDScale = Vec2Div(Vec2Div((4, 4), Sb.GetHUDScale()), Vec2Div((4, 4), Sb.defaultScale));
-		// Interpolate
-		//bob = lastbob + ((bob - lastbob));
-		
-		
-		HudFont NewFont = HUDFont.Create("NEWSMALLFONT");
-				
 		if(Wep is 'NSHHunter')
 		{
 			if(NSHHunter(Wep).Checking)Sb.DrawString(NewFont, StringTable.Localize("$HD_CHOKE")..
@@ -890,5 +893,7 @@ Class MR_NoHudHudHandler : EventHandler
 				HUDScale.X*((100, -32)+Bob), Sb.DI_SCREEN_CENTER|Sb.DI_TEXT_ALIGN_RIGHT, Font.CR_CYAN, 0.6, Scale:HUDScale*.5);
 			}
 		}
+		
+		Sb.FullscreenOffsets = OriginalOffsets;
 	}
 }
