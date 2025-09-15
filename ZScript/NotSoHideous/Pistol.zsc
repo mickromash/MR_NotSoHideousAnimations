@@ -849,11 +849,10 @@ Class MR_NoHudHudHandler : EventHandler
 	Override Void RenderOverlay(RenderEvent e)
 	{
 		Let Plr = HDPlayerPawn(Players[ConsolePlayer].Camera);
+		if(!Plr || Plr.Player || Plr.Player.ReadyWeapon)Return;
 		Let Wep = HDWeapon(Plr.Player.ReadyWeapon);
 		Let Sb = StatusBar;
-		
-		if(!Plr || !Wep)Return;
-		
+				
 		if(!(Wep is 'NSHHunter') && !(Wep is 'NSHSlayer'))Return;
 		
 		Bool OriginalOffsets = Sb.FullscreenOffsets;
