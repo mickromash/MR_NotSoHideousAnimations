@@ -848,6 +848,9 @@ Class MR_NoHudHudHandler : EventHandler
 	
 	Override Void RenderOverlay(RenderEvent e)
 	{
+		String Handler = "MR_NoHudHudHandler_Immerse";
+		if(EventHandler.Find(Handler))Return;
+		
 		Let Plr = HDPlayerPawn(Players[ConsolePlayer].Camera);
 		if(!Plr || !Plr.Player || !Plr.Player.ReadyWeapon)Return;
 		Let Wep = HDWeapon(Plr.Player.ReadyWeapon);
