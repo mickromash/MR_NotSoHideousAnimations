@@ -12,7 +12,7 @@ Class MRHD_CrawlAnimation: CustomInventory
 		Super.Tick();
 		
 		HDPlayerPawn Plr = HDPlayerPawn(Owner);
-		if(!Owner){Destroy();Return;}
+		if(!Owner||!Plr){Destroy();Return;}
 		
 		if(GetAge()%350==0)Owner.UseInventory(Self);
 		
@@ -117,9 +117,9 @@ Class MRHD_CrawlAnimation: CustomInventory
 			Loop;
 			
 		Crawling:
-			HGRB G 0 A_Jumpif((Roll<0&&Pitch>40), 7);
-			HGRB E 0 A_Jumpif((Roll<0), 6);
-			HGRB F 0 A_JumpIf((Pitch>40&&Roll<7), 5);
+			HGRB G 0 A_Jumpif(Roll<0&&Pitch>40&&Health>0, 7);
+			HGRB E 0 A_Jumpif(Roll<0&&Health>0, 6);
+			HGRB F 0 A_JumpIf((Pitch>40&&Roll<7)||Health<1, 5);
 			HGRB D 0 A_Jumpif((Roll<7), 4);
 			HGRB A 0 A_JumpIf(Roll<12, 3);
 			HGRB H 0 A_JumpIf(Roll>=14, 2);
@@ -160,10 +160,10 @@ Class MRHD_CrawlAnimation: CustomInventory
 				Pitch = OrigPitch;
 			}
 		CrawlingLoop:
-			HGRB G 0 A_Jumpif((Roll<0&&Pitch>40), 7);
-			HGRB E 0 A_Jumpif((Roll<0), 6);
-			HGRB F 0 A_JumpIf((Pitch>40&&Roll<7), 5);
-			HGRB D 0 A_Jumpif((Roll<7), 4);
+			HGRB G 0 A_Jumpif(Roll<0&&Pitch>40 &&Health>0, 7);
+			HGRB E 0 A_Jumpif(Roll<0&&Health>0, 6);
+			HGRB F 0 A_JumpIf((Pitch>40&&Roll<7)&&Health<1, 5);
+			HGRB D 0 A_Jumpif((Roll<7)||Health<1, 4);
 			HGRB A 0 A_JumpIf(Roll<12, 3);
 			HGRB H 0 A_JumpIf(Roll>=14, 2);
 			HGRB I 0;
