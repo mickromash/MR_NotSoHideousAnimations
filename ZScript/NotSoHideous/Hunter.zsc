@@ -77,6 +77,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 	
 	Array<String> Shells, Spents, Fumbls, Names, Sprites, Bullets, Pickups;
 	Array<Double> PowersMin, PowersMax;//For god's sake, add vector2 dynamic arrays PLEASE
+	Array<int> Pellets;
 		
 	Override Void PostBeginPlay()
 	{
@@ -93,6 +94,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 			PowersMin.Push(.9);
 			PowersMax.Push(1.05);
 			Pickups.Push("ShellPickup");
+			Pellets.Push(10);
 		}
 		
 		Shel = "HDSlugAmmo";
@@ -106,6 +108,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 			PowersMin.Push(.91);
 			PowersMax.Push(1.06);
 			Pickups.Push("SlugPickup");
+			Pellets.Push(1);
 		}
 		
 		Shel = "HDExplosiveShellAmmo";
@@ -119,6 +122,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 			PowersMin.Push(1.4);
 			PowersMax.Push(1.6);
 			Pickups.Push("ExplosiveShellPickup");
+			Pellets.Push(1);
 		}
 		
 		Shel = "HDLLShellAmmo";
@@ -129,9 +133,10 @@ class NSHHunter:Hunter{// Replaces Hunter{
 			Fumbls.Push("HDLLFumblingShell");
 			Names.Push(StringTable.Localize("$LWPHELP_SHTGSHELLLL"));
 			Sprites.Push("LLS1A0");
-			PowersMin.Push(.1);
-			PowersMax.Push(.2);
+			PowersMin.Push(.9);//According to llhunter from RadTechWeaponsPack
+			PowersMax.Push(1.05);//
 			Pickups.Push("LLShellPickup");
+			Pellets.Push(10);//
 		}
 	}
 		
@@ -179,12 +184,10 @@ class NSHHunter:Hunter{// Replaces Hunter{
 		spread*=shotpower;
 		speedfactor*=shotpower;
 		HDBulletActor.FireBullet(caller,"HDB_wad");
-		String Shot = "HDB_00";
-		int Pellets = 10;
-		if(ShellType>0)Pellets = 1;
-		Shot = hhh.Bullets[ShellType];
+		String Shot = hhh.Bullets[ShellType];
+		int Pellets = hhh.Pellets[ShellType];
 		
-		let p=HDBulletActor.FireBullet(caller,Shot,
+		HDBulletActor.FireBullet(caller,Shot,
 			spread:spread,speedfactor:speedfactor,amount:Pellets
 		);
 		distantnoise.make(caller,"world/shotgunfar");

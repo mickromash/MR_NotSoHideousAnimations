@@ -75,7 +75,8 @@ class NSHSlayer:Slayer{// replaces Slayer{
 	Array<Int> HandShell;
 	
 	Array<String> Shells, Spents, Fumbls, Names, Sprites, Bullets, Pickups;
-	Array<Double> PowersMin, PowersMax;//For god's sake, add vector2 dynamic arrays PLEASE	
+	Array<Double> PowersMin, PowersMax;//For god's sake, add vector2 dynamic arrays PLEASE
+	Array<int> Pellets;
 	
 	override void DrawHUDStuff(HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl){
 		if(sb.hudlevel==1){
@@ -245,6 +246,7 @@ class NSHSlayer:Slayer{// replaces Slayer{
 			PowersMin.Push(.9);
 			PowersMax.Push(1.05);
 			Pickups.Push("ShellPickup");
+			Pellets.Push(10);
 		}
 		
 		Shel = "HDSlugAmmo";
@@ -258,6 +260,7 @@ class NSHSlayer:Slayer{// replaces Slayer{
 			PowersMin.Push(.91);
 			PowersMax.Push(1.06);
 			Pickups.Push("SlugPickup");
+			Pellets.Push(1);
 		}
 		
 		Shel = "HDExplosiveShellAmmo";
@@ -271,6 +274,7 @@ class NSHSlayer:Slayer{// replaces Slayer{
 			PowersMin.Push(1.4);
 			PowersMax.Push(1.6);
 			Pickups.Push("ExplosiveShellPickup");
+			Pellets.Push(1);
 		}
 		
 		Shel = "HDLLShellAmmo";
@@ -281,9 +285,10 @@ class NSHSlayer:Slayer{// replaces Slayer{
 			Fumbls.Push("HDLLFumblingShell");
 			Names.Push(StringTable.Localize("$LWPHELP_SHTGSHELLLL"));
 			Sprites.Push("LLS1A0");
-			PowersMin.Push(.1);
-			PowersMax.Push(.2);
+			PowersMin.Push(.9);//According to llhunter from RadTechWeaponsPack
+			PowersMax.Push(1.05);//
 			Pickups.Push("LLShellPickup");
+			Pellets.Push(10);//
 		}
 		
 		super.postbeginplay();
@@ -391,12 +396,10 @@ class NSHSlayer:Slayer{// replaces Slayer{
 		vector2 barreladjust=(0.8,-0.05);
 		if(right)barreladjust=-barreladjust;
 		HDBulletActor.FireBullet(caller,"HDB_wad",xyofs:barreladjust.x,aimoffx:barreladjust.y);
-		String Shot = "HDB_00";
-		int Pellets = 10;
-		if(ShellType>0)Pellets = 1;
-		Shot = sss.Bullets[ShellType];
+		String Shot = sss.Bullets[ShellType];
+		int Pellets = sss.Pellets[ShellType];
 
-		let p=HDBulletActor.FireBullet(caller,Shot,xyofs:barreladjust.x,
+		HDBulletActor.FireBullet(caller,Shot,xyofs:barreladjust.x,
 			spread:spread,aimoffx:barreladjust.y,speedfactor:speedfactor,amount:Pellets
 		);
 		
