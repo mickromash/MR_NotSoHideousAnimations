@@ -399,7 +399,7 @@ class NSHSlayer:Slayer{// replaces Slayer{
 		String Shot = sss.Bullets[ShellType];
 		int Pellets = sss.Pellets[ShellType];
 
-		HDBulletActor.FireBullet(caller,Shot,xyofs:barreladjust.x,
+		Let p = HDBulletActor.FireBullet(caller,Shot,xyofs:barreladjust.x,
 			spread:spread,aimoffx:barreladjust.y,speedfactor:speedfactor,amount:Pellets
 		);
 		
