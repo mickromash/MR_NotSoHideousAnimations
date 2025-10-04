@@ -510,7 +510,8 @@ class NSHHunter:Hunter{// Replaces Hunter{
 					//A_OverlayOffset(OverlayId(), 128+HDPlayerPawn(Self).crossbob.X, 113+HDPlayerPawn(Self).crossbob.Y);
 					Player.GetPSprite(OverlayId()).Alpha=FRandom(.3, .5);
 				}
-		NSHS A 1;
+		NSHS A 1{A_OverlayFlags(OverlayId(), PSPF_ALPHA|PSPF_RENDERSTYLE, True);
+					A_OverlayRenderStyle(OverlayId(), CVar.FindCVar("mrnsha_muzzlesmoke").GetBool()?STYLE_TRANSLUCENT:STYLE_NONE);}
 		NSHS AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1{
 					int Index = OverlayId()-PSP_FLASH-10;
 					A_OverlayFlags(OverlayId(), PSPF_INTERPOLATE, true);
