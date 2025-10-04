@@ -158,8 +158,44 @@ class NSHBossRifle:BossRifle{//Replaces BossRifle{
 		// the scope display is in 10ths of an arcminute.
 		// one dot = 6 arcminutes.
 	}
+	
+	NSHA_SmokeContainer FireSmokes[50];
 
 	states{
+	
+	SmokeLay:
+		NSHS A 0{
+					A_OverlayFlags(OverlayId(), PSPF_ADDBOB|PSPF_ADDWEAPON, false);
+					A_OverlayFlags(OverlayId(), PSPF_ALPHA|PSPF_RENDERSTYLE, True);
+					A_OverlayRenderStyle(OverlayId(), CVar.FindCVar("mrnsha_muzzlesmoke").GetBool()?STYLE_TRANSLUCENT:STYLE_NONE);
+					A_OverlayPivot(OverlayId(), .5, .5);
+					//Float Scale = FRandom(.05, .06);
+					//A_OverlayScale(OverlayId(), Scale, Scale);
+					//A_OverlayOffset(OverlayId(), 128+HDPlayerPawn(Self).crossbob.X, 113+HDPlayerPawn(Self).crossbob.Y);
+					Player.GetPSprite(OverlayId()).Alpha=FRandom(.3, .5);
+				}
+		NSHS A 1;
+		NSHS AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA 1{
+					int Index = OverlayId()-PSP_FLASH-10;
+					A_OverlayFlags(OverlayId(), PSPF_INTERPOLATE, true);
+					
+					Player.GetPSprite(OverlayId()).Alpha-=.01;
+					
+					Float Scale = (FRandom(.09, .13) + (Vel.X*Cos(Angle) + Vel.Y*Sin(Angle))*.2);
+					Scale -= (invoker.FireSmokes[Index].Vel.Y);
+					Scale *= .1;
+					A_OverlayScale(OverlayId(), Max(0, Scale), Max(0, Scale), WOF_ADD);
+					
+					if(Player.GetPSprite(OverlayId()).Scale.Length()>15)A_OverlayRenderStyle(OverlayId(), STYLE_NONE);
+					Player.GetPSprite(OverlayId()).Y += Player.Cmd.Pitch*.02 + Max(0, (Vel.X*Cos(Angle) + Vel.Y*Sin(Angle)*3));
+					Player.GetPSprite(OverlayId()).Y -= invoker.FireSmokes[Index].Vel.Z*Cos(Pitch);
+					Player.GetPSprite(OverlayId()).Y += invoker.FireSmokes[Index].Vel.Y*Sin(Pitch);
+					Player.GetPSprite(OverlayId()).X += Player.Cmd.Yaw*.02 + (Vel.X*Cos(Angle+90) + Vel.Y*Sin(Angle+90)*5);
+					Player.GetPSprite(OverlayId()).X += invoker.FireSmokes[index].Vel.X;
+				}
+		TNT1 A 0 {invoker.FireSmokes[OverlayId()-PSP_FLASH-10].Destroy();invoker.FireSmokes[OverlayId()-PSP_FLASH-10]=Null;}
+		Stop;
+	
 	select0:
 		BARG A 0;
 		goto select0bfg;
@@ -457,7 +493,24 @@ class NSHBossRifle:BossRifle{//Replaces BossRifle{
 				rrr.target=self;
 				rrr.angle=angle;
 				rrr.vel=HDMath.RotateVec3D((1,-4,2),angle,pitch);
-				if(chm==1)rrr.vel*=1.3;
+				if(chm==1){
+					rrr.vel*=1.3;
+					
+					int index;
+					For(index=0;index<invoker.FireSmokes.Size();index++){
+						if(!invoker.FireSmokes[index])Break;
+					}
+					if(index<invoker.FireSmokes.Size()){
+						NSHA_SmokeContainer a = New('NSHA_SmokeContainer');
+						a.Vel = (FRandom(1, 1.2), -.5, .3);
+						invoker.FireSmokes[index] = a;
+						
+						A_Overlay(PSP_FLASH+10+index, "SmokeLay");
+						A_OverlayOffset(PSP_FLASH+10+index, 144+HDPlayerPawn(Self).crossbob.X, 147+HDPlayerPawn(Self).crossbob.Y);
+						Player.GetPSprite(PSP_FLASH+10+index).Scale = (1,1)*FRandom(.3, .33);
+						A_OverlayAlpha(PSP_FLASH+10+index, FRandom(.1, .15)*3);
+					}
+				}
 				rrr.vel+=vel;
 			}
 

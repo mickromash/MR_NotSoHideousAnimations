@@ -19,6 +19,7 @@ LWPHELP_SHTGSHELLSLUG = " \ccs\chlug\c- ";
 
 OPTMNU_NSHASIGHTS = "Iron Sights Affected By Lighting";
 OPTMNU_NSHAMUZZLESMOKE = "Smoke from muzzle";
+mrnsha_muzzlesmoke = "Fancy smoke from guns";
 //OPTMNU_NSHADELAY = "";
 OPTMNU_NSHABINDS = "Help text shows actual key bindings";
 
@@ -72,6 +73,7 @@ LWPHELP_SHTGSHELLSLUG = " \ccс\chлаг\c- ";
 
 OPTMNU_NSHASIGHTS = "Освещённость прицела";
 OPTMNU_NSHAMUZZLESMOKE = "Дым из стволов";
+mrnsha_muzzlesmoke = "Дым от оружия";
 OPTMNU_NSHABINDS = "Назначеные клавиши в подсказках";
 
 OPTMNU_NSHAHUNTSHELLS = "Охотник может появится с патронами из BulletLib";

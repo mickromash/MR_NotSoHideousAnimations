@@ -3,4 +3,4 @@ user int mrnsha_delay = 1;
 user bool mrnsha_binds = true;
 //server bool mrnsha_huntershells = true;
 //server bool mrnsha_slayershells = true;
-//user bool mrnsha_muzzlesmoke = true;
+user bool mrnsha_muzzlesmoke = true;

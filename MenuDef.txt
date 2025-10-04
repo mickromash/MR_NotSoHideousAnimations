@@ -11,6 +11,7 @@ OptionMenu "NSHAMenu"
 {
 	Title "Not So Hideous Animations"
 	Option "$OPTMNU_NSHASIGHTS", "mrnsha_sights", "YesNo"
+	Option "$mrnsha_muzzlesmoke", "mrnsha_muzzlesmoke", "YesNo"
 	//Option "$OPTMNU_NSHAMUZZLESMOKE", "mrnsha_muzzlesmoke", "YesNo"
 	//Slider "$OPTMNU_NSHADELAY", "mrnsha_delay", 1, 35, 1
 	Option "$OPTMNU_NSHABINDS", "mrnsha_binds", "YesNo"
