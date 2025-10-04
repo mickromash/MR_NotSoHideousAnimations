@@ -116,12 +116,12 @@ Class MRHD_CrawlAnimation: CustomInventory
 			TNT1 A 1 A_JumpIf(invoker.Crawling, "Crawling");
 			Loop;
 			
-		Crawling:
-			HGRB G 0 A_Jumpif(Roll<0&&Pitch>40&&Health>0, 7);
-			HGRB E 0 A_Jumpif(Roll<0&&Health>0, 6);
+		Crawling://Left hand
+			HGRB G 0 A_Jumpif((Roll<0&&Pitch>40)||(Health<1 && CRandom(0, 40)>35), 7);
+			HGRB E 0 A_Jumpif(Roll<0||(Health<1 && CRandom(0, 40)>35), 6);
 			HGRB F 0 A_JumpIf((Pitch>40&&Roll<7)||Health<1, 5);
-			HGRB D 0 A_Jumpif((Roll<7), 4);
-			HGRB A 0 A_JumpIf(Roll<12, 3);
+			HGRB D 0 A_Jumpif(Roll<7&&Health>0, 4);
+			HGRB A 0 A_JumpIf(Roll<12&&Health>0, 3);
 			HGRB H 0 A_JumpIf(Roll>=14, 2);
 			HGRB I 0;
 			HGRB # 1 {
@@ -159,11 +159,11 @@ Class MRHD_CrawlAnimation: CustomInventory
 				Roll=OrigRoll;
 				Pitch = OrigPitch;
 			}
-		CrawlingLoop:
-			HGRB G 0 A_Jumpif(Roll<0&&Pitch>40 &&Health>0, 7);
-			HGRB E 0 A_Jumpif(Roll<0&&Health>0, 6);
-			HGRB F 0 A_JumpIf((Pitch>40&&Roll<7)&&Health<1, 5);
-			HGRB D 0 A_Jumpif((Roll<7)||Health<1, 4);
+		CrawlingLoop://Left hand
+			HGRB G 0 A_Jumpif(Roll<0&&Pitch>40, 7);
+			HGRB E 0 A_Jumpif(Roll<0, 6);
+			HGRB F 0 A_JumpIf((Pitch>40&&Roll<7)||Health<1, 5);
+			HGRB D 0 A_Jumpif(Roll<7, 4);
 			HGRB A 0 A_JumpIf(Roll<12, 3);
 			HGRB H 0 A_JumpIf(Roll>=14, 2);
 			HGRB I 0;
