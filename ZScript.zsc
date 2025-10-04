@@ -130,7 +130,7 @@ Class MRHD_WeapAnimsReplacer : Inventory
 {
 	Default{inventory.MaxAmount 1;+inventory.UNTOSSABLE+inventory.UNDROPPABLE}
 	Static Const String Weaps [] = {"HDMedikitter", "PortableStimpack", "SelfBandage", "HDPistol", "HDRevolver", "HDSMG", "Hunter", "Slayer",
-	"ZM66AssaultRifle", "LiberatorRifle", "Vulcanette", "HDRL", "ThunderBuster", "BFG9K", "BossRifle", "HDFragGrenades", "TripwireFrag"};
+		"ZM66AssaultRifle", "LiberatorRifle", "Vulcanette", "HDRL", "ThunderBuster", "BFG9K", "BossRifle", "HDFragGrenades", "TripwireFrag"};
 	int Numb;
 	bool IsImmersive()
 	{
@@ -200,7 +200,8 @@ Class MRHD_WeapAnimsReplacer : Inventory
 				}
 				else if(Weap.IndexOf("HD")>-1)Weap.Replace("HD", "NSH");
 				else Weap = "NSH"..Weap;
-				if(Owner.Player.ReadyWeapon && Owner.Player.ReadyWeapon.GetClassName() == Weaps[i])Select=Weap;
+				if((Owner.Player.ReadyWeapon && Owner.Player.ReadyWeapon.GetClassName() == Weaps[i])||
+					Owner.Player.PendingWeapon.GetClassName() == Weaps[i])Select=Weap;
 				
 				let spw=spareweapons(Owner.findinventory("spareweapons"));
 				int amt=1;
@@ -232,9 +233,14 @@ Class MRHD_WeapAnimsReplacer : Inventory
 					}
 				}
 				actualweapon.ActualAmount = amt;
-				if(Select!="")Owner.A_SelectWeapon(Select);
+				if(Select!=""){Owner.A_SelectWeapon(Select);}//if(Select ~== "NSHMedikitter")NSHMedikitter(actualweapon).SelectU = true;}
 				if(NSHPortableStimpack(ActualWeapon))NSHPortableStimpack(ActualWeapon).FromMedikit = false;//If stim passed 'AttachToOwner()', it wasn't given from a medikit
 			}
 		}
 	}
+}
+
+Class NSHA_SmokeContainer: Object play
+{
+	Vector3 Vel;
 }
