@@ -1,5 +1,6 @@
 HDMedikitter
 PortableStimpack
+PortableBerserkPack
 SelfBandage
 HDPistol
 HDRevolver

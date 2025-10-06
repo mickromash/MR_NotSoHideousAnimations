@@ -129,7 +129,7 @@ Class MRHD_WeapAnimsHandler : EventHandler
 Class MRHD_WeapAnimsReplacer : Inventory
 {
 	Default{inventory.MaxAmount 1;+inventory.UNTOSSABLE+inventory.UNDROPPABLE}
-	Static Const String Weaps [] = {"HDMedikitter", "PortableStimpack", "SelfBandage", "HDPistol", "HDRevolver", "HDSMG", "Hunter", "Slayer",
+	Static Const String Weaps [] = {"HDMedikitter", "PortableStimpack", "PortableBerserkPack", "SelfBandage", "HDPistol", "HDRevolver", "HDSMG", "Hunter", "Slayer",
 		"ZM66AssaultRifle", "LiberatorRifle", "Vulcanette", "HDRL", "ThunderBuster", "BFG9K", "BossRifle", "HDFragGrenades", "TripwireFrag"};
 	int Numb;
 	bool IsImmersive()
@@ -147,9 +147,10 @@ Class MRHD_WeapAnimsReplacer : Inventory
 			{
 				let spw=spareweapons(Owner.findinventory("spareweapons"));
 				if(spw){
-				for(int i=0;i<spw.weapontype.size();i++){
-				if(spw.weapontype[i]~=="NSHPortableStimpack")spw.weapontype.Delete(i);
-				}}
+					for(int i=0;i<spw.weapontype.size();i++){
+						if(spw.weapontype[i]~=="NSHPortableStimpack")spw.weapontype.Delete(i);
+					}
+				}
 				HDWeapon mdk;
 				For(int i=0;i<HDWeapon(Owner.FindInventory("NSHPortableStimpack")).ActualAmount;i++)
 				{
@@ -160,7 +161,26 @@ Class MRHD_WeapAnimsReplacer : Inventory
 				Owner.RemoveInventory(Owner.FindInventory("NSHPortableStimpack"));
 			}
 			Return;
+			
+			if(Owner.FindInventory("NSHPortableBerserkpack"))
+			{
+				let spw=spareweapons(Owner.findinventory("spareweapons"));
+				if(spw){
+					for(int i=0;i<spw.weapontype.size();i++){
+						if(spw.weapontype[i]~=="NSHPortableBerserkpack")spw.weapontype.Delete(i);
+					}
+				}
+				HDWeapon mdk;
+				For(int i=0;i<HDWeapon(Owner.FindInventory("NSHPortableBerserkpack")).ActualAmount;i++)
+				{
+					mdk=HDWeapon(spawn("PortableBerserkpack",Owner.pos));
+					mdk.actualpickup(Owner,true);
+				}
+				if(owner.player.mo.invsel is "NSHPortableBerserkpack")owner.player.mo.invsel = mdk;
+				Owner.RemoveInventory(Owner.FindInventory("NSHPortableBerserkpack"));
+			}
 		}
+		
 		
 		if(owner.player.mo.invsel && owner.player.mo.invsel.GetClassName() == "PortableMedikit" && !Owner.FindInventory("HDMedikitter")
 		&& Owner.FindInventory("NSHMedikitter"))
@@ -181,7 +201,8 @@ Class MRHD_WeapAnimsReplacer : Inventory
 		
 		
 		if((Numb + GetAge())%CVar.GetCVar("mrnsha_delay", owner.Player).GetInt()!=0 &&
-			!Owner.FindInventory("HDMedikitter") && !Owner.FindInventory("PortableStimpack"))Return;
+			!Owner.FindInventory("HDMedikitter") && !Owner.FindInventory("PortableStimpack")
+			&& !Owner.FindInventory("PortableBerserkPack"))Return;
 			
 		For(int i=0;i<Weaps.Size(); i++)
 		{
@@ -221,7 +242,7 @@ Class MRHD_WeapAnimsReplacer : Inventory
 				}
 				else actualweapon.attachtoowner(owner);
 				actualweapon.loadoutconfigure("");
-				if(i<2)
+				if(i<3)
 				{
 					if(GotOne)actualweapon.AddSpareWeaponRegular(Owner);
 					if(owner.player.mo.invsel.GetClassName() == Weaps[i])owner.player.mo.invsel = actualWeapon;
