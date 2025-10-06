@@ -6,6 +6,8 @@ class NSHMedikitter:HDMedikitter Replaces HDMedikitter{
 	override hdweapon GetSpareWeapon(actor newowner,bool reverse,bool doselect){return GetSpareWeaponRegular(newowner,reverse,doselect);}
 	String UAS_CartridgeS;
 	Bool UAS_Cartridge;
+	
+	Bool SelectU;
 	default{
 	Weapon.SlotPriority 1000;
 	weapon.selectionorder 1005;}
@@ -26,79 +28,16 @@ class NSHMedikitter:HDMedikitter Replaces HDMedikitter{
 			weaponstatus[MEDS_ACCURACY]=inv.weaponstatus[MEDS_ACCURACY];
 			weaponstatus[MEDS_BLOOD]=inv.weaponstatus[MEDS_BLOOD];
 			inv.Destroy();
+			if(SelectU){Owner.A_SelectWeapon(GetClassName());SelectU = false;}
 			Return;
 		}
 		super.loadoutconfigure(input);
 	}
 	
-	/*override void initializewepstats(bool idfa){
-		weaponstatus[MEDS_SECONDFLESH]=MEDIKIT_MAXFLESH;
-		weaponstatus[MEDS_USEDON]=-1;
-		patientname=Stringtable.Localize("$MEDIKIT_UNKNOWN");
-	}
-	override double weaponbulk(){
-		return ENC_MEDIKIT;
-	}*/
 	override string,double getpickupsprite(){
 		return (weaponstatus[MEDS_USEDON]<0)?"MEDIB0":"MEDIC0", 1;
 	}
 
-	/*override void DrawHUDStuff(HDStatusBar sb,HDWeapon hdw,HDPlayerPawn hpl){
-		let ww=hdmedikitter(hdw);
-		int of=0;
-		let bwnd=hdbleedingwound.findbiggest(hpl);
-		if(
-			bwnd
-			&&(weaponstatus[MEDS_USEDON]<0||weaponstatus[MEDS_USEDON]==hpl.playernumber())
-		){
-			of=clamp(int(bwnd.width*0.1),1,3);
-			if(hpl.flip)of=-of;
-		}
-		sb.drawrect(-29,-17+of,2,6);
-		sb.drawrect(-31,-15+of,6,2);
-
-		int usedon=weaponstatus[MEDS_USEDON];
-		if(usedon>=0){
-			int upn=weaponstatus[MEDS_USEDON];
-			string pn=
-				upn>=0
-				&&upn<MAXPLAYERS
-				&&playeringame[upn]
-				?players[upn].getusername()
-				:patientname
-			;
-			sb.DrawString(sb.psmallfont,pn,(-53,-8),
-				sb.DI_SCREEN_CENTER_BOTTOM|sb.DI_ITEM_RIGHT|sb.DI_TEXT_ALIGN_RIGHT,
-				Font.CR_RED,scale:(0.3,0.5)
-			);
-			sb.drawimage(
-				"BLUDB0",(-7,-12),
-				sb.DI_SCREEN_CENTER_BOTTOM|sb.DI_ITEM_VCENTER|sb.DI_ITEM_RIGHT,
-				0.2+min(0.4,0.01*ww.weaponstatus[MEDS_BLOOD]),scale:(1.5,1.5)*(1+0.02*ww.weaponstatus[MEDS_BLOOD])
-			);
-		}
-
-		int btn=hpl.player.cmd.buttons;
-		if(!(btn&BT_FIREMODE)){
-			sb.drawwepnum(ww.weaponstatus[MEDS_SECONDFLESH],MEDIKIT_MAXFLESH);
-
-			let targetwound=ww.targetwound;
-			if(!!targetwound){
-				double tgtwsc=1.4+targetwound.width*0.1;
-				double tgtwa=0;
-				if(tgtwsc>3.){
-					tgtwa=3.-tgtwsc;
-					tgtwsc=3.;
-				}
-				sb.drawimage(
-					"BLUDC0",(-15,!!targetwound.width&&hpl.flip?-8:-7),
-					sb.DI_SCREEN_CENTER_BOTTOM|sb.DI_ITEM_RIGHT,
-					0.01+targetwound.depth*0.1+tgtwa,scale:(1,1)*tgtwsc
-				);
-			}
-		}
-	}
-	*/
 	override string gethelptext(){
 		if(!Cvar.GetCVar("mrnsha_binds", Owner.Player).GetBool())LocalizeHelp();
 		else
