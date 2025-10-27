@@ -129,8 +129,13 @@ Class MRHD_WeapAnimsHandler : EventHandler
 Class MRHD_WeapAnimsReplacer : Inventory
 {
 	Default{inventory.MaxAmount 1;+inventory.UNTOSSABLE+inventory.UNDROPPABLE}
-	Static Const String Weaps [] = {"HDMedikitter", "PortableStimpack", "PortableBerserkPack", "SelfBandage", "HDPistol", "HDRevolver", "HDSMG", "Hunter", "Slayer",
-		"ZM66AssaultRifle", "LiberatorRifle", "Vulcanette", "HDRL", "ThunderBuster", "BFG9K", "BossRifle", "HDFragGrenades", "TripwireFrag"};
+	
+	Static Const String Weaps [] = {
+		"HDMedikitter", "PortableStimpack", "PortableBerserkPack", "SelfBandage","HDPistol",
+		"HDRevolver", "HDSMG", "Hunter", "Slayer", "ZM66AssaultRifle", "LiberatorRifle",
+		"Vulcanette", "HDRL", "ThunderBuster", "BFG9K", "BossRifle", "HDFragGrenades", "TripwireFrag"
+	};
+	
 	int Numb;
 	bool IsImmersive()
 	{
@@ -183,21 +188,22 @@ Class MRHD_WeapAnimsReplacer : Inventory
 		
 		
 		if(owner.player.mo.invsel && owner.player.mo.invsel.GetClassName() == "PortableMedikit" && !Owner.FindInventory("HDMedikitter")
-		&& Owner.FindInventory("NSHMedikitter"))
+			&& Owner.FindInventory("NSHMedikitter"))
 		{
 			Owner.GiveInventory("HDMedikitter", 1);
 			Owner.FindInventory("HDMedikitter").bInvBar = false;
 		}
 		else if(
-		(!Owner.FindInventory("NSHMedikitter") || !owner.player.mo.invsel || 
-		(owner.player.mo.invsel && owner.player.mo.invsel.GetClassName() != "PortableMedikit"))&& 
-		Owner.FindInventory("HDMedikitter") && !Owner.FindInventory("HDMedikitter").bInvBar)
-			Owner.RemoveInventory(Owner.FindInventory("HDMedikitter"));
+			(!Owner.FindInventory("NSHMedikitter") || !owner.player.mo.invsel || 
+			(owner.player.mo.invsel && owner.player.mo.invsel.GetClassName() != "PortableMedikit"))&& 
+			Owner.FindInventory("HDMedikitter") && !Owner.FindInventory("HDMedikitter").bInvBar)
+				Owner.RemoveInventory(Owner.FindInventory("HDMedikitter"));
 		
 		if(
-		Owner.player.ReadyWeapon&&(
-		Owner.player.PendingWeapon.GetClassName() == "HDMedikitter"
-		|| Owner.player.ReadyWeapon.GetClassName() == "HDMedikitter"))Owner.A_SelectWeapon("NSHMedikitter");
+			Owner.player.ReadyWeapon&&(
+			Owner.player.PendingWeapon.GetClassName() == "HDMedikitter"
+			|| Owner.player.ReadyWeapon.GetClassName() == "HDMedikitter"))
+				Owner.A_SelectWeapon("NSHMedikitter");
 		
 		
 		if((Numb + GetAge())%CVar.GetCVar("mrnsha_delay", owner.Player).GetInt()!=0 &&
@@ -206,57 +212,56 @@ Class MRHD_WeapAnimsReplacer : Inventory
 			
 		For(int i=0;i<Weaps.Size(); i++)
 		{
-			if(Owner.FindInventory(Weaps[i]))
+			if(!Owner.FindInventory(Weaps[i]))Continue;
+			
+			if(Weaps[i] == "HDMedikitter" && !Owner.FindInventory("HDMedikitter").bInvBar)
 			{
-				if(Weaps[i] == "HDMedikitter" && !Owner.FindInventory("HDMedikitter").bInvBar)
-				{
-					if(owner.player.mo.invsel.GetClassName() == "PortableMedikit")Continue;
-					else {Owner.RemoveInventory(Owner.FindInventory(Weaps[i]));Continue;}
-				}
-				String Select="";
-				String Weap = Weaps[i];
-				if(/*(Weaps[i] == "Hunter"||*/Weaps[i] == "Slayer" && IsImmersive())
-				{
-					Weap = "Immersive"..Weap;
-				}
-				else if(Weap.IndexOf("HD")>-1)Weap.Replace("HD", "NSH");
-				else Weap = "NSH"..Weap;
-				if((Owner.Player.ReadyWeapon && Owner.Player.ReadyWeapon.GetClassName() == Weaps[i])||
-					Owner.Player.PendingWeapon.GetClassName() == Weaps[i])Select=Weap;
-				
-				let spw=spareweapons(Owner.findinventory("spareweapons"));
-				int amt=1;
-				bool GotOne = false;
-				if(Owner.FindInventory(Weap))GotOne = true;
-				if(GotOne && (Weaps[i] == "SelfBandage"|| Weaps[i] == "HDFragGrenades")){Owner.FindInventory(Weaps[i]).Destroy();Continue;}
-				
-				hdweapon actualweapon=hdweapon(spawn(Weap,Owner.pos));
-				
-				if(NSHPortableStimpack(ActualWeapon))NSHPortableStimpack(ActualWeapon).FromMedikit = true;//Prevent stim given from medikit from dup
-				
-				if(GotOne){
-					For(int st=0;st<HDWEP_STATUSSLOTS;st++)
-						ActualWeapon.Weaponstatus[st] = HDWeapon(Owner.FindInventory(Weaps[i])).WeaponStatus[st];
-					ActualWeapon.AddSpareWeapon(owner);
-					Owner.RemoveInventory(Owner.FindInventory(Weaps[i]));
-				}
-				else actualweapon.attachtoowner(owner);
-				actualweapon.loadoutconfigure("");
-				if(i<3)
-				{
-					if(GotOne)actualweapon.AddSpareWeaponRegular(Owner);
-					if(owner.player.mo.invsel.GetClassName() == Weaps[i])owner.player.mo.invsel = actualWeapon;
-					if(i<1)Select = Weap;
-				}
-				if(spw){
-					for(int i1=0;i1<spw.weapontype.size();i1++){
-						if(spw.weapontype[i1]~==Weaps[i]){spw.weapontype[i1]=Weap; amt++;}
-					}
-				}
-				actualweapon.ActualAmount = amt;
-				if(Select!=""){Owner.A_SelectWeapon(Select);}//if(Select ~== "NSHMedikitter")NSHMedikitter(actualweapon).SelectU = true;}
-				if(NSHPortableStimpack(ActualWeapon))NSHPortableStimpack(ActualWeapon).FromMedikit = false;//If stim passed 'AttachToOwner()', it wasn't given from a medikit
+				if(owner.player.mo.invsel.GetClassName() == "PortableMedikit")Continue;
+				else {Owner.RemoveInventory(Owner.FindInventory(Weaps[i]));Continue;}
 			}
+			String Select="";
+			String Weap = Weaps[i];
+			if(/*(Weaps[i] == "Hunter"||*/Weaps[i] == "Slayer" && IsImmersive())
+			{
+				Weap = "Immersive"..Weap;
+			}
+			else if(Weap.IndexOf("HD")>-1)Weap.Replace("HD", "NSH");
+			else Weap = "NSH"..Weap;
+			if((Owner.Player.ReadyWeapon && Owner.Player.ReadyWeapon.GetClassName() == Weaps[i])||
+				Owner.Player.PendingWeapon.GetClassName() == Weaps[i])Select=Weap;
+			
+			let spw=spareweapons(Owner.findinventory("spareweapons"));
+			int amt=1;
+			bool GotOne = false;
+			if(Owner.FindInventory(Weap))GotOne = true;
+			if(GotOne && (Weaps[i] == "SelfBandage"|| Weaps[i] == "HDFragGrenades")){Owner.FindInventory(Weaps[i]).Destroy();Continue;}
+			
+			hdweapon actualweapon=hdweapon(spawn(Weap,Owner.pos));
+			
+			if(NSHPortableStimpack(ActualWeapon))NSHPortableStimpack(ActualWeapon).FromMedikit = true;//Prevent stim given from medikit from dup
+			
+			if(GotOne){
+				For(int st=0;st<HDWEP_STATUSSLOTS;st++)
+					ActualWeapon.Weaponstatus[st] = HDWeapon(Owner.FindInventory(Weaps[i])).WeaponStatus[st];
+				ActualWeapon.AddSpareWeapon(owner);
+				Owner.RemoveInventory(Owner.FindInventory(Weaps[i]));
+			}
+			else actualweapon.attachtoowner(owner);
+			actualweapon.loadoutconfigure("");
+			if(i<3)
+			{
+				if(GotOne)actualweapon.AddSpareWeaponRegular(Owner);
+				if(owner.player.mo.invsel.GetClassName() == Weaps[i])owner.player.mo.invsel = actualWeapon;
+				if(i<1)Select = Weap;
+			}
+			if(spw){
+				for(int i1=0;i1<spw.weapontype.size();i1++){
+					if(spw.weapontype[i1]~==Weaps[i]){spw.weapontype[i1]=Weap; amt++;}
+				}
+			}
+			actualweapon.ActualAmount = amt;
+			if(Select!=""){Owner.A_SelectWeapon(Select);}//if(Select ~== "NSHMedikitter")NSHMedikitter(actualweapon).SelectU = true;}
+			if(NSHPortableStimpack(ActualWeapon))NSHPortableStimpack(ActualWeapon).FromMedikit = false;//If stim passed 'AttachToOwner()', it wasn't given from a medikit
 		}
 	}
 }
