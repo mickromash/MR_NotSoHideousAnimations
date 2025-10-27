@@ -1,0 +1,7 @@
+//Copy these into TEXTURES.txt after editing it!
+NoTrim "STKGK0"
+NoTrim "STKGL0"
+NoTrim "STKGM0"
+NoTrim "STKGN0"
+NoTrim "STKGO0"
+NoTrim "STKGP0"

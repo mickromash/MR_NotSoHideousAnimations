@@ -5777,4 +5777,11 @@ Sprite "STI1A0", 136, 85
 	}
 }
 
+NoTrim "STKGK0"
+NoTrim "STKGL0"
+NoTrim "STKGM0"
+NoTrim "STKGN0"
+NoTrim "STKGO0"
+NoTrim "STKGP0"
+
 // End of texture definitions
