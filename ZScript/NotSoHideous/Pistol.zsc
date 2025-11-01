@@ -93,22 +93,15 @@ class NSHPistol:HDPistol{// replaces HDPistol{
 			scale:scc, col:color(254-Light,0,0,0)
 		);
 	}
-	override void DropOneAmmo(int amt){
-		if(owner){
-			amt=clamp(amt,1,10);
-			if(owner.countinv("HDPistolAmmo"))owner.A_DropInventory("HDPistolAmmo",amt*15);
-			else owner.A_DropInventory("HD9mMag15",amt);
-		}
-	}
-	override void ForceBasicAmmo(){
-		owner.A_TakeInventory("HDPistolAmmo");
-		ForceOneBasicAmmo("HD9mMag15");
-	}
+
 	action void A_CheckPistolHand(){
 		if(invoker.wronghand)player.getpsprite(PSP_WEAPON).sprite=getspriteindex("PI2GA0");
 	}
-	override bool AddSpareWeapon(actor newowner){return AddSpareWeaponRegular(newowner);}
-	override hdweapon GetSpareWeapon(actor newowner,bool reverse,bool doselect){return GetSpareWeaponRegular(newowner,reverse,doselect);}
+	
+	//override bool AddSpareWeapon(actor newowner){return AddSpareWeaponRegular(newowner);}
+	//override hdweapon GetSpareWeapon(actor newowner,bool reverse,bool doselect){return GetSpareWeaponRegular(newowner,reverse,doselect);}
+	//Override Bool AddSpareWeapon(actor newowner){return false;}
+	//Override hdweapon GetSpareWeapon(actor newowner,bool reverse,bool doselect){return null;}
 	
 	NSHA_SmokeContainer FireSmokes[50];
 	
@@ -872,10 +865,12 @@ class NSHPistol:HDPistol{// replaces HDPistol{
 			else if(firemode>0)weaponstatus[0]|=PISF_FIREMODE;
 		}
 	}
-	Override Void Tick()
+	
+	/*Override Void Tick()
 	{
 		Super.Tick();
 		if(Owner)Return;
+		//Console.Printf("Pick: "..bisbeingpickedup);
 		HDWeapon a = HDWeapon(Spawn("HDPistol", pos));
 		if(a)
 		{
@@ -885,7 +880,7 @@ class NSHPistol:HDPistol{// replaces HDPistol{
 			For(int i=0;i<HDWEP_STATUSSLOTS;i++)a.weaponstatus[i]=weaponstatus[i];
 			Destroy();
 		}
-	}
+	}*/
 }
 
 enum NSHpistolstatus{PISF_SAFETY=8,};

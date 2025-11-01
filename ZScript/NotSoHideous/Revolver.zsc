@@ -165,7 +165,7 @@ class NSHRevolver:HDRevolver{// Replaces HDRevolver{
 		Super.LoadOutConfigure(input);
 	}
 	
-	Override Void Tick()
+	/*Override Void Tick()
 	{
 		Super.Tick();
 		if(Owner)Return;
@@ -178,20 +178,7 @@ class NSHRevolver:HDRevolver{// Replaces HDRevolver{
 			For(int i=0;i<HDWEP_STATUSSLOTS;i++)a.weaponstatus[i]=weaponstatus[i];
 			Destroy();
 		}
-	}
-
-	action bool HoldingRightHanded(){
-		bool righthanded=invoker.wronghand;
-		righthanded=
-		(
-			righthanded
-			&&Wads.CheckNumForName("id",0)!=-1
-		)||(
-			!righthanded
-			&&Wads.CheckNumForName("id",0)==-1
-		);
-		return righthanded;
-	}
+	}*/
 
 	action void A_HitExtractor(){
 		double cosp=cos(pitch);
