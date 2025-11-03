@@ -83,7 +83,6 @@ class NSHPortableStimpack:PortableStimpack Replaces PortableStimpack{
 		#### # 0 A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, 1);
 		#### A 1 A_Raise(18);
 		#### A 1 A_Raise(10);
-		//Goto Open;
 	Open:
 		#### A 0 A_StartSound("weapons/pocket",8,CHANF_OVERLAP,volume:0.7);
 		#### BBBCCDD 1 A_WeaponReady(WRF_NOFIRE);
@@ -189,7 +188,7 @@ class NSHPortableStimpack:PortableStimpack Replaces PortableStimpack{
 		goto nope;
 	althold:
 		STIF H 2;
-		TNT1 A 0{
+		#### # 0{
 			bool helptext=DoHelpText();
 			flinetracedata injectorline;
 			linetrace(
@@ -202,54 +201,24 @@ class NSHPortableStimpack:PortableStimpack Replaces PortableStimpack{
 				let ccc=HDHumanoid(injectorline.hitactor);
 				if(
 					ccc
-					&&invoker.getclassname()=="HDportableStimPack"
+					&&invoker.getclassname()=="HDStimpacker"
 				){
 					if(
 						ccc.stunned<100
 						||ccc.health<10
 					){
-						if(helptext)A_WeaponMessage("They don't need it.",2);
-						return resolvestate("UnInject");
+						if(helptext)A_WeaponMessage(Stringtable.Localize("$STIMPACK_NONEED"),2);
+						return resolvestate("nope");
 					}
-					return resolvestate("Injecting");
-				}}
+					return resolvestate("Injection");
+				}
 				if(helptext)A_WeaponMessage(Stringtable.Localize("$STIMPACK_NOTHINGTOBEDONE"));
-				return resolvestate("UnInject");
+				return resolvestate("nope");
 			}
-		Goto Injection;	
-		Injecting:
-		STIF HIJ 2;
-		TNT1 A 0{bool helptext=DoHelpText();
-			flinetracedata injectorline;
-			linetrace(
-				angle,42,pitch,
-				offsetz:gunheight()-2,
-				data:injectorline
-			);
-			let ccc=HDHumanoid(injectorline.hitactor);
-					ccc.A_StartSound(ccc.painsound,CHAN_VOICE);
-					ccc.stunned=max(0,ccc.stunned>>1);}
-		STIF JJKKLM	2;
-		TNT1 A 0{invoker.weaponstatus[0]|=INJECTF_SPENT;}
-		Goto Nope;
-		UnInject:
-		STIF C 6 A_Refire();
-		Goto Nope;
-		Injection:
-		STIF HIJ 2;
-		TNT1 A 0{
-			bool helptext=DoHelpText();
-			flinetracedata injectorline;
-			linetrace(
-				angle,42,pitch,
-				offsetz:gunheight()-2,
-				data:injectorline
-			);
-			let c=HDPlayerPawn(injectorline.hitactor);
-			let blockinv=HDWoundFixer.CheckCovered(self,CHECKCOV_ONLYFULL);
+			let blockinv=HDWoundFixer.CheckCovered(c,CHECKCOV_ONLYFULL);
 			if(blockinv){
 				if(helptext)A_WeaponMessage(Stringtable.Localize("$STIMPACK_TAKEOFFOTHER")..blockinv.gettag()..Stringtable.Localize("$STIMPACK_ELIPSES"));
-				return resolvestate("InjectFail");
+				return resolvestate("nope");
 			}
 			if(IsMoving.Count(c)>4){
 				bool chelptext=DoHelpText(c);
@@ -260,7 +229,7 @@ class NSHPortableStimpack:PortableStimpack Replaces PortableStimpack{
 					if(chelptext)HDWeapon.ForceWeaponMessage(c,string.format(Stringtable.Localize("$STIMPACK_STOPSQUIRMING"),player.getusername()));
 					if(helptext)A_WeaponMessage(Stringtable.Localize("$STIMPACK_STAYSTILLOTHER"));
 				}
-				return resolvestate("InjectFail");
+				return resolvestate("nope");
 			}
 			if(
 				//because poisoning people should count as friendly fire!
@@ -278,12 +247,106 @@ class NSHPortableStimpack:PortableStimpack Replaces PortableStimpack{
 			){
 				if(DoHelpText(c))HDWeapon.ForceWeaponMessage(c,string.format(Stringtable.Localize("$STIMPACK_OVERDOSEPLAYER"),player.getusername()));
 				if(DoHelpText())A_WeaponMessage(Stringtable.Localize("$STIMPACK_SEEMFIDGETY"));
-				return resolvestate("InjectFail");
+				return resolvestate("nope");
 			}
-			//and now...
-			return resolvestate("injectDone");
+			return resolvestate("Injection");
 		}
 		Goto Nope;
+		
+	Injecting:
+		STIF HIJ 2;
+		TNT1 A 0{bool helptext=DoHelpText();
+			flinetracedata injectorline;
+			linetrace(
+				angle,42,pitch,
+				offsetz:gunheight()-2,
+				data:injectorline
+			);
+			let ccc=HDHumanoid(injectorline.hitactor);
+					ccc.A_StartSound(ccc.painsound,CHAN_VOICE);
+					ccc.stunned=max(0,ccc.stunned>>1);}
+		STIF JJKKLM	2;
+		TNT1 A 0{invoker.weaponstatus[0]|=INJECTF_SPENT;}
+		Goto Nope;
+		
+	UnInject:
+		STIF C 6 A_Refire();
+		Goto Nope;
+		
+	Injection:
+		STIF IJ 2;
+		TNT1 A 0{
+			A_OverlayFlags(PSP_WEAPON, PSPF_INTERPOLATE, false);
+			bool helptext=DoHelpText();
+			flinetracedata injectorline;
+			linetrace(
+				angle,42,pitch,
+				offsetz:gunheight()-2,
+				data:injectorline
+			);
+			let c=HDPlayerPawn(injectorline.hitactor);
+			if(!c){
+				let ccc=HDHumanoid(injectorline.hitactor);
+				if(
+					ccc
+					&&invoker.getclassname()=="HDStimpacker"
+				){
+					if(
+						ccc.stunned<100
+						||ccc.health<10
+					){
+						if(helptext)A_WeaponMessage(Stringtable.Localize("$STIMPACK_NONEED"),2);
+						return resolvestate("nope");
+					}
+					invoker.weaponstatus[0]|=INJECTF_SPENT;
+					ccc.A_StartSound(ccc.painsound,CHAN_VOICE);
+					ccc.stunned=max(0,ccc.stunned>>1);
+					return resolvestate("injected");
+				}
+				if(helptext)A_WeaponMessage(Stringtable.Localize("$STIMPACK_NOTHINGTOBEDONE"));
+				return resolvestate("nope");
+			}
+			let blockinv=HDWoundFixer.CheckCovered(c,CHECKCOV_ONLYFULL);
+			if(blockinv){
+				if(helptext)A_WeaponMessage(Stringtable.Localize("$STIMPACK_TAKEOFFOTHER")..blockinv.gettag()..Stringtable.Localize("$STIMPACK_ELIPSES"));
+				return resolvestate("nope");
+			}
+			if(IsMoving.Count(c)>4){
+				bool chelptext=DoHelpText(c);
+				if(c.countinv("HDStim")){
+					if(chelptext)HDWeapon.ForceWeaponMessage(c,string.format(Stringtable.Localize("$STIMPACK_OVERDOSEPLAYER"),player.getusername()));
+					if(helptext)A_WeaponMessage(Stringtable.Localize("$STIMPACK_FIDGETY"));
+				}else{
+					if(chelptext)HDWeapon.ForceWeaponMessage(c,string.format(Stringtable.Localize("$STIMPACK_STOPSQUIRMING"),player.getusername()));
+					if(helptext)A_WeaponMessage(Stringtable.Localize("$STIMPACK_STAYSTILLOTHER"));
+				}
+				return resolvestate("nope");
+			}
+			if(
+				//because poisoning people should count as friendly fire!
+				(teamplay || !deathmatch)&&
+				(
+					(
+						invoker.injecttype=="InjectStimDummy"
+						&& c.countinv("HDStim")
+					)||
+					(
+						invoker.injecttype=="InjectZerkDummy"
+						&& c.countinv("HDZerk")>HDZerk.HDZERK_COOLOFF
+					)
+				)
+			){
+				if(DoHelpText(c))HDWeapon.ForceWeaponMessage(c,string.format(Stringtable.Localize("$STIMPACK_OVERDOSEPLAYER"),player.getusername()));
+				if(DoHelpText())A_WeaponMessage(Stringtable.Localize("$STIMPACK_SEEMFIDGETY"));
+				return resolvestate("nope");
+			}
+
+			//and now...
+			A_InjectorInject(self,c);
+			return resolvestate("injected");
+		}
+		Goto Nope;
+		
 	InjectFail:
 		STIF JKC 2;
 		Goto ReadyEnd;
