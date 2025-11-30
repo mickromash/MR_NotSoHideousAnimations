@@ -209,6 +209,11 @@ Class MRHD_WeapAnimsReplacer : Inventory
 		if((Numb + GetAge())%CVar.GetCVar("mrnsha_delay", owner.Player).GetInt()!=0 &&
 			!Owner.FindInventory("HDMedikitter") && !Owner.FindInventory("PortableStimpack")
 			&& !Owner.FindInventory("PortableBerserkPack"))Return;
+		
+		if(Owner.FindInventory("PortableMedikit")){
+			Owner.GiveInventory("NSHPortableMedikit", Owner.CountInv("PortableMedikit"));
+			Owner.RemoveInventory(Owner.FindInventory("PortableMedikit"));
+		}
 			
 		For(int i=0;i<Weaps.Size(); i++)
 		{

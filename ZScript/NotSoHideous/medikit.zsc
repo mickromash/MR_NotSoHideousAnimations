@@ -1,6 +1,33 @@
 //-------------------------------------------------
 // Medikit
 //-------------------------------------------------
+class NSHPortableMedikit:PortableMedikit Replaces PortableMedikit{
+	states{
+	use:
+		TNT1 A 0{
+			class<weapon> kittype=hd_nobleed?"HDMedikitterNoBleed":"NSHMedikitter";
+			if(
+				!FindInventory(kittype)
+				||player.cmd.buttons&BT_USE
+			){
+				let mdk=HDWeapon(spawn(kittype,pos));
+				mdk.actualpickup(self,true);
+				mdk=HDWeapon(spawn("NSHPortableStimpack",pos));
+				mdk.actualpickup(self,true);
+				mdk=HDWeapon(spawn("SecondBlood",pos));
+				mdk.actualpickup(self,true);
+				A_TakeInventory(invoker.GetClassName(),1);
+			}else{
+				A_Log(Stringtable.Localize("$MEDIKIT_USEUNWRAPPED"),true);
+				if(HDWeapon.CheckDoHelpText(self))A_Log(Stringtable.Localize("$MEDIKIT_USEUNWRAPPEDHELP"),true);
+			}
+			if(!hdplayerpawn(self)||!hdplayerpawn(self).incapacitated)A_SelectWeapon(kittype);
+			A_StartSound("weapons/pocket",9);
+		}
+		fail;
+	}
+}
+
 class NSHMedikitter:HDMedikitter Replaces HDMedikitter{
 	override bool AddSpareWeapon(actor newowner){return AddSpareWeaponRegular(newowner);}
 	override hdweapon GetSpareWeapon(actor newowner,bool reverse,bool doselect){return GetSpareWeaponRegular(newowner,reverse,doselect);}
