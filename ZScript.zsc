@@ -187,23 +187,13 @@ Class MRHD_WeapAnimsReplacer : Inventory
 			}
 		}
 		
-		
-		if(owner.player.mo.invsel && owner.player.mo.invsel.GetClassName() == "PortableMedikit" && !Owner.FindInventory("HDMedikitter")
-		&& Owner.FindInventory("NSHMedikitter"))
-		{
-			//Owner.GiveInventory("HDMedikitter", 1);
-			//Owner.FindInventory("HDMedikitter").bInvBar = false;
-		}
-		else if(
-		(!Owner.FindInventory("NSHMedikitter") || !owner.player.mo.invsel || 
-		(owner.player.mo.invsel && owner.player.mo.invsel.GetClassName() != "PortableMedikit"))&& 
-		Owner.FindInventory("HDMedikitter") && !Owner.FindInventory("HDMedikitter").bInvBar)
-			Owner.RemoveInventory(Owner.FindInventory("HDMedikitter"));
-		
+				
 		if(
-		Owner.player.ReadyWeapon&&(
-		Owner.player.PendingWeapon.GetClassName() == "HDMedikitter"
-		|| Owner.player.ReadyWeapon.GetClassName() == "HDMedikitter"))Owner.A_SelectWeapon("NSHMedikitter");
+			Owner.player.ReadyWeapon&&(
+			Owner.player.PendingWeapon.GetClassName() == "HDMedikitter"
+			|| Owner.player.ReadyWeapon.GetClassName() == "HDMedikitter")
+		)
+			Owner.A_SelectWeapon("NSHMedikitter");
 		
 		
 		if((Numb + GetAge())%CVar.GetCVar("mrnsha_delay", owner.Player).GetInt()!=0 &&
@@ -265,7 +255,11 @@ Class MRHD_WeapAnimsReplacer : Inventory
 				}
 			}
 			actualweapon.ActualAmount = amt;
-			if(Select!=""){Owner.A_SelectWeapon(Select);}//if(Select ~== "NSHMedikitter")NSHMedikitter(actualweapon).SelectU = true;}
+			if(Select!=""){
+				Owner.A_SelectWeapon(Select);
+				if(!HDPlayerPawn(Owner).neverswitchonpickup
+					||!HDPlayerPawn(Owner).neverswitchonpickup.GetBool())Owner.UseInventory(Owner.FindInventory("SpareWeapons"));
+			}//if(Select ~== "NSHMedikitter")NSHMedikitter(actualweapon).SelectU = true;}
 			if(NSHPortableStimpack(ActualWeapon))NSHPortableStimpack(ActualWeapon).FromMedikit = false;//If stim passed 'AttachToOwner()', it wasn't given from a medikit
 		}
 	}
