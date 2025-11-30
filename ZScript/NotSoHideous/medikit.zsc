@@ -34,6 +34,18 @@ class NSHMedikitter:HDMedikitter Replaces HDMedikitter{
 		super.loadoutconfigure(input);
 	}
 	
+	Override Void DoEffect()
+	{
+		Super.DoEffect();
+		
+		if(Owner.FindInventory("HDMedikitter")){//Prevent duplication when opening medikit while handling a medikitter
+			let mdk=HDWeapon(Owner.spawn(Self.GetClass(),Owner.pos));
+			mdk.actualpickup(Owner,true);
+			
+			Owner.FindInventory("HDMedikitter").Destroy();
+		}
+	}
+		
 	override string,double getpickupsprite(){
 		return (weaponstatus[MEDS_USEDON]<0)?"MEDIB0":"MEDIC0", 1;
 	}
