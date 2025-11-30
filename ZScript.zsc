@@ -131,9 +131,10 @@ Class MRHD_WeapAnimsReplacer : Inventory
 	Default{inventory.MaxAmount 1;+inventory.UNTOSSABLE+inventory.UNDROPPABLE}
 	
 	Static Const String Weaps [] = {
-		"HDMedikitter", "PortableStimpack", "PortableBerserkPack", "SelfBandage","HDPistol",
-		"HDRevolver", "HDSMG", "Hunter", "Slayer", "ZM66AssaultRifle", "LiberatorRifle",
-		"Vulcanette", "HDRL", "ThunderBuster", "BFG9K", "BossRifle", "HDFragGrenades", "TripwireFrag"
+		"HDMedikitter", "PortableStimpack", "PortableBerserkPack", "SelfBandage", 
+		"HDPistol", "HDRevolver", "HDSMG", "Hunter", "Slayer", "ZM66AssaultRifle",
+		"LiberatorRifle", "Vulcanette", "HDRL", "ThunderBuster", "BFG9K", "BossRifle",
+		"HDFragGrenades", "TripwireFrag"
 	};
 	
 	int Numb;
@@ -188,22 +189,21 @@ Class MRHD_WeapAnimsReplacer : Inventory
 		
 		
 		if(owner.player.mo.invsel && owner.player.mo.invsel.GetClassName() == "PortableMedikit" && !Owner.FindInventory("HDMedikitter")
-			&& Owner.FindInventory("NSHMedikitter"))
+		&& Owner.FindInventory("NSHMedikitter"))
 		{
-			Owner.GiveInventory("HDMedikitter", 1);
-			Owner.FindInventory("HDMedikitter").bInvBar = false;
+			//Owner.GiveInventory("HDMedikitter", 1);
+			//Owner.FindInventory("HDMedikitter").bInvBar = false;
 		}
 		else if(
-			(!Owner.FindInventory("NSHMedikitter") || !owner.player.mo.invsel || 
-			(owner.player.mo.invsel && owner.player.mo.invsel.GetClassName() != "PortableMedikit"))&& 
-			Owner.FindInventory("HDMedikitter") && !Owner.FindInventory("HDMedikitter").bInvBar)
-				Owner.RemoveInventory(Owner.FindInventory("HDMedikitter"));
+		(!Owner.FindInventory("NSHMedikitter") || !owner.player.mo.invsel || 
+		(owner.player.mo.invsel && owner.player.mo.invsel.GetClassName() != "PortableMedikit"))&& 
+		Owner.FindInventory("HDMedikitter") && !Owner.FindInventory("HDMedikitter").bInvBar)
+			Owner.RemoveInventory(Owner.FindInventory("HDMedikitter"));
 		
 		if(
-			Owner.player.ReadyWeapon&&(
-			Owner.player.PendingWeapon.GetClassName() == "HDMedikitter"
-			|| Owner.player.ReadyWeapon.GetClassName() == "HDMedikitter"))
-				Owner.A_SelectWeapon("NSHMedikitter");
+		Owner.player.ReadyWeapon&&(
+		Owner.player.PendingWeapon.GetClassName() == "HDMedikitter"
+		|| Owner.player.ReadyWeapon.GetClassName() == "HDMedikitter"))Owner.A_SelectWeapon("NSHMedikitter");
 		
 		
 		if((Numb + GetAge())%CVar.GetCVar("mrnsha_delay", owner.Player).GetInt()!=0 &&
@@ -213,7 +213,7 @@ Class MRHD_WeapAnimsReplacer : Inventory
 		For(int i=0;i<Weaps.Size(); i++)
 		{
 			if(!Owner.FindInventory(Weaps[i]))Continue;
-			
+
 			if(Weaps[i] == "HDMedikitter" && !Owner.FindInventory("HDMedikitter").bInvBar)
 			{
 				if(owner.player.mo.invsel.GetClassName() == "PortableMedikit")Continue;
@@ -269,4 +269,40 @@ Class MRHD_WeapAnimsReplacer : Inventory
 Class NSHA_SmokeContainer: Object play
 {
 	Vector3 Vel;
+}
+
+
+Class MRF3Actor_HDWeapon_Tic: Actor{}
+Class MRF3Class_HDWeapon_Tic: Object ui
+{
+	Override Void OnDestroy()
+	{
+		if(!Players[ConsolePlayer].Camera)Return;
+		if(StatusBar.artiflashTick==-1)StatusBar.artiflashTick = 1;
+		else
+		{
+			String Com = "MRF3_String";
+			String Side = "MRF3SideL";
+			Let Plr = Players[ConsolePlayer];
+			if(!Plr.mo||!Plr.ReadyWeapon)Return;
+			
+			Let Weap = HDWeapon(Plr.ReadyWeapon);
+			if(!Weap)Return;
+			
+			String Str1 = "Spare weapons: ";
+			int amt;
+			let spw=spareweapons(Plr.mo.findinventory("spareweapons"));
+			if(spw){
+				for(int i=0;i<spw.weapontype.size();i++){
+					if(spw.weapontype[i]==Weap.getclassname())amt++;
+				}
+			}
+			
+			if(amt<1)Return;
+			
+			Str1 = Str1..Amt;
+			
+			EventHandler.SendInterfaceEvent(ConsolePlayer, Com..Side..Str1);
+		}
+	}
 }
