@@ -149,6 +149,28 @@ Class MRHD_WeapAnimsReplacer : Inventory
 	{
 		if(Owner.Player.ReadyWeapon is "HDIncapWeapon")
 		{
+			Let Incap = HDPlayerPawn(Owner);
+				
+			if(Incap.incapacitated<=0){
+				if(Owner.FindInventory("PortableStimpack")){
+					let spw=spareweapons(Owner.findinventory("spareweapons"));
+					if(spw){
+						for(int i=0;i<spw.weapontype.size();i++){
+							if(spw.weapontype[i]~=="PortableStimpack")spw.weapontype.Delete(i);
+						}
+					}
+					HDWeapon mdk;
+					For(int i=HDWeapon(Owner.FindInventory("PortableStimpack")).ActualAmount?1:0;i<HDWeapon(Owner.FindInventory("PortableStimpack")).ActualAmount;i++)
+					{
+						mdk=HDWeapon(spawn("NSHPortableStimpack",Owner.pos));
+						mdk.actualpickup(Owner,true);
+					}
+					if(owner.player.mo.invsel is "PortableStimpack")owner.player.mo.invsel = mdk;
+					Owner.RemoveInventory(Owner.FindInventory("PortableStimpack"));
+				}
+				Return;
+			}
+			
 			if(Owner.FindInventory("NSHPortableStimpack"))
 			{
 				let spw=spareweapons(Owner.findinventory("spareweapons"));
@@ -260,7 +282,9 @@ Class MRHD_WeapAnimsReplacer : Inventory
 				if(!HDPlayerPawn(Owner).neverswitchonpickup
 					||!HDPlayerPawn(Owner).neverswitchonpickup.GetBool())Owner.UseInventory(Owner.FindInventory("SpareWeapons"));
 			}//if(Select ~== "NSHMedikitter")NSHMedikitter(actualweapon).SelectU = true;}
-			if(NSHPortableStimpack(ActualWeapon))NSHPortableStimpack(ActualWeapon).FromMedikit = false;//If stim passed 'AttachToOwner()', it wasn't given from a medikit
+			if(NSHPortableStimpack(ActualWeapon) && !Owner.FindInventory("HDIncapWeapon")){
+				NSHPortableStimpack(ActualWeapon).FromMedikit = false;//If stim passed 'AttachToOwner()', it wasn't given from a medikit
+			}
 		}
 	}
 }
