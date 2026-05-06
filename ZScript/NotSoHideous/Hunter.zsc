@@ -1287,6 +1287,7 @@ class NSHHunter:Hunter{// Replaces Hunter{
 			else frame=6;
 		}
 	}
+	
 	override void InitializeWepStats(bool idfa){
 		For(int i=weaponstatus[SHOTS_SIDESADDLE];i<12;i++)weaponstatus[HUNTS_SSHELL1+i]=shelltype;
 		if(weaponstatus[HUNTS_CHAMBER]<2)weaponstatus[HUNTS_SHELL1]=shelltype;
