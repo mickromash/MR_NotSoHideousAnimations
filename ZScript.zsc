@@ -16,6 +16,7 @@ Version "4.10"
 #include "ZScript/NotSoHideous/SelfBandage.zsc"
 #include "ZScript/NotSoHideous/Grenade.zsc"
 #include "ZScript/NotSoHideous/Tripwires.zsc"
+#include "ZScript/NotSoHideous/Crawling.zsc"
 
 #include "ZScript/NotSoHideous/PlayerAnims.zsc"
 
@@ -147,6 +148,13 @@ Class MRHD_WeapAnimsReplacer : Inventory
 	
 	Override Void DoEffect()
 	{
+		if(Owner.Player.ReadyWeapon && Owner.Player.ReadyWeapon.GetClassName() == "HDIncapWeapon"){
+			if(!Owner.CountInv("NSHIncapWeapon"))Owner.A_GiveInventory("NSHIncapWeapon");
+			Owner.player.setpsprite(PSP_WEAPON, Owner.player.readyweapon.findstate("deselect"));
+			Owner.A_SelectWeapon("NSHIncapWeapon");
+			Owner.player.setpsprite(PSP_WEAPON, Owner.player.readyweapon.findstate("deselect"));
+		}
+		
 		if(
 			Owner.player.ReadyWeapon&&(
 			Owner.player.PendingWeapon.GetClassName() == "HDMedikitter"

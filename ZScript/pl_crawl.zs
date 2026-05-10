@@ -233,8 +233,8 @@ class HDIncapWeapon:SelfBandage{
 	action void A_PickInventoryType(){
 		static const class<inventory> types[]={
 			"HDIncapWeapon",
-			"NSHPortableBerserkpack",
-			"NSHPortableStimpack",
+			"HDIncapWeapon",
+			"HDIncapWeapon",
 			"DERPUsable",
 			"HDFragGrenadeAmmo"
 		};
