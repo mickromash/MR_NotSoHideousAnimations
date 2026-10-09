@@ -95,13 +95,21 @@ class NSHLiberatorRifle:LiberatorRifle{// Replaces LiberatorRifle{
 		if(
 			anyotherconditions
 			&&countinv("SevenMilBrass")
-			&&countinv("FourMilAmmo")>=4
+			&&countinv("FourMilAmmo")>=HDCONST_FOURFORSEVEN
 		){
 			invoker.makinground=true;
+
+			//make up to 10 rounds
 			int counter=min(10,countinv("SevenMilBrass"));
-			invoker.brass=counter;A_TakeInventory("SevenMilBrass",counter);
-			counter=min(30,countinv("FourMilAmmo"));
-			invoker.powders=counter;A_TakeInventory("FourMilAmmo",counter);
+			invoker.weaponstatus[RELS_BRASS]=counter;
+			A_TakeInventory("SevenMilBrass",counter);
+
+			//figure out how much powder that is
+			counter=min(counter*HDCONST_FOURFORSEVEN,countinv("FourMilAmmo"));
+			counter-=counter%HDCONST_FOURFORSEVEN;
+			invoker.weaponstatus[RELS_POWDER]=counter;
+			A_TakeInventory("FourMilAmmo",counter);
+			
 			invoker.master = Self;
 			dropinventory(invoker);
 		}
@@ -677,8 +685,8 @@ class NSHLiberatorRifle:LiberatorRifle{// Replaces LiberatorRifle{
 
 			if(
 				invoker.makinground
-				&&invoker.brass>0
-				&&invoker.powders>=3
+				&&invoker.weaponstatus[RELS_BRASS]>0
+				&&invoker.weaponstatus[RELS_POWDER]>=HDCONST_FOURFORSEVEN
 			)setstatelabel("chug");
 		}
 		BRLL ABCDEFGH -1;
@@ -707,8 +715,6 @@ class NSHLiberatorRifle:LiberatorRifle{// Replaces LiberatorRifle{
 			a.Pitch = Pitch;
 			a.Vel = Vel;
 			For(int i=0;i<HDWEP_STATUSSLOTS;i++)a.weaponstatus[i]=weaponstatus[i];
-			a.powders=powders;
-			a.brass=brass;
 			a.makinground=makingRound;
 			Destroy();
 		}
@@ -733,7 +739,7 @@ class NSHLiberatorRifle:LiberatorRifle{// Replaces LiberatorRifle{
 		int nogl=getloadoutvar(input,"nogl",1);
 		//disable launchers if rocket grenades denylisted
 		string denylist=hd_noloadout;
-		if(denylist.IndexOf(HDLD_BLOOPER)>=0)nogl=1;
+		if(denylist.IndexOf("blo")>=0)nogl=1;
 		if(!nogl){
 			weaponstatus[0]&=~LIBF_NOLAUNCHER;
 		}else if(nogl>0){

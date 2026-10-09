@@ -1,4 +1,8 @@
 class NSHIncapWeapon:HDIncapWeapon{
+	class<actor> injecttype;
+	class<actor> spentinjecttype;
+	class<inventory> inventorytype;
+	
 	action void A_PickInventoryType(){
 		static const class<inventory> types[]={
 			"NSHIncapWeapon",
@@ -37,7 +41,7 @@ class NSHIncapWeapon:HDIncapWeapon{
 			invoker.spentinjecttype="SpentZerk";
 			invoker.injecttype="InjectZerkDummy";
 		}
-		else if(inventorytype=="NSHPortableBerserkPack"){
+		else if(inventorytype=="NSHPortableStimPack"){
 			invoker.spentinjecttype="SpentStim";
 			invoker.injecttype="InjectStimDummy";
 		}
@@ -73,8 +77,9 @@ class NSHIncapWeapon:HDIncapWeapon{
 	Override Void DoEffect()
 	{
 		Super.DoEffect();
-		if(!Owner.FindInventory("HDIncapWeapon"))Destroy();
+		if(HDPlayerPawn(Owner).incapacitated==0)Destroy();
 	}
+	
 	states{
 	nope:
 		---- A 1 A_ClearRefire();

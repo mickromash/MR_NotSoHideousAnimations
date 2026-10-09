@@ -381,7 +381,7 @@ Class NSHPortableBerserkPack: NSHPortableStimpack Replaces PortableBerserkPack
 		inventory.pickupmessage "$PICKUP_ZERKPACK";
 		inventory.icon "PSTRA0";
 		tag "$TAG_ZERKPACK";
-		hdweapon.refid HDLD_BERSERK;
+		hdweapon.refid "zrk";
 
 		weapon.selectionorder 1002;
 

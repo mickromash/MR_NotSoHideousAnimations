@@ -41,9 +41,9 @@ Class MRHD_CrawlAnimation: CustomInventory
 		}
 		if(Plr.Health<1)Yaw.Reset(0);
 		Crawling = True;
-		if(Plr.Player.ReadyWeapon is 'HDIncapWeapon' &&
-			HDIncapWeapon(Plr.Player.ReadyWeapon).inventorytype != Null &&
-			!(HDIncapWeapon(Plr.Player.ReadyWeapon).inventorytype is 'HDIncapWeapon'))RightCrawl=false;
+		if(Plr.Player.ReadyWeapon is 'NSHIncapWeapon' &&
+			NSHIncapWeapon(Plr.Player.ReadyWeapon).inventorytype != Null &&
+			!(NSHIncapWeapon(Plr.Player.ReadyWeapon).inventorytype is 'NSHIncapWeapon'))RightCrawl=false;
 		else RightCrawl = True;
 	}
 	

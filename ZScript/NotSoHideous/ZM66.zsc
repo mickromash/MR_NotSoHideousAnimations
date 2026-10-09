@@ -156,7 +156,7 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 				&&!(invoker.weaponstatus[0]&ZM66F_CHAMBERBROKEN)
 				&&(
 					invoker.weaponstatus[ZM66S_MAG]||
-					invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_CHAMBER
+					invoker.weaponstatus[0]&ZM66F_CHAMBER
 				)
 			){
 				DropInventory(invoker);
@@ -184,7 +184,7 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 				-frandom(0.4,1.4),-frandom(1.3,2.6)
 			);
 
-			invoker.weaponstatus[ZM66S_FLAGS]&=~ZM66F_CHAMBER;
+			invoker.weaponstatus[0]&=~ZM66F_CHAMBER;
 			invoker.weaponstatus[ZM66S_HEAT]+=random(3,5);
 			A_AlertMonsters();
 		}
@@ -224,7 +224,7 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 
 	fire:
 		RIFG A 2{
-			if(invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_GLMODE)setweaponstate("firefrag");
+			if(invoker.weaponstatus[0]&ZM66F_GLMODE)setweaponstate("firefrag");
 			else if(invoker.weaponstatus[ZM66S_AUTO]>0)A_SetTics(3);
 		}goto shootgun;
 	hold:
@@ -242,7 +242,7 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 		RIFG B 1 offset(-1,36){
 			A_StartSound("weapons/riflejam",CHAN_WEAPON,CHANF_OVERLAP);
 			invoker.weaponstatus[0]|=ZM66F_CHAMBERBROKEN;
-			invoker.weaponstatus[ZM66S_FLAGS]&=~ZM66F_CHAMBER;
+			invoker.weaponstatus[0]&=~ZM66F_CHAMBER;
 		}
 		RIFG B 1 offset(1,30) A_StartSound("weapons/riflejam",CHAN_WEAPON,CHANF_OVERLAP);
 		goto nope;
@@ -253,12 +253,12 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 				//can neither shoot nor chamber
 				invoker.weaponstatus[0]&ZM66F_CHAMBERBROKEN
 				||(
-					!(invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_CHAMBER)
+					!(invoker.weaponstatus[0]&ZM66F_CHAMBER)
 					&&invoker.weaponstatus[ZM66S_MAG]<1
 				)
 			){
 				setweaponstate("nope");
-			}else if(!(invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_CHAMBER)){
+			}else if(!(invoker.weaponstatus[0]&ZM66F_CHAMBER)){
 				//no shot but can chamber
 				setweaponstate("chamber_manual");
 			}else{
@@ -279,7 +279,7 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 			if(invoker.weaponstatus[ZM66S_MAG]%100>0){
 				if(invoker.weaponstatus[ZM66S_MAG]==51)invoker.weaponstatus[ZM66S_MAG]=50;
 				invoker.weaponstatus[ZM66S_MAG]--;
-				invoker.weaponstatus[ZM66S_FLAGS]|=ZM66F_CHAMBER;
+				invoker.weaponstatus[0]|=ZM66F_CHAMBER;
 			}else{
 				invoker.weaponstatus[ZM66S_MAG]=min(invoker.weaponstatus[ZM66S_MAG],0);
 				A_StartSound("weapons/rifchamber",CHAN_WEAPON,CHANF_OVERLAP);
@@ -327,9 +327,9 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 	user4:
 	unload:
 		RIFG A 0{
-			invoker.weaponstatus[ZM66S_FLAGS]|=ZM66F_UNLOADONLY;
+			invoker.weaponstatus[0]|=ZM66F_UNLOADONLY;
 			if(
-				invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_GLMODE
+				invoker.weaponstatus[0]&ZM66F_GLMODE
 			){
 				setweaponstate("unloadgrenade");
 			}else if(
@@ -337,8 +337,8 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 			){
 				setweaponstate("unloadmag");
 			}else if(
-				invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_CHAMBER
-				||invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_CHAMBERBROKEN
+				invoker.weaponstatus[0]&ZM66F_CHAMBER
+				||invoker.weaponstatus[0]&ZM66F_CHAMBERBROKEN
 			){
 				setweaponstate("unloadchamber");
 			}else{
@@ -350,18 +350,18 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 			if(PressingZoom())SetWeaponState("CheckMag");
 			else
 			{
-			invoker.weaponstatus[ZM66S_FLAGS]&=~ZM66F_UNLOADONLY;
+			invoker.weaponstatus[0]&=~ZM66F_UNLOADONLY;
 			if(	//full mag, no jam, not unload-only - why hit reload at all?
 				!(invoker.weaponstatus[0]&ZM66F_CHAMBERBROKEN)
 				&&invoker.weaponstatus[ZM66S_MAG]%100>=50
-				&&!(invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_UNLOADONLY)
+				&&!(invoker.weaponstatus[0]&ZM66F_UNLOADONLY)
 			){
 				setweaponstate("nope");
 			}else if(	//if jammed, treat as unloading
 				invoker.weaponstatus[ZM66S_MAG]<0
 				&&invoker.weaponstatus[0]&ZM66F_CHAMBERBROKEN
 			){
-				invoker.weaponstatus[ZM66S_FLAGS]|=ZM66F_UNLOADONLY;
+				invoker.weaponstatus[0]|=ZM66F_UNLOADONLY;
 				setweaponstate("unloadchamber");
 			}else if(!HDMagAmmo.NothingLoaded(self,"HD4mMag")){
 				setweaponstate("unloadmag");
@@ -379,7 +379,7 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 				setweaponstate("magout");
 			}
 			if(invoker.weaponstatus[0]&ZM66F_CHAMBERBROKEN)
-				invoker.weaponstatus[ZM66S_FLAGS]|=ZM66F_UNLOADONLY;
+				invoker.weaponstatus[0]|=ZM66F_UNLOADONLY;
 			A_MuzzleClimb(-0.3,-0.3);
 			A_StartSound("weapons/rifleclick2",CHAN_WEAPON,CHANF_OVERLAP);
 		}
@@ -406,7 +406,7 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 	magout:
 		RIFG C 0{
 			if(
-				invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_UNLOADONLY
+				invoker.weaponstatus[0]&ZM66F_UNLOADONLY
 				||!countinv("HD4mMag")
 			)setweaponstate("reloadend");
 		} //fallthrough to loadmag
@@ -481,19 +481,19 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 		goto chamber_manual;
 
 	chamber_manual:
-		RIFG A 0 A_JumpIf(invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_CHAMBER,"nope");
+		RIFG A 0 A_JumpIf(invoker.weaponstatus[0]&ZM66F_CHAMBER,"nope");
 		RIFG A 3 offset(-1,36)A_WeaponBusy();
 		RIFG B 4 offset(-3,42){
 			if(!invoker.weaponstatus[ZM66S_MAG]%100)invoker.weaponstatus[ZM66S_MAG]=0;
 			if(
-				!(invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_CHAMBER)
-				&& !(invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_CHAMBER)
+				!(invoker.weaponstatus[0]&ZM66F_CHAMBER)
+				&& !(invoker.weaponstatus[0]&ZM66F_CHAMBER)
 				&& invoker.weaponstatus[ZM66S_MAG]%100>0
 			){
 				A_StartSound("weapons/rifleclick",CHAN_WEAPON);
 				if(invoker.weaponstatus[ZM66S_MAG]==51)invoker.weaponstatus[ZM66S_MAG]=49;
 				else invoker.weaponstatus[ZM66S_MAG]--;
-				invoker.weaponstatus[ZM66S_FLAGS]|=ZM66F_CHAMBER;
+				invoker.weaponstatus[0]|=ZM66F_CHAMBER;
 				brokenround();
 			}else setweaponstate("nope");
 		}
@@ -509,18 +509,18 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 		RIFG C 2 offset(-16,42){
 			A_MuzzleClimb(frandom(-0.4,0.4),frandom(-0.4,0.4));
 			if(
-				invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_CHAMBER
+				invoker.weaponstatus[0]&ZM66F_CHAMBER
 				&&!(invoker.weaponstatus[0]&ZM66F_CHAMBERBROKEN)
 			){
 				A_SpawnItemEx("ZM66DroppedRound",0,0,20,
 					random(4,7),random(-2,2),random(-2,1),0,
 					SXF_NOCHECKPOSITION
 				);
-				invoker.weaponstatus[ZM66S_FLAGS]&=~ZM66F_CHAMBER;
+				invoker.weaponstatus[0]&=~ZM66F_CHAMBER;
 				A_StartSound("weapons/rifleclick2",CHAN_WEAPON,CHANF_OVERLAP);
 			}else if(!random(0,4)){
 				invoker.weaponstatus[0]&=~ZM66F_CHAMBERBROKEN;
-				invoker.weaponstatus[ZM66S_FLAGS]&=~ZM66F_CHAMBER;
+				invoker.weaponstatus[0]&=~ZM66F_CHAMBER;
 				A_StartSound("weapons/rifleclick",CHAN_WEAPON,CHANF_OVERLAP);
 				for(int i=0;i<5;i++)A_SpawnItemEx("FourMilChunk",0,0,20,
 					random(4,7),random(-2,2),random(-2,1),0,SXF_NOCHECKPOSITION
@@ -535,7 +535,7 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 		RIFG C 2 A_Jumpif(!PressingReload(), "Nope");
 		---- C 0 {if(invoker.weaponstatus[ZM66S_MAG]>0)A_Overlay(102, "Dumb");if(Invoker.weaponstatus[0]&ZM66F_CHAMBER)A_Overlay(103, "Dumb2");
 			if(!(invoker.weaponstatus[0]&ZM66F_NOFIRESELECT))A_Overlay(104, "Dumb3");
-			if(invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_GRENADELOADED)A_Overlay(105, "Dumb4");}
+			if(invoker.weaponstatus[0]&ZM66F_GRENADELOADED)A_Overlay(105, "Dumb4");}
 		Loop;
 	Dumb:
 		STUP O 5 {A_OverLayOffset(102,29,24);A_OverlayPivot(OverlayId(), 1, .5);Float Mag = invoker.weaponstatus[ZM66S_MAG];A_OverlayScale(OverlayId(), Mag/50, 1);}
@@ -558,12 +558,12 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 
 	firefrag:
 		RIFG B 2{
-			if(!(invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_GRENADELOADED)){
+			if(!(invoker.weaponstatus[0]&ZM66F_GRENADELOADED)){
 				setweaponstate("nope");
 				return;
 			}
 			A_FireHDGL();
-			invoker.weaponstatus[ZM66S_FLAGS]&=~ZM66F_GRENADELOADED;
+			invoker.weaponstatus[0]&=~ZM66F_GRENADELOADED;
 			A_StartSound("weapons/grenadeshot",CHAN_WEAPON);
 		}
 		RIFG B 3{
@@ -589,10 +589,10 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 
 	altreload:
 		RIFG A 0{
-			invoker.weaponstatus[ZM66S_FLAGS]&=~ZM66F_UNLOADONLY;
+			invoker.weaponstatus[0]&=~ZM66F_UNLOADONLY;
 			if(
-				!(invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_NOLAUNCHER)
-				&&!(invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_GRENADELOADED)
+				!(invoker.weaponstatus[0]&ZM66F_NOLAUNCHER)
+				&&!(invoker.weaponstatus[0]&ZM66F_GRENADELOADED)
 				&&countinv("HDRocketAmmo")
 			)setweaponstate("unloadgrenade");
 		}goto nope;
@@ -608,14 +608,14 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 		RIFG D 2 offset(8,48){
 			A_StartSound("weapons/grenopen",CHAN_WEAPon,CHANF_OVERLAP);
 			A_MuzzleClimb(-0.3,-0.3);
-			if(invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_GRENADELOADED)A_StartSound("weapons/grenreload",CHAN_WEAPON);
+			if(invoker.weaponstatus[0]&ZM66F_GRENADELOADED)A_StartSound("weapons/grenreload",CHAN_WEAPON);
 		}
 		RIFG D 10 offset(10,49){
-			if(!(invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_GRENADELOADED)){
-				if(!(invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_UNLOADONLY))A_SetTics(3);
+			if(!(invoker.weaponstatus[0]&ZM66F_GRENADELOADED)){
+				if(!(invoker.weaponstatus[0]&ZM66F_UNLOADONLY))A_SetTics(3);
 				return;
 			}
-			invoker.weaponstatus[ZM66S_FLAGS]&=~ZM66F_GRENADELOADED;
+			invoker.weaponstatus[0]&=~ZM66F_GRENADELOADED;
 			if(
 				!PressingUnload()
 				||A_JumpIfInventory("HDRocketAmmo",0,"null")
@@ -630,14 +630,14 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 				A_MuzzleClimb(frandom(0.8,-0.2),frandom(0.4,-0.2));
 			}
 		}
-		RIFG C 0 A_JumpIf(invoker.weaponstatus[ZM66S_FLAGS]&ZM66F_UNLOADONLY,"greloadend");
+		RIFG C 0 A_JumpIf(invoker.weaponstatus[0]&ZM66F_UNLOADONLY,"greloadend");
 	loadgrenade:
 		RIFG D 4 offset(10,50) A_StartSound("weapons/pocket",CHAN_WEAPON,CHANF_OVERLAP);
 		RIFG DDD 8 offset(10,50) A_MuzzleClimb(frandom(-0.2,0.8),frandom(-0.2,0.4));
 		RIFG C 18 offset(8,50){
 			if(!countinv("HDRocketAmmo"))return;
 			A_TakeInventory("HDRocketAmmo",1,TIF_NOTAKEINFINITE);
-			invoker.weaponstatus[ZM66S_FLAGS]|=ZM66F_GRENADELOADED;
+			invoker.weaponstatus[0]|=ZM66F_GRENADELOADED;
 			A_StartSound("weapons/grenreload",CHAN_WEAPON);
 		}
 	greloadend:
@@ -769,7 +769,7 @@ class NSHZM66AssaultRifle:ZM66AssaultRifle{// Replaces ZM66AssaultRifle{
 		int nogl=getloadoutvar(input,"nogl",1);
 		//disable launchers if rocket grenades denylisted
 		string denylist=hd_noloadout;
-		if(denylist.IndexOf(HDLD_BLOOPER)>=0)nogl=1;
+		if(denylist.IndexOf("blo")>=0)nogl=1;
 		if(!nogl){
 			weaponstatus[0]&=~ZM66F_NOLAUNCHER;
 		}else if(nogl>0){
